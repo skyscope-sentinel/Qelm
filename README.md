@@ -31,7 +31,7 @@
 
 Welcome to the **Quantum-Enhanced Language Model (QELM)** – an innovative project that merges the power of quantum computing with natural language processing to create a next-generation language model. Leveraging **Qiskit** and **Qiskit Aer**, QELM explores the potential of quantum circuits in enhancing language understanding and generation capabilities.
 
-![QELM Diagram](docs/images/QELM_Diagram.png) <!-- Replace with actual image path -->
+![QELM Diagram](docs/images/QELM_Diagram.png)
 
 ## Features
 
@@ -246,11 +246,7 @@ QELM/
         └── QELM_Diagram.png
 ```
 
-- **Qelm2.py:** The main script containing the Quantum-Enhanced Language Model implementation.
-- **requirements.txt:** Lists all Python dependencies required to run QELM.
-- **README.md:** This documentation file.
-- **quantum_llm_model_enhanced.json:** Saved model parameters after training.
-- **docs/images/QELM_Diagram.png:** Diagram illustrating the QELM architecture (replace with actual image).
+![Simple Model](docs/images/quantum.png)
 
 ## Credits
 

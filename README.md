@@ -29,7 +29,9 @@
 
 ## Overview
 
-Welcome to the **Quantum-Enhanced Language Model (QELM)** – an innovative project that merges the power of quantum computing with natural language processing to create a next-generation language model. Leveraging **Qiskit** and **Qiskit Aer**, QELM explores the potential of quantum circuits in enhancing language understanding and generation capabilities.
+Welcome to the **Quantum-Enhanced Language Model (QELM)** – an innovative project that merges the power of quantum computing with natural language processing to create a next-generation language model. Leveraging **Qiskit** and **Qiskit Aer**, QELM explores the potential of quantum circuits in enhancing language understanding and generation capabilities. Utilizing Qubits Qelm can train a model that would normally take up gigabytes worth of data in llm files all the way down to kb's with no loss. With this size, llm's can run instantly with no loss of capabilities or intelligence and on small computers instead requiring data centers to run single models.
+The goal is to create llm's that are instant, smarter and can be utilized anywhere and by anyone.
+
 
 ![QELM Diagram](docs/images/QELM_Diagram.png)
 
@@ -75,7 +77,7 @@ cd QELM
 
 ### Setup Virtual Environment
 
-It's recommended to use a virtual environment to manage dependencies.
+It's recommended to use a virtual environment to manage dependencies as it's easier to deal with issues. If you are sure of your capabilities then using a full environment is best.
 
 ```bash
 # Create a virtual environment named 'qiskit_env'
@@ -101,15 +103,15 @@ pip install -r requirements.txt
 
 ## Usage
 
-QELM provides a command-line interface (CLI) to facilitate training, inference, saving, and loading models.
+QELM provides a command-line interface (CLI) to facilitate training, inference, saving, and loading models. This is extremely basic and being worked on.
 
 ### Training the Model
 
-You can train QELM using either synthetic data (for testing purposes) or a real dataset.
+You can train QELM using either synthetic data (for testing purposes) or a real dataset. Any dataset can be used. File extension may need to be altered for certain types of data.
 
 #### With Synthetic Data
 
-Synthetic data is useful for initial testing and ensuring that the training pipeline works correctly.
+Synthetic data is useful for initial testing and ensuring that the training pipeline works correctly. If you are testing try 2 epochs instead of 20. Each epoch can take minutes to hours depending on your computers capabilities. 
 
 ```bash
 python Qelm2.py --train --epochs 20 --lr 0.05
@@ -244,6 +246,7 @@ QELM/
 └── docs/
     └── images/
         └── QELM_Diagram.png
+        └── quantum.png
 ```
 
 ![Simple Model](docs/images/quantum.png)

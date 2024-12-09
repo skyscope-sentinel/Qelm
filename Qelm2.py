@@ -3,10 +3,10 @@
 
 """
 ====================================================================================================
-Quantum-Enhanced Language Model (QELM) - Enhanced Complete Script - By Inserian
+Quantum-Enhanced Language Model (QELM) - Complete Revised Script
 ====================================================================================================
 
-This script defines an advanced Quantum-Enhanced Language Model (QELM) with the following features:
+This script defines a Quantum-Enhanced Language Model (QELM) with the following features:
 1. Gradient-Based Optimization using the Parameter Shift Rule.
 2. Advanced Quantum Circuit Design with entangling gates and multiple layers.
 3. Improved Synthetic Dataset resembling language data.
@@ -120,17 +120,18 @@ class QuantumAttentionLayer:
         # Initialize quantum simulator
         self.backend = AerSimulator()
     
-    def build_circuit(self, input_vector: np.ndarray, param_store: QuantumParameterStore) -> QuantumCircuit:
+    def build_circuit(self, input_vector: np.ndarray, param_store: QuantumParameterStore, output_length: int) -> QuantumCircuit:
         """
         Build the quantum circuit with entangling gates and multiple layers.
         """
-        qubits_needed = max(1, int(np.ceil(np.log2(self.embed_dim))))
+        qubits_needed = max(1, int(np.ceil(np.log2(output_length))))
         circuit = QuantumCircuit(qubits_needed)
         
         # Initialize the quantum state
         state_prep_vec = np.zeros(2**qubits_needed, dtype=complex)
-        if self.embed_dim > 0:
-            state_prep_vec[:self.embed_dim] = input_vector.astype(complex)
+        # Truncate or pad the input_vector to match output_length
+        truncated_input = input_vector[:output_length] if len(input_vector) >= output_length else np.pad(input_vector, (0, output_length - len(input_vector)), 'constant')
+        state_prep_vec[:output_length] = truncated_input.astype(complex)
         state_prep_vec = normalize_vector(state_prep_vec)
         circuit.initialize(state_prep_vec, qubits=range(qubits_needed))
         
@@ -160,13 +161,17 @@ class QuantumAttentionLayer:
         """
         input_vector = normalize_vector(input_vector)
         if mode == 'query':
-            circuit = self.build_circuit(input_vector, self.query_params)
+            output_length = self.embed_dim
+            circuit = self.build_circuit(input_vector, self.query_params, output_length)
         elif mode == 'key':
-            circuit = self.build_circuit(input_vector, self.key_params)
+            output_length = self.embed_dim
+            circuit = self.build_circuit(input_vector, self.key_params, output_length)
         elif mode == 'value':
-            circuit = self.build_circuit(input_vector, self.value_params)
+            output_length = self.embed_dim
+            circuit = self.build_circuit(input_vector, self.value_params, output_length)
         elif mode == 'out':
-            circuit = self.build_circuit(input_vector, self.out_params)
+            output_length = self.embed_dim
+            circuit = self.build_circuit(input_vector, self.out_params, output_length)
         else:
             sys.exit("Error: Invalid mode for QuantumAttentionLayer.forward")
         
@@ -180,9 +185,8 @@ class QuantumAttentionLayer:
             sys.exit(1)
         
         # Extract and normalize the output vector
-        output_length = self.embed_dim
         if len(final_state.data) < output_length:
-            logging.warning(f"Final state vector length ({len(final_state.data)}) is less than embed_dim ({output_length}). Padding with zeros.")
+            logging.warning(f"Final state vector length ({len(final_state.data)}) is less than expected ({output_length}). Padding with zeros.")
             output_vec = np.real(final_state.data[:len(final_state.data)])  # Use available data
             output_vec = np.pad(output_vec, (0, output_length - len(output_vec)), 'constant')
         else:
@@ -255,17 +259,18 @@ class QuantumFeedForwardLayer:
         # Initialize quantum simulator
         self.backend = AerSimulator()
     
-    def build_circuit(self, input_vector: np.ndarray, param_store: QuantumParameterStore) -> QuantumCircuit:
+    def build_circuit(self, input_vector: np.ndarray, param_store: QuantumParameterStore, output_length: int) -> QuantumCircuit:
         """
         Build the quantum circuit with entangling gates and multiple layers.
         """
-        qubits_needed = max(1, int(np.ceil(np.log2(self.hidden_dim))))
+        qubits_needed = max(1, int(np.ceil(np.log2(output_length))))
         circuit = QuantumCircuit(qubits_needed)
         
         # Initialize the quantum state
         state_prep_vec = np.zeros(2**qubits_needed, dtype=complex)
-        if self.embed_dim > 0:
-            state_prep_vec[:self.embed_dim] = input_vector.astype(complex)
+        # Truncate or pad the input_vector to match output_length
+        truncated_input = input_vector[:output_length] if len(input_vector) >= output_length else np.pad(input_vector, (0, output_length - len(input_vector)), 'constant')
+        state_prep_vec[:output_length] = truncated_input.astype(complex)
         state_prep_vec = normalize_vector(state_prep_vec)
         circuit.initialize(state_prep_vec, qubits=range(qubits_needed))
         
@@ -295,9 +300,11 @@ class QuantumFeedForwardLayer:
         """
         input_vector = normalize_vector(input_vector)
         if layer == 'w1':
-            circuit = self.build_circuit(input_vector, self.w1_params)
+            output_length = self.hidden_dim  # 32
+            circuit = self.build_circuit(input_vector, self.w1_params, output_length)
         elif layer == 'w2':
-            circuit = self.build_circuit(input_vector, self.w2_params)
+            output_length = self.embed_dim  # 16
+            circuit = self.build_circuit(input_vector, self.w2_params, output_length)
         else:
             sys.exit("Error: Invalid layer for QuantumFeedForwardLayer.forward")
         
@@ -311,9 +318,8 @@ class QuantumFeedForwardLayer:
             sys.exit(1)
         
         # Extract and normalize the output vector
-        output_length = self.hidden_dim
         if len(final_state.data) < output_length:
-            logging.warning(f"Final state vector length ({len(final_state.data)}) is less than hidden_dim ({output_length}). Padding with zeros.")
+            logging.warning(f"Final state vector length ({len(final_state.data)}) is less than expected ({output_length}). Padding with zeros.")
             output_vec = np.real(final_state.data[:len(final_state.data)])  # Use available data
             output_vec = np.pad(output_vec, (0, output_length - len(output_vec)), 'constant')
         else:
@@ -419,9 +425,9 @@ class QuantumLanguageModel:
             x = combined_attn
         
         # Quantum feed-forward
-        ffn_output_w1 = self.ffn.forward(x, layer='w1')
-        ffn_output_w2 = self.ffn.forward(x, layer='w2')
-        ffn_output = ffn_output_w1 + ffn_output_w2
+        ffn_output_w1 = self.ffn.forward(x, layer='w1')  # Shape: (32,)
+        ffn_output_w2 = self.ffn.forward(ffn_output_w1, layer='w2')  # Shape: (16,)
+        ffn_output = ffn_output_w2  # Shape: (16,)
         
         if use_residual:
             x = normalize_vector(x + ffn_output)  # Residual connection and normalization
@@ -429,8 +435,8 @@ class QuantumLanguageModel:
             x = ffn_output
         
         # Output logits (linear transformation)
-        W_out = np.random.randn(self.vocab_size, self.hidden_dim).astype(np.float32) * 0.01
-        logits = W_out @ x
+        W_out = np.random.randn(self.vocab_size, self.embed_dim).astype(np.float32) * 0.01  # Updated shape to (256, 16)
+        logits = W_out @ x  # Shape: (256,)
         return logits
     
     def get_all_parameters(self) -> np.ndarray:

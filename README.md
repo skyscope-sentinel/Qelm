@@ -268,7 +268,7 @@ For any inquiries, suggestions, or contributions, feel free to reach out:
 
 - **Email:** [contact@rdbiotechalaska.com](mailto:contact@rdbiotechalaska.com)
 - **GitHub:** [R-D-BioTech-Alaska](https://github.com/R-D-BioTech-Alaska)
-- **Website:** [RDBioTech.org](https://RDBioTech.org)
+- **Website:** [RDBioTech.org](http://RDBioTech.org)
 
 ---
 

@@ -24,6 +24,8 @@ Dependencies:
 
 Ensure all dependencies are installed before running the script.
 
+Ensure Qiskit is running import correctly as they tend to change it each update.
+
 ====================================================================================================
 """
 

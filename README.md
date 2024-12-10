@@ -29,7 +29,7 @@
 
 ## Overview
 
-Welcome to the **Quantum-Enhanced Language Model (QELM)** – an innovative project that merges the power of quantum computing with natural language processing to create a next-generation language model. Leveraging **Qiskit** and **Qiskit Aer**, QELM explores the potential of quantum circuits in enhancing language understanding and generation capabilities. Utilizing Qubits Qelm can train a model that would normally take up gigabytes worth of data in llm files all the way down to kb's with no loss. With this size, llm's can run instantly with no loss of capabilities or intelligence and on small computers instead requiring data centers to run single models.
+Welcome to the **Quantum-Enhanced Language Model (QELM)** – an innovative project that merges the power of quantum computing with natural language processing to create a next-generation language model. Leveraging **Qiskit** and **Qiskit Aer**, QELM explores the potential of quantum circuits in enhancing language understanding and generation capabilities. Utilizing Qubits Qelm can train a model that would normally take up gigabytes worth of data in llm files all the way down to -testing-. With this size, llm's can run instantly with no loss of capabilities or intelligence and on small computers instead requiring data centers to run single models.
 The goal is to create llm's that are instant, smarter and can be utilized anywhere and by anyone.
 
 

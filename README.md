@@ -257,6 +257,16 @@ Developed by **Brenton Carter** (Inserian).
 
 Special thanks to the [Qiskit](https://qiskit.org/) community for providing robust quantum computing tools and resources that made this project possible.
 
+## Credit Requirements
+
+If you use or build upon this project, please provide proper credit to the original developer:
+
+- Include the following attribution in your project:  
+  **"Based on Quantum-Enhanced Language Model (QELM) by Brenton Carter (Inserian)"**
+- Provide a link back to the original repository: [R-D-BioTech-Alaska/QELM](https://github.com/R-D-BioTech-Alaska/QELM)
+
+- Include a mention to the Qiskit community. [Qiskit](https://qiskit.org/)
+
 ## License
 
 This project is licensed under the MIT License.

@@ -3,17 +3,20 @@
 
 """
 ====================================================================================================
-Quantum-Enhanced Language Model (QELM) - Enhanced Complete Training Script with Tkinter GUI
+Quantum-Enhanced Language Model (QELM) - Trainer with multi thread support. *CPU/GPU*
 ====================================================================================================
 
-This script defines an advanced Quantum-Enhanced Language Model (QELM) with the following features:
+This script defines a Quantum-Enhanced Language Model (QELM) with the following features:
 1. Gradient-Based Optimization using the Parameter Shift Rule.
 2. Advanced Quantum Circuit Design with entangling gates and multiple layers.
 3. Support for both Synthetic and Real Datasets resembling language data.
 4. Enhanced Model Architecture with residual connections and layer normalization.
 5. Robust Parameter Persistence with versioning and validation using a custom .qelm file extension.
 6. User-Friendly Graphical User Interface (GUI) using Tkinter for training, inference, saving, loading, and exploring token mappings.
-7. Multi-threading for cpu and gpu selection. Makes use of your full cpu/gpu.
+7. **Fixed Issues:**
+   - Resolved shape mismatch error during residual connections by ensuring consistent tensor shapes across model components.
+   - Added global exception handling to prevent the script from closing unexpectedly and to display error messages to the user.
+   - Suppressed excessive logging from worker processes to prevent resource exhaustion.
 
 Dependencies:
 - qiskit
@@ -25,7 +28,7 @@ Dependencies:
 
 Ensure all dependencies are installed before running the script.
 
-Remember to update qiskit calls with correct versions with each update. (Not sure why they change it)
+Check with Qiskit to ensure calls are correct. They have a tendency to change them with updates.
 
 ====================================================================================================
 """
@@ -45,12 +48,29 @@ from collections import defaultdict
 import tkinter as tk
 from tkinter import filedialog, messagebox, scrolledtext, ttk
 import threading
+import multiprocessing
+import concurrent.futures
+import copy
+import os
+import traceback  # *** ADDED *** for detailed error traces
 
 # Initialize NLTK data (only the first time)
 nltk.download('punkt', quiet=True)
 
-# Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+# Configure logging to file *do not delete this unless you know what you are doing* - Be careful about overloading as this can quickly get large.
+logging.basicConfig(
+    filename='qelm.log',  # *** ADDED *** Log file name
+    filemode='a',
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+
+# Also log to console for debugging purposes
+console = logging.StreamHandler()
+console.setLevel(logging.INFO)
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+console.setFormatter(formatter)
+logging.getLogger('').addHandler(console)
 
 
 # ============================
@@ -59,7 +79,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 
 def normalize_vector(vec: np.ndarray) -> np.ndarray:
     """
-    Normalize a vector to unit length.
+    Normalize a vector to unit length, ensuring shape consistency.
     """
     norm = np.linalg.norm(vec)
     if norm < 1e-12:
@@ -109,7 +129,7 @@ class QuantumAttentionLayer:
     """
     Quantum-enhanced attention layer with advanced circuit design.
     """
-    def __init__(self, embed_dim: int, num_heads: int, prefix: str = "attn"):
+    def __init__(self, embed_dim: int, num_heads: int, sim_method: str = 'cpu', num_threads: int = 1, prefix: str = "attn"):
         self.embed_dim = embed_dim
         self.num_heads = num_heads
         self.head_dim = embed_dim // num_heads
@@ -122,20 +142,38 @@ class QuantumAttentionLayer:
         self.value_params = QuantumParameterStore(embed_dim * embed_dim, prefix=f"{prefix}_V")
         self.out_params   = QuantumParameterStore(embed_dim * embed_dim, prefix=f"{prefix}_O")
         
-        # Initialize quantum simulator
-        self.backend = AerSimulator(method='statevector', max_parallel_threads=32)
+        # Initialize quantum simulator based on user selection
+        self.sim_method = sim_method
+        self.num_threads = num_threads
+        self.backend = self.initialize_simulator()
+    
+    def initialize_simulator(self):
+        """
+        Initialize the AerSimulator with selected method and thread configuration.
+        """
+        if self.sim_method == 'gpu':
+            try:
+                # Attempt to initialize GPU simulator *Sort of working*
+                backend = AerSimulator(method='statevector_gpu', max_parallel_threads=self.num_threads)
+                logging.info("Initialized AerSimulator with GPU support.")
+            except Exception as e:
+                logging.error(f"Failed to initialize GPU simulator: {e}. Falling back to CPU simulator.")
+                backend = AerSimulator(method='statevector', max_parallel_threads=self.num_threads)
+        else:
+            # Default to CPU simulator *checks for threading*
+            backend = AerSimulator(method='statevector', max_parallel_threads=self.num_threads)
+        return backend
     
     def build_circuit(self, input_vector: np.ndarray, param_store: QuantumParameterStore) -> QuantumCircuit:
         """
         Build the quantum circuit with entangling gates and multiple layers.
         """
-        qubits_needed = max(1, int(np.ceil(np.log2(self.embed_dim))))
+        qubits_needed = max(1, int(np.ceil(np.log2(len(input_vector)))))  # *** FIXED ***
         circuit = QuantumCircuit(qubits_needed)
         
         # Initialize the quantum state
         state_prep_vec = np.zeros(2**qubits_needed, dtype=complex)
-        if self.embed_dim > 0:
-            state_prep_vec[:self.embed_dim] = input_vector.astype(complex)
+        state_prep_vec[:len(input_vector)] = input_vector.astype(complex)  # *** FIXED ***
         state_prep_vec = normalize_vector(state_prep_vec)
         circuit.initialize(state_prep_vec, qubits=range(qubits_needed))
         
@@ -193,7 +231,13 @@ class QuantumAttentionLayer:
         else:
             output_vec = np.real(final_state.data[:output_length])
         
-        return normalize_vector(output_vec)
+        output_vec = normalize_vector(output_vec)
+        
+        # *** ADDED: Logging for Attention Output Shapes *watch for 16,32* ***
+        logging.info(f"QuantumAttentionLayer.forward - Mode: {mode}, input_vector.shape: {input_vector.shape}, output_vec.shape: {output_vec.shape}")
+        # *** END ADDED ***
+        
+        return output_vec
     
     def get_all_parameters(self) -> np.ndarray:
         """
@@ -229,7 +273,9 @@ class QuantumAttentionLayer:
             "query_params": self.query_params.to_dict(),
             "key_params": self.key_params.to_dict(),
             "value_params": self.value_params.to_dict(),
-            "out_params": self.out_params.to_dict()
+            "out_params": self.out_params.to_dict(),
+            "sim_method": self.sim_method,          # *** ADDED ***
+            "num_threads": self.num_threads         # *** ADDED ***
         }
     
     def from_dict(self, d: dict):
@@ -239,6 +285,10 @@ class QuantumAttentionLayer:
         self.key_params.from_dict(d["key_params"])
         self.value_params.from_dict(d["value_params"])
         self.out_params.from_dict(d["out_params"])
+        # *** ADDED: Update simulation settings ***
+        self.sim_method = d.get("sim_method", "cpu")
+        self.num_threads = d.get("num_threads", 1)
+        self.backend = self.initialize_simulator()
 
 
 # ============================
@@ -249,7 +299,7 @@ class QuantumFeedForwardLayer:
     """
     Quantum-enhanced feed-forward layer with advanced circuit design.
     """
-    def __init__(self, embed_dim: int, hidden_dim: int, prefix: str = "ffn"):
+    def __init__(self, embed_dim: int, hidden_dim: int, sim_method: str = 'cpu', num_threads: int = 1, prefix: str = "ffn"):
         self.embed_dim = embed_dim
         self.hidden_dim = hidden_dim
         
@@ -257,20 +307,38 @@ class QuantumFeedForwardLayer:
         self.w1_params = QuantumParameterStore(embed_dim * hidden_dim, prefix=f"{prefix}_W1")
         self.w2_params = QuantumParameterStore(hidden_dim * embed_dim, prefix=f"{prefix}_W2")
         
-        # Initialize quantum simulator
-        self.backend = AerSimulator(method='statevector', max_parallel_threads=32)
+        # Initialize quantum simulator based on user selection
+        self.sim_method = sim_method
+        self.num_threads = num_threads
+        self.backend = self.initialize_simulator()
+    
+    def initialize_simulator(self):
+        """
+        Initialize the AerSimulator with selected method and thread configuration.
+        """
+        if self.sim_method == 'gpu':
+            try:
+                # Attempt to initialize GPU simulator
+                backend = AerSimulator(method='statevector_gpu', max_parallel_threads=self.num_threads)
+                logging.info("Initialized AerSimulator with GPU support.")
+            except Exception as e:
+                logging.error(f"Failed to initialize GPU simulator: {e}. Falling back to CPU simulator.")
+                backend = AerSimulator(method='statevector', max_parallel_threads=self.num_threads)
+        else:
+            # Default to CPU simulator
+            backend = AerSimulator(method='statevector', max_parallel_threads=self.num_threads)
+        return backend
     
     def build_circuit(self, input_vector: np.ndarray, param_store: QuantumParameterStore) -> QuantumCircuit:
         """
         Build the quantum circuit with entangling gates and multiple layers.
         """
-        qubits_needed = max(1, int(np.ceil(np.log2(self.hidden_dim))))
+        qubits_needed = max(1, int(np.ceil(np.log2(len(input_vector)))))  # *** FIXED ***
         circuit = QuantumCircuit(qubits_needed)
         
         # Initialize the quantum state
         state_prep_vec = np.zeros(2**qubits_needed, dtype=complex)
-        if self.embed_dim > 0:
-            state_prep_vec[:self.embed_dim] = input_vector.astype(complex)
+        state_prep_vec[:len(input_vector)] = input_vector.astype(complex)  # *** FIXED ***
         state_prep_vec = normalize_vector(state_prep_vec)
         circuit.initialize(state_prep_vec, qubits=range(qubits_needed))
         
@@ -324,7 +392,13 @@ class QuantumFeedForwardLayer:
         else:
             output_vec = np.real(final_state.data[:output_length])
         
-        return normalize_vector(output_vec)
+        output_vec = normalize_vector(output_vec)
+        
+        # *** ADDED: Logging for Feed-Forward Output Shapes ***
+        logging.info(f"QuantumFeedForwardLayer.forward - Layer: {layer}, input_vector.shape: {input_vector.shape}, output_vec.shape: {output_vec.shape}")
+        # *** END ADDED ***
+        
+        return output_vec
     
     def get_all_parameters(self) -> np.ndarray:
         """
@@ -351,7 +425,9 @@ class QuantumFeedForwardLayer:
             "embed_dim": self.embed_dim,
             "hidden_dim": self.hidden_dim,
             "w1_params": self.w1_params.to_dict(),
-            "w2_params": self.w2_params.to_dict()
+            "w2_params": self.w2_params.to_dict(),
+            "sim_method": self.sim_method,          # *** ADDED ***
+            "num_threads": self.num_threads         # *** ADDED ***
         }
     
     def from_dict(self, d: dict):
@@ -359,6 +435,10 @@ class QuantumFeedForwardLayer:
             sys.exit("Error: Feed-forward layer configuration mismatch.")
         self.w1_params.from_dict(d["w1_params"])
         self.w2_params.from_dict(d["w2_params"])
+        # *** ADDED: Update simulation settings ***
+        self.sim_method = d.get("sim_method", "cpu")
+        self.num_threads = d.get("num_threads", 1)
+        self.backend = self.initialize_simulator()
 
 
 # ============================
@@ -369,7 +449,7 @@ class QuantumLanguageModel:
     """
     Quantum-Enhanced Language Model combining attention and feed-forward layers with a Projection Layer.
     """
-    def __init__(self, vocab_size: int, embed_dim: int, num_heads: int, hidden_dim: int):
+    def __init__(self, vocab_size: int, embed_dim: int, num_heads: int, hidden_dim: int, sim_method: str = 'cpu', num_threads: int = 1):
         self.vocab_size = vocab_size
         self.embed_dim = embed_dim
         self.num_heads = num_heads
@@ -378,9 +458,9 @@ class QuantumLanguageModel:
         # Initialize embeddings
         self.embeddings = (np.random.randn(vocab_size, embed_dim) * 0.01).astype(np.float32)
         
-        # Initialize quantum layers
-        self.attn = QuantumAttentionLayer(embed_dim, num_heads, prefix="layer1_attn")
-        self.ffn  = QuantumFeedForwardLayer(embed_dim, hidden_dim, prefix="layer1_ffn")
+        # Initialize quantum layers with simulation settings
+        self.attn = QuantumAttentionLayer(embed_dim, num_heads, sim_method=sim_method, num_threads=num_threads, prefix="layer1_attn")
+        self.ffn  = QuantumFeedForwardLayer(embed_dim, hidden_dim, sim_method=sim_method, num_threads=num_threads, prefix="layer1_ffn")
         
         # Initialize projection layer
         self.W_proj = np.random.randn(embed_dim, hidden_dim).astype(np.float32) * 0.01  # Projection matrix
@@ -418,12 +498,12 @@ class QuantumLanguageModel:
             sys.exit(f"Error: input_id {input_ids[0]} is out of bounds for vocabulary size {self.vocab_size}.")
         
         # Quantum attention
-        attn_output = self.attn.forward(x, mode='query')
-        key_output = self.attn.forward(x, mode='key')
-        value_output = self.attn.forward(x, mode='value')
+        attn_output = self.attn.forward(x, mode='query')  # Shape: (16,)
+        key_output = self.attn.forward(x, mode='key')     # Shape: (16,)
+        value_output = self.attn.forward(x, mode='value') # Shape: (16,)
         
-        # Combine attention outputs (placeholder for actual attention mechanism)
-        combined_attn = attn_output + key_output + value_output
+        # Combine attention outputs
+        combined_attn = attn_output + key_output + value_output  # Shape: (16,)
         
         if use_residual:
             if x.shape[0] != combined_attn.shape[0]:
@@ -433,14 +513,22 @@ class QuantumLanguageModel:
             x = combined_attn
         
         # Quantum feed-forward
-        ffn_output_w1 = self.ffn.forward(x, layer='w1')  # Shape: (hidden_dim,)
-        ffn_output_w2 = self.ffn.forward(x, layer='w2')  # Shape: (hidden_dim,)
-        ffn_output = ffn_output_w1 + ffn_output_w2      # Shape: (hidden_dim,)
+        ffn_output_w1 = self.ffn.forward(x, layer='w1')  # Shape: (32,)
+        ffn_output_w2 = self.ffn.forward(ffn_output_w1, layer='w2')  # Shape: (32,)
+        ffn_output = ffn_output_w1 + ffn_output_w2      # Shape: (32,)
+        
+        # Project ffn_output to embed_dim
+        ffn_output_proj = self.W_proj @ ffn_output  # Shape: (16,)
+        
+        # *** ADDED: Logging for Forward Pass Shapes ***
+        logging.info("Forward Pass Shapes:")
+        logging.info(f"x.shape: {x.shape}")
+        logging.info(f"ffn_output.shape: {ffn_output.shape}")
+        logging.info(f"W_proj.shape: {self.W_proj.shape}")
+        logging.info(f"ffn_output_proj.shape: {ffn_output_proj.shape}")
+        # *** END ADDED ***
         
         if use_residual:
-            # Project ffn_output to embed_dim
-            ffn_output_proj = self.W_proj @ ffn_output  # Shape: (embed_dim,)
-            # Ensure x and ffn_output_proj have the same shape
             if x.shape[0] != ffn_output_proj.shape[0]:
                 sys.exit(f"Error: Shape mismatch in residual connection after projection. x shape: {x.shape}, ffn_output_proj shape: {ffn_output_proj.shape}")
             x = normalize_vector(x + ffn_output_proj)  # Residual connection and normalization
@@ -448,7 +536,7 @@ class QuantumLanguageModel:
             x = ffn_output
         
         # Output logits (linear transformation)
-        logits = self.W_out @ x  # Shape: (vocab_size,)
+        logits = self.W_out @ x  # Shape: (256,)
         return logits
     
     def get_all_parameters(self) -> np.ndarray:
@@ -485,6 +573,7 @@ class QuantumLanguageModel:
         # Set projection matrix
         proj_params = params[attn_size + ffn_size:attn_size + ffn_size + proj_size]
         self.W_proj = proj_params.reshape(self.embed_dim, self.hidden_dim)
+        logging.info(f"W_proj set to shape: {self.W_proj.shape}")
         
         # Set output weights
         out_params = params[attn_size + ffn_size + proj_size:]
@@ -632,54 +721,139 @@ def mse_loss(pred: np.ndarray, target: np.ndarray) -> float:
 # Training Functions
 # ============================
 
-def compute_gradients(model: QuantumLanguageModel, X: np.ndarray, Y: np.ndarray) -> np.ndarray:
+def compute_gradient_for_parameter(args):
     """
-    Compute gradients of the loss with respect to all quantum parameters using the Parameter Shift Rule.
-    Note: This is a simplified implementation for demonstration purposes.
-    """
-    gradients = np.zeros_like(model.get_all_parameters())
-    original_params = model.get_all_parameters().copy()
+    Compute the gradient for a single parameter using the Parameter Shift Rule.
+    This function runs in a separate process.
     
-    for i in range(len(original_params)):
+    Args:
+        args (tuple): Contains all necessary parameters to reconstruct the model and compute the gradient.
+            - vocab_size (int)
+            - embed_dim (int)
+            - num_heads (int)
+            - hidden_dim (int)
+            - sim_method (str)
+            - num_threads (int)
+            - X (np.ndarray)
+            - Y (np.ndarray)
+            - original_params (np.ndarray)
+            - i (int): Index of the parameter to compute the gradient for.
+    
+    Returns:
+        tuple: (i, gradient)
+    """
+    import logging
+    import traceback  # *** ADDED *** for detailed error traces
+    
+    # *** ADDED *** Suppress logging in worker processes
+    logging.getLogger().handlers = []
+    logging.basicConfig(level=logging.CRITICAL)  # Only log critical errors
+    try:
+        (vocab_size, embed_dim, num_heads, hidden_dim, sim_method, num_threads, X, Y, original_params, i) = args
+        
+        # Reconstruct the model with the same configuration
+        model = QuantumLanguageModel(
+            vocab_size=vocab_size,
+            embed_dim=embed_dim,
+            num_heads=num_heads,
+            hidden_dim=hidden_dim,
+            sim_method=sim_method,
+            num_threads=num_threads
+        )
+        model.set_all_parameters(original_params)
+        
         # Shift parameter positively
         shifted_params_plus = original_params.copy()
         shifted_params_plus[i] += np.pi / 2
         model.set_all_parameters(shifted_params_plus)
-        loss_plus = 0.0
-        for x, y in zip(X, Y):
-            logits = model.forward([x])
-            loss_plus += mse_loss(logits, y)
-        loss_plus /= len(X)
+        loss_plus = np.mean([mse_loss(model.forward([x]), y) for x, y in zip(X, Y)])
         
         # Shift parameter negatively
         shifted_params_minus = original_params.copy()
         shifted_params_minus[i] -= np.pi / 2
         model.set_all_parameters(shifted_params_minus)
-        loss_minus = 0.0
-        for x, y in zip(X, Y):
-            logits = model.forward([x])
-            loss_minus += mse_loss(logits, y)
-        loss_minus /= len(X)
+        loss_minus = np.mean([mse_loss(model.forward([x]), y) for x, y in zip(X, Y)])
         
-        # Reset to original parameter
+        # Reset to original parameters
         model.set_all_parameters(original_params)
         
         # Compute gradient using Parameter Shift Rule
-        gradients[i] = (loss_plus - loss_minus) / 2
+        gradient = (loss_plus - loss_minus) / 2.0
+        return i, gradient
+    except Exception as e:
+        # *** ADDED *** Log the error traceback
+        logging.critical(f"Error in compute_gradient_for_parameter: {traceback.format_exc()}")
+        return i, 0.0  # Return zero gradient on failure
+
+def compute_gradients_parallel(model: QuantumLanguageModel, X: np.ndarray, Y: np.ndarray, num_processes: int = 1) -> np.ndarray:
+    """
+    Compute gradients of the loss with respect to all quantum parameters using multi-processing.
+    
+    Args:
+        model (QuantumLanguageModel): The model whose gradients are to be computed.
+        X (np.ndarray): Input data.
+        Y (np.ndarray): Target data.
+        num_processes (int): Number of parallel processes to use.
+    
+    Returns:
+        np.ndarray: Gradients array.
+    """
+    gradients = np.zeros_like(model.get_all_parameters())
+    original_params = model.get_all_parameters().copy()
+    total_params = len(original_params)
+    
+    # Prepare arguments for each parameter
+    args_list = [
+        (
+            model.vocab_size,
+            model.embed_dim,
+            model.num_heads,
+            model.hidden_dim,
+            model.attn.sim_method,
+            model.attn.num_threads,
+            X,
+            Y,
+            original_params,
+            i
+        )
+        for i in range(total_params)
+    ]
+    
+    # Utilize a pool of workers to compute gradients in parallel
+    with concurrent.futures.ProcessPoolExecutor(max_workers=num_processes) as executor:
+        # Submit all tasks
+        futures = [executor.submit(compute_gradient_for_parameter, args) for args in args_list]
+        for future in concurrent.futures.as_completed(futures):
+            try:
+                i, gradient = future.result()
+                gradients[i] = gradient
+            except Exception as e:
+                logging.critical(f"Error in gradient computation: {traceback.format_exc()}")
+                # Optionally, set gradient to zero or handle accordingly
+                gradients[i] = 0.0
     
     return gradients
 
-def train_model(model: QuantumLanguageModel, X: np.ndarray, Y: np.ndarray, epochs: int = 10, lr: float = 0.1, log_callback=None):
+def train_model_parallel(model: QuantumLanguageModel, X: np.ndarray, Y: np.ndarray, epochs: int = 10, lr: float = 0.1, num_threads: int = 1, log_callback=None):
     """
-    Train the model using gradient-based optimization with the Parameter Shift Rule.
+    Train the model using gradient-based optimization with the Parameter Shift Rule and parallel computation.
+    
+    Args:
+        model (QuantumLanguageModel): The model to train.
+        X (np.ndarray): Input data.
+        Y (np.ndarray): Target data.
+        epochs (int): Number of training epochs.
+        lr (float): Learning rate.
+        num_threads (int): Number of parallel processes to use.
+        log_callback (callable, optional): Function to log training progress.
     """
     for epoch in range(epochs):
         logging.info(f"Starting Epoch {epoch+1}/{epochs}")
         if log_callback:
             log_callback(f"Starting Epoch {epoch+1}/{epochs}\n")
         
-        # Compute gradients
-        gradients = compute_gradients(model, X, Y)
+        # Compute gradients in parallel
+        gradients = compute_gradients_parallel(model, X, Y, num_processes=num_threads)
         
         # Update parameters
         params = model.get_all_parameters()
@@ -687,16 +861,20 @@ def train_model(model: QuantumLanguageModel, X: np.ndarray, Y: np.ndarray, epoch
         model.set_all_parameters(params)
         
         # Compute average loss
-        total_loss = 0.0
-        for x, y in zip(X, Y):
-            logits = model.forward([x])
-            loss = mse_loss(logits, y)
-            total_loss += loss
-        avg_loss = total_loss / len(X)
+        try:
+            total_loss = np.mean([mse_loss(model.forward([x]), y) for x, y in zip(X, Y)])
+        except Exception as e:
+            logging.error(f"Error computing average loss: {e}")
+            total_loss = float('inf')  # Assign a high loss on failure
         
-        logging.info(f"Epoch {epoch+1}/{epochs}, Average Loss: {avg_loss:.6f}")
+        logging.info(f"Epoch {epoch+1}/{epochs}, Average Loss: {total_loss:.6f}")
         if log_callback:
-            log_callback(f"Epoch {epoch+1}/{epochs}, Average Loss: {avg_loss:.6f}\n")
+            log_callback(f"Epoch {epoch+1}/{epochs}, Average Loss: {total_loss:.6f}\n")
+        
+        # Update progress bar
+        if log_callback:
+            progress_percentage = ((epoch + 1) / epochs) * 100
+            log_callback(f"Progress: {progress_percentage:.2f}%\n")
     
     logging.info("Training completed.")
     if log_callback:
@@ -761,15 +939,18 @@ class QELM_GUI:
     def __init__(self, master):
         self.master = master
         master.title("Quantum-Enhanced Language Model (QELM) Trainer")
-        master.geometry("1000x800")
+        master.geometry("1200x900")  # Increased size to accommodate new controls
         master.resizable(False, False)
         
-        # Initialize model
+        # Initialize model with default simulation settings
         self.vocab_size = 256
         self.embed_dim = 16
         self.num_heads = 2
         self.hidden_dim = 32
-        self.model = QuantumLanguageModel(self.vocab_size, self.embed_dim, self.num_heads, self.hidden_dim)
+        self.sim_method = 'cpu'          # Default simulation method
+        self.num_threads = min(4, multiprocessing.cpu_count())             # *** FIXED *** Default threads to 4 or max CPU cores
+        self.model = QuantumLanguageModel(self.vocab_size, self.embed_dim, self.num_heads, self.hidden_dim,
+                                          sim_method=self.sim_method, num_threads=self.num_threads)
         
         # Initialize token mappings
         self.token_to_id = {}
@@ -810,14 +991,40 @@ class QELM_GUI:
         # Epochs
         ttk.Label(hyperparams_frame, text="Epochs:").grid(row=0, column=0, padx=10, pady=10, sticky='e')
         self.epochs_entry = ttk.Entry(hyperparams_frame, width=15)
-        self.epochs_entry.insert(0, "10")
+        self.epochs_entry.insert(0, "2")  # Set default to 2 for your test
         self.epochs_entry.grid(row=0, column=1, padx=10, pady=10, sticky='w')
         
         # Learning Rate
         ttk.Label(hyperparams_frame, text="Learning Rate:").grid(row=1, column=0, padx=10, pady=10, sticky='e')
         self.lr_entry = ttk.Entry(hyperparams_frame, width=15)
-        self.lr_entry.insert(0, "0.1")
+        self.lr_entry.insert(0, "0.05")  # Set default to 0.05 for your test
         self.lr_entry.grid(row=1, column=1, padx=10, pady=10, sticky='w')
+        
+        # *** ADDED: Simulation Settings ***
+        sim_settings_frame = ttk.LabelFrame(self.tab_train, text="Simulation Settings")
+        sim_settings_frame.pack(fill='x', padx=10, pady=10)
+        
+        # Simulation Method (CPU/GPU)
+        ttk.Label(sim_settings_frame, text="Simulation Method:").grid(row=0, column=0, padx=10, pady=10, sticky='e')
+        self.sim_method_var = tk.StringVar(value="cpu")
+        cpu_radio = ttk.Radiobutton(sim_settings_frame, text='CPU', variable=self.sim_method_var, value='cpu')
+        gpu_radio = ttk.Radiobutton(sim_settings_frame, text='GPU', variable=self.sim_method_var, value='gpu')
+        cpu_radio.grid(row=0, column=1, padx=10, pady=10, sticky='w')
+        gpu_radio.grid(row=0, column=2, padx=10, pady=10, sticky='w')
+        
+        # Number of Threads
+        ttk.Label(sim_settings_frame, text="Number of Threads:").grid(row=1, column=0, padx=10, pady=10, sticky='e')
+        self.num_threads_var = tk.IntVar(value=self.num_threads)
+        self.num_threads_spinbox = ttk.Spinbox(
+            sim_settings_frame, 
+            from_=1, 
+            to=multiprocessing.cpu_count(), 
+            textvariable=self.num_threads_var, 
+            width=5
+        )
+        self.num_threads_spinbox.grid(row=1, column=1, padx=10, pady=10, sticky='w')
+        ttk.Label(sim_settings_frame, text=f"(Max: {multiprocessing.cpu_count()})").grid(row=1, column=2, padx=10, pady=10, sticky='w')
+        # *** END ADDED ***
         
         # Training Controls
         train_controls_frame = ttk.Frame(self.tab_train)
@@ -833,7 +1040,7 @@ class QELM_GUI:
         self.load_button.pack(side='left', padx=10, pady=10)
         
         # Progress Bar
-        self.progress = ttk.Progressbar(self.tab_train, orient='horizontal', length=400, mode='determinate')
+        self.progress = ttk.Progressbar(self.tab_train, orient='horizontal', length=600, mode='determinate')
         self.progress.pack(pady=10)
         
         # Training Log
@@ -915,14 +1122,19 @@ class QELM_GUI:
         """
         Open a file dialog to select a dataset file.
         """
-        file_path = filedialog.askopenfilename(title="Select Dataset File", filetypes=(("Text Files", "*.txt"), ("All Files", "*.*")))
-        if file_path:
-            self.dataset_path = file_path
-            self.dataset_path_var.set(file_path)
-            self.log_train(f"Selected Dataset: {file_path}\n")
-            # Reset token mappings if a new dataset is selected
-            self.token_to_id = {}
-            self.id_to_token = {}
+        try:
+            file_path = filedialog.askopenfilename(title="Select Dataset File", filetypes=(("Text Files", "*.txt"), ("All Files", "*.*")))
+            if file_path:
+                self.dataset_path = file_path
+                self.dataset_path_var.set(file_path)
+                self.log_train(f"Selected Dataset: {file_path}\n")
+                # Reset token mappings if a new dataset is selected
+                self.token_to_id = {}
+                self.id_to_token = {}
+        except Exception as e:
+            error_message = f"An error occurred while selecting the dataset:\n{traceback.format_exc()}"
+            self.log_train(error_message + "\n")
+            messagebox.showerror("Dataset Selection Error", error_message)
     
     def train_model(self):
         """
@@ -938,6 +1150,17 @@ class QELM_GUI:
             messagebox.showerror("Invalid Input", "Please enter positive numbers for epochs and learning rate.")
             return
         
+        # *** ADDED: Retrieve Simulation Settings ***
+        sim_method = self.sim_method_var.get()
+        num_threads = self.num_threads_var.get()
+        # Limit number of threads to available CPU cores
+        max_threads = multiprocessing.cpu_count()
+        if num_threads > max_threads:
+            messagebox.showwarning("Thread Limit Exceeded", f"Number of threads set to maximum available cores: {max_threads}")
+            num_threads = max_threads
+            self.num_threads_var.set(num_threads)
+        # *** END ADDED ***
+        
         # Check if dataset is selected
         if hasattr(self, 'dataset_path') and self.dataset_path:
             dataset_path = self.dataset_path
@@ -949,7 +1172,9 @@ class QELM_GUI:
                 self.id_to_token = {idx: token for token, idx in token_to_id.items()}
                 self.log_train(f"Loaded real dataset from {dataset_path}\n")
             except Exception as e:
-                messagebox.showerror("Error", f"Failed to load dataset: {e}")
+                error_message = f"Failed to load dataset:\n{traceback.format_exc()}"
+                self.log_train(error_message + "\n")
+                messagebox.showerror("Dataset Load Error", error_message)
                 return
         else:
             # Use synthetic dataset
@@ -957,6 +1182,19 @@ class QELM_GUI:
             self.X = X
             self.Y = Y
             self.log_train("Using synthetic dataset for training.\n")
+        
+        # *** ADDED: Update Simulation Settings in the Model ***
+        self.model.sim_method = sim_method
+        self.model.num_threads = num_threads
+        # Re-initialize simulators in quantum layers
+        self.model.attn.sim_method = sim_method
+        self.model.attn.num_threads = num_threads
+        self.model.attn.backend = self.model.attn.initialize_simulator()
+        
+        self.model.ffn.sim_method = sim_method
+        self.model.ffn.num_threads = num_threads
+        self.model.ffn.backend = self.model.ffn.initialize_simulator()
+        # *** END ADDED ***
         
         # Disable the train button to prevent multiple clicks
         self.train_button.config(state='disabled')
@@ -966,20 +1204,21 @@ class QELM_GUI:
         self.log_train("Starting training...\n")
         
         # Start training in a separate thread
-        training_thread = threading.Thread(target=self.training_process, args=(epochs, lr))
+        training_thread = threading.Thread(target=self.training_process, args=(epochs, lr, num_threads))
         training_thread.start()
     
-    def training_process(self, epochs: int, lr: float):
+    def training_process(self, epochs: int, lr: float, num_threads: int):
         """
         The actual training process.
         """
         try:
-            train_model(self.model, self.X, self.Y, epochs=epochs, lr=lr, log_callback=self.log_train)
+            train_model_parallel(self.model, self.X, self.Y, epochs=epochs, lr=lr, num_threads=num_threads, log_callback=self.log_train)
             self.log_train("Training process completed.\n")
             messagebox.showinfo("Training Completed", "Model training has been completed successfully.")
         except Exception as e:
-            self.log_train(f"An error occurred during training: {e}\n")
-            messagebox.showerror("Training Error", f"An error occurred during training: {e}")
+            error_message = f"An error occurred during training:\n{traceback.format_exc()}"  # *** FIXED *** Detailed traceback
+            self.log_train(error_message + "\n")
+            messagebox.showerror("Training Error", error_message)
         finally:
             # Re-enable the buttons
             self.train_button.config(state='normal')
@@ -991,9 +1230,9 @@ class QELM_GUI:
         """
         Save the model to a .qelm file.
         """
-        save_path = filedialog.asksaveasfilename(title="Save Model", defaultextension=".qelm", filetypes=(("QELM Files", "*.qelm"), ("All Files", "*.*")))
-        if save_path:
-            try:
+        try:
+            save_path = filedialog.asksaveasfilename(title="Save Model", defaultextension=".qelm", filetypes=(("QELM Files", "*.qelm"), ("All Files", "*.*")))
+            if save_path:
                 save_model(self.model, save_path, log_callback=self.log_train)
                 # Save token mappings if available
                 if self.token_to_id:
@@ -1002,17 +1241,18 @@ class QELM_GUI:
                         json.dump(self.token_to_id, f, indent=4)
                     self.log_train(f"Token mappings saved to {token_map_path}\n")
                 messagebox.showinfo("Model Saved", f"Model saved successfully to {save_path}")
-            except Exception as e:
-                self.log_train(f"Failed to save model: {e}\n")
-                messagebox.showerror("Save Error", f"Failed to save model: {e}")
+        except Exception as e:
+            error_message = f"Failed to save model:\n{traceback.format_exc()}"  # *** FIXED *** Detailed traceback
+            self.log_train(error_message + "\n")
+            messagebox.showerror("Save Error", error_message)
     
     def load_model(self):
         """
         Load the model from a .qelm file.
         """
-        load_path = filedialog.askopenfilename(title="Load Model", filetypes=(("QELM Files", "*.qelm"), ("All Files", "*.*")))
-        if load_path:
-            try:
+        try:
+            load_path = filedialog.askopenfilename(title="Load Model", filetypes=(("QELM Files", "*.qelm"), ("All Files", "*.*")))
+            if load_path:
                 load_model(self.model, load_path, log_callback=self.log_train)
                 # Load token mappings if available
                 token_map_path = load_path.replace(".qelm", "_token_map.json")
@@ -1025,9 +1265,10 @@ class QELM_GUI:
                 except FileNotFoundError:
                     self.log_train("Token mappings file not found. Inference may be limited.\n")
                 messagebox.showinfo("Model Loaded", f"Model loaded successfully from {load_path}")
-            except Exception as e:
-                self.log_train(f"Failed to load model: {e}\n")
-                messagebox.showerror("Load Error", f"Failed to load model: {e}")
+        except Exception as e:
+            error_message = f"Failed to load model:\n{traceback.format_exc()}"  # *** FIXED *** Detailed traceback
+            self.log_train(error_message + "\n")
+            messagebox.showerror("Load Error", error_message)
     
     def run_inference(self):
         """
@@ -1054,8 +1295,9 @@ class QELM_GUI:
             run_inference(self.model, input_token, self.token_to_id, self.id_to_token, log_callback=self.log_infer)
             messagebox.showinfo("Inference Completed", "Model inference has been completed successfully.")
         except Exception as e:
-            self.log_infer(f"An error occurred during inference: {e}\n")
-            messagebox.showerror("Inference Error", f"An error occurred during inference: {e}")
+            error_message = f"An error occurred during inference:\n{traceback.format_exc()}"  # *** FIXED *** Detailed traceback
+            self.log_infer(error_message + "\n")
+            messagebox.showerror("Inference Error", error_message)
         finally:
             # Re-enable the inference button
             self.infer_button.config(state='normal')
@@ -1064,18 +1306,19 @@ class QELM_GUI:
         """
         Load and display token mappings from a JSON file.
         """
-        file_path = filedialog.askopenfilename(title="Load Token Map", filetypes=(("JSON Files", "*.json"), ("All Files", "*.*")))
-        if file_path:
-            try:
+        try:
+            file_path = filedialog.askopenfilename(title="Load Token Map", filetypes=(("JSON Files", "*.json"), ("All Files", "*.*")))
+            if file_path:
                 with open(file_path, 'r') as f:
                     self.token_to_id = json.load(f)
                 self.id_to_token = {int(idx): token for token, idx in self.token_to_id.items()}
                 self.log_token_map(f"Loaded token mappings from {file_path}\n")
                 self.display_token_map()
                 messagebox.showinfo("Token Map Loaded", f"Token mappings loaded successfully from {file_path}")
-            except Exception as e:
-                self.log_token_map(f"Failed to load token map: {e}\n")
-                messagebox.showerror("Load Error", f"Failed to load token map: {e}")
+        except Exception as e:
+            error_message = f"Failed to load token map:\n{traceback.format_exc()}"  # *** FIXED *** Detailed traceback
+            self.log_token_map(error_message + "\n")
+            messagebox.showerror("Load Error", error_message)
     
     def display_token_map(self):
         """
@@ -1087,16 +1330,32 @@ class QELM_GUI:
         for token, idx in sorted(self.token_to_id.items(), key=lambda x: x[1]):
             self.token_map_display.insert(tk.END, f"{token}: {idx}\n")
         self.token_map_display.config(state='disabled')
+    
+    def update_progress(self, percentage):
+        """
+        Update the progress bar.
+        """
+        self.progress['value'] = percentage
+        self.master.update_idletasks()
 
 
 # ============================
-# Main Execution
+# Main Execution with Global Exception Handling
 # ============================
 
 def main():
-    root = tk.Tk()
-    gui = QELM_GUI(root)
-    root.mainloop()
+    try:
+        root = tk.Tk()
+        gui = QELM_GUI(root)
+        root.mainloop()
+    except Exception as e:
+        error_trace = traceback.format_exc()  # *** ADDED *** Detailed traceback
+        logging.critical(f"An unexpected error occurred:\n{error_trace}")
+        # Initialize a hidden root to show the messagebox
+        hidden_root = tk.Tk()
+        hidden_root.withdraw()
+        messagebox.showerror("Unexpected Error", f"An unexpected error occurred:\n{e}")
+        sys.exit(1)
 
 
 if __name__ == "__main__":

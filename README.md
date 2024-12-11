@@ -268,6 +268,8 @@ If you use or build upon this project, please provide proper credit to the origi
 
 - Include a mention to the Qiskit community. [Qiskit](https://qiskit.org/)
 
+- Thank IBM!
+
 ## License
 
 This project is licensed under the MIT License.

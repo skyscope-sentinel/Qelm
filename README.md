@@ -67,6 +67,7 @@ Integrating quantum principles inspires new model architectures, offering unique
 
 - **Python 3.7 to 3.11**
 - **Git** installed on your machine
+- **Remember** if python command does not work then use py
 
 ### Clone the Repository
 

@@ -3,7 +3,7 @@
 
 """
 ====================================================================================================
-Quantum-Enhanced Language Model (QELM) - Complete Revised Script
+Quantum-Enhanced Language Model (QELM) - Single Thread Script (This takes a long time to train)
 ====================================================================================================
 
 This script defines a Quantum-Enhanced Language Model (QELM) with the following features:
@@ -13,6 +13,7 @@ This script defines a Quantum-Enhanced Language Model (QELM) with the following 
 4. Enhanced Model Architecture with residual connections and layer normalization.
 5. Robust Parameter Persistence with versioning and validation.
 6. User-Friendly Command-Line Interface (CLI) for training, inference, saving, and loading.
+7. Single thread - to utilize the most of your cpu or gpu you will need to update threading or use the GUI script.
 
 Dependencies:
 - qiskit

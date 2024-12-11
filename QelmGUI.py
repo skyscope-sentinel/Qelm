@@ -13,6 +13,7 @@ This script defines an advanced Quantum-Enhanced Language Model (QELM) with the 
 4. Enhanced Model Architecture with residual connections and layer normalization.
 5. Robust Parameter Persistence with versioning and validation using a custom .qelm file extension.
 6. User-Friendly Graphical User Interface (GUI) using Tkinter for training, inference, saving, loading, and exploring token mappings.
+7. Multi-threading for cpu and gpu selection. Makes use of your full cpu/gpu.
 
 Dependencies:
 - qiskit

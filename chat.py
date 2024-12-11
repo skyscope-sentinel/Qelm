@@ -6,13 +6,11 @@ QELM Conversational UI - Enhanced Version (still rudi)
 ==========================================
 
 This script provides a chat-style interface to interact with the Quantum-Enhanced Language Model (QELM).
-**Remember** This is a basic script to load the Qelm or json files and converse with them. Inference, Training, Script modifications will change constantly.
 Enhancements include:
 1. Support for both .json and .qelm model files.
 2. Error handling with output.
 3. Modern GUI using ttk.
 4. Additional features like clearing chat, saving conversations, and status updates.
-5. 
 
 Dependencies:
 - tkinter (standard with Python)
@@ -20,6 +18,8 @@ Dependencies:
 - nltk
 
 Ensure all dependencies are installed before running the script.
+
+Remember that this is a basic chat for the qelm models. This will constantly be updated but not always focused on.
 
 Author: Brenton Carter
 """
@@ -55,6 +55,7 @@ class QuantumLanguageModel:
         self.id_to_token = None
         self.W_out = None  # Output weight matrix
         self.W_proj = None  # Projection matrix (optional)
+        self.rotation_angles = None  # If applicable
 
     def load_from_file(self, file_path: str):
         """
@@ -74,6 +75,11 @@ class QuantumLanguageModel:
         with open(file_path, 'r') as f:
             model_dict = json.load(f)
 
+        # Print all keys for verification
+        print("Model Keys:")
+        for key in model_dict.keys():
+            print(f"- {key}")
+
         # Common required keys
         required_keys = ["vocab_size", "embed_dim", "hidden_dim", "embeddings", "token_to_id"]
         for key in required_keys:
@@ -85,29 +91,37 @@ class QuantumLanguageModel:
         self.hidden_dim = model_dict["hidden_dim"]
         self.embeddings = np.array(model_dict["embeddings"], dtype=np.float32)
 
-        # Load token-to-ID and ID-to-token mappings (if not added then its automatic)
+        # Load token-to-ID and ID-to-token mappings *unless none then leave empty*
         self.token_to_id = model_dict["token_to_id"]
         self.id_to_token = {int(v): k for k, v in self.token_to_id.items()}
 
         # Load W_out if present
         if "W_out" in model_dict:
             self.W_out = np.array(model_dict["W_out"], dtype=np.float32)
-            expected_shape = (self.vocab_size, self.hidden_dim)
+            expected_shape = (self.vocab_size, self.hidden_dim) if "W_proj" in model_dict and model_dict["W_proj"] is not None else (self.vocab_size, self.embed_dim)
             if self.W_out.shape != expected_shape:
                 raise ValueError(f"'W_out' shape mismatch: expected {expected_shape}, got {self.W_out.shape}")
+            print(f"W_out loaded with shape: {self.W_out.shape}")
         else:
-            # Initialize W_out randomly if not present
-            self.W_out = np.random.randn(self.vocab_size, self.hidden_dim).astype(np.float32) * 0.01
-            print("Warning: 'W_out' not found in the model file. Initialized randomly.")
+            if "W_proj" in model_dict and model_dict["W_proj"] is not None:
+                # Initialize W_out with shape (vocab_size, hidden_dim)
+                self.W_out = np.random.randn(self.vocab_size, self.hidden_dim).astype(np.float32) * 0.01
+                print("Warning: 'W_out' not found in the model file. Initialized randomly with shape (vocab_size, hidden_dim).")
+            else:
+                # Initialize W_out with shape (vocab_size, embed_dim)
+                self.W_out = np.random.randn(self.vocab_size, self.embed_dim).astype(np.float32) * 0.01
+                print("Warning: 'W_out' not found in the model file. Initialized randomly with shape (vocab_size, embed_dim).")
 
         # Load W_proj if present (optional)
-        if "W_proj" in model_dict:
+        if "W_proj" in model_dict and model_dict["W_proj"] is not None:
             self.W_proj = np.array(model_dict["W_proj"], dtype=np.float32)
             expected_proj_shape = (self.hidden_dim, self.embed_dim)  # Mapping from embed_dim to hidden_dim
             if self.W_proj.shape != expected_proj_shape:
                 raise ValueError(f"'W_proj' shape mismatch: expected {expected_proj_shape}, got {self.W_proj.shape}")
+            print(f"W_proj loaded with shape: {self.W_proj.shape}")
         else:
             self.W_proj = None  # Projection layer not used in UI
+            print("W_proj: Not used in this model.")
 
     def run_inference(self, input_text: str):
         """
@@ -131,17 +145,24 @@ class QuantumLanguageModel:
 
         # Use the embeddings to generate a response
         input_vector = normalize_vector(np.sum(self.embeddings[input_ids], axis=0))
+        print(f"Input Vector Shape: {input_vector.shape}")  # Debugging
 
         # If projection layer exists, apply it
         if self.W_proj is not None:
             # W_proj shape: (hidden_dim, embed_dim)
             # input_vector shape: (embed_dim,)
             x = self.W_proj @ input_vector  # Resulting shape: (hidden_dim,)
+            print(f"W_proj Shape: {self.W_proj.shape}")  # Debugging
+            print(f"Projected Vector Shape: {x.shape}")  # Debugging
         else:
             x = input_vector  # Shape: (embed_dim,)
+            print(f"Using Input Vector Directly. Shape: {x.shape}")  # Debugging
 
         # Compute logits
+        print(f"W_out Shape: {self.W_out.shape}")  # Debugging
+        print(f"x Shape: {x.shape}")  # Debugging
         logits = self.W_out @ x  # Shape: (vocab_size,)
+        print(f"Logits Shape: {logits.shape}")  # Debugging
 
         # Get the top response ID
         top_response_id = np.argmax(logits)
@@ -330,14 +351,18 @@ class QELMChatUI:
         # Display user message
         self.update_chat("User", user_text, color=self.user_color)
 
+        response = ""  # Initialize response
+
         try:
             # Generate and display model response
             response = self.model.run_inference(user_text)
             self.update_chat("QELM", response, color=self.qelm_color)
             self.status_label.config(text="Response generated.")
         except Exception as e:
-            self.update_chat("System", f"Error: {e}", color=self.system_color)
+            error_message = f"Error: {e}"
+            self.update_chat("System", error_message, color=self.system_color)
             self.status_label.config(text="Error during inference.")
+            response = "<Error: Response generation failed>"
 
         # Add to conversation history
         self.conversation.append(f"User: {user_text}")
@@ -364,7 +389,7 @@ class QELMChatUI:
             tag = "system"
 
         # Configure tag if not already
-        if not self.chat_display.tag_names().__contains__(tag):
+        if tag not in self.chat_display.tag_names():
             self.chat_display.tag_configure(tag, foreground=color if color else self.text_color, font=("Helvetica", 12, "bold"))
 
         # Insert message
@@ -426,7 +451,6 @@ def main():
         root.mainloop()
     except Exception as e:
         messagebox.showerror("Fatal Error", f"An unexpected error occurred:\n{e}")
-
 
 if __name__ == "__main__":
     main()

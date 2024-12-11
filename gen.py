@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Script to Generate Vocabulary from a Large Corpus and Update a Model JSON. You can alter this in any way.
+Script to Generate Vocabulary from a Large Corpus and Update a Model Qelm/JSON. You can alter this in any way.
 """
 
 import json

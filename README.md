@@ -104,7 +104,7 @@ pip install -r requirements.txt
 
 ## Usage
 
-QELM provides a command-line interface (CLI) to facilitate training, inference, saving, and loading models. This is extremely basic and being worked on.
+QELM provides a command-line interface (CLI) to facilitate training, inference, saving, and loading models. This is extremely basic and being worked on. A fully working GUI model with threading is now available.
 
 ### Training the Model
 
@@ -115,13 +115,13 @@ You can train QELM using either synthetic data (for testing purposes) or a real 
 Synthetic data is useful for initial testing and ensuring that the training pipeline works correctly. If you are testing try 2 epochs instead of 20. Each epoch can take minutes to hours depending on your computers capabilities. 
 
 ```bash
-python Qelm2.py --train --epochs 20 --lr 0.05
+python Qelm2.py --train --epochs 02 --lr 0.05
 ```
 
 **Parameters:**
 
 - `--train`: Initiates the training process.
-- `--epochs 20`: Sets the number of training epochs to 20.
+- `--epochs 02`: Sets the number of training epochs to 02. *Only increase this if you know what you're doing*
 - `--lr 0.05`: Sets the learning rate to 0.05.
 - `--save_path`: (Optional) Path to save the trained model (default: `quantum_llm_model_enhanced.json`).
 - `--dataset_path`: (Optional) Path to a real dataset file. If not provided, synthetic data will be used.
@@ -131,29 +131,26 @@ python Qelm2.py --train --epochs 20 --lr 0.05
 ```plaintext
 INFO:root:Creating synthetic dataset...
 INFO:root:Starting training...
-INFO:root:Starting Epoch 1/20
-INFO:root:Epoch 1/20, Average Loss: 0.012345
-INFO:root:Starting Epoch 2/20
-INFO:root:Epoch 2/20, Average Loss: 0.011234
-...
-INFO:root:Starting Epoch 20/20
-INFO:root:Epoch 20/20, Average Loss: 0.010123
+INFO:root:Starting Epoch 1/2
+INFO:root:Epoch 1/2, Average Loss: 0.012345
+INFO:root:Starting Epoch 2/2
+INFO:root:Epoch 2/2, Average Loss: 0.011234
 INFO:root:Training completed.
 INFO:root:Model saved to quantum_llm_model_enhanced.json
 ```
 
 #### With a Real Dataset
 
-If you have a real language dataset, you can specify its path using the `--dataset_path` argument. Ensure that your dataset is in plain text format.
+If you have a real language dataset, you can specify its path using the `--dataset_path` argument. Ensure that your dataset is in plain text format, csv is also now compatible.
 
 ```bash
-python Qelm2.py --train --epochs 20 --lr 0.05 --dataset_path path_to_your_dataset.txt
+python Qelm2.py --train --epochs 02 --lr 0.05 --dataset_path path_to_your_dataset.txt
 ```
 
 **Parameters:**
 
 - `--train`: Initiates the training process.
-- `--epochs 20`: Sets the number of training epochs to 20.
+- `--epochs 02`: Sets the number of training epochs to 02. *Only increase this if you know what you're doing*
 - `--lr 0.05`: Sets the learning rate to 0.05.
 - `--dataset_path path_to_your_dataset.txt`: Specifies the path to your real dataset file.
 - `--save_path`: (Optional) Path to save the trained model (default: `quantum_llm_model_enhanced.json`).
@@ -163,13 +160,10 @@ python Qelm2.py --train --epochs 20 --lr 0.05 --dataset_path path_to_your_datase
 ```plaintext
 INFO:root:Loading real dataset...
 INFO:root:Starting training...
-INFO:root:Starting Epoch 1/20
-INFO:root:Epoch 1/20, Average Loss: 0.012345
-INFO:root:Starting Epoch 2/20
-INFO:root:Epoch 2/20, Average Loss: 0.011234
-...
-INFO:root:Starting Epoch 20/20
-INFO:root:Epoch 20/20, Average Loss: 0.010123
+INFO:root:Starting Epoch 1/2
+INFO:root:Epoch 1/2, Average Loss: 0.012345
+INFO:root:Starting Epoch 2/2
+INFO:root:Epoch 2/2, Average Loss: 0.011234
 INFO:root:Training completed.
 INFO:root:Model saved to quantum_llm_model_enhanced.json
 ```

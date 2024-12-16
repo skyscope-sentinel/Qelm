@@ -279,4 +279,3 @@ For any inquiries, suggestions, or contributions, feel free to reach out:
 ---
 
 > **Disclaimer:** Quantum computing is an emerging field, and this project serves as an experimental exploration into integrating quantum circuits with language modeling. While promising, it is subject to the current limitations of quantum hardware and algorithms. Please add to this project so we can help move quantum computing into the future.
-```

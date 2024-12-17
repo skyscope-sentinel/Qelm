@@ -1,5 +1,5 @@
 ---
-# Quantum-Enhanced Language Model (QELM) Neuron
+# Quantum-Enhanced Language Model (QELM) - Neuron
 
 Welcome to the **Quantum-Enhanced Language Model (QELM) Neuron repository! This project leverages quantum computing and neural 
 network-inspired architectures to explore advanced language processing using **Qiskit** and quantum hardware simulators.

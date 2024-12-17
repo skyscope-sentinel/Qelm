@@ -151,7 +151,7 @@ The GUI outputs the generated sequence.
 
 ## Graphical User Interface (GUI)
 
----
+
 ![QELM](docs/images/QELM.png)
 ---
 

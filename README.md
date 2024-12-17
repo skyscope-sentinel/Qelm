@@ -182,7 +182,8 @@ QELM/
 └── docs/
     └── images/
         ├── QELM_Diagram.png
-        └── quantum.png
+        ├── quantum.png
+        └── Qelm.png 
 ```
 
 ---

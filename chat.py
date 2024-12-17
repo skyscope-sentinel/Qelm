@@ -11,6 +11,7 @@ Enhancements include:
 2. Error handling with output.
 3. Modern GUI using ttk.
 4. Additional features like clearing chat, saving conversations, and status updates.
+5. Added autoloading (if no token file is selected it asks).
 
 Dependencies:
 - tkinter (standard with Python)
@@ -32,6 +33,7 @@ from nltk.tokenize import word_tokenize
 import nltk
 import os
 import datetime
+import traceback  # For detailed error traces
 
 # Initialize NLTK data (only the first time)
 nltk.download('punkt', quiet=True)
@@ -44,35 +46,36 @@ nltk.download('punkt', quiet=True)
 class QuantumLanguageModel:
     """
     Quantum-Enhanced Language Model combining embeddings and output weights.
-    Supports loading from both .json and .qelm files.
+    Supports loading from both .json and .qelm files along with separate token mapping files.
     """
     def __init__(self):
         self.vocab_size = None
         self.embed_dim = None
         self.hidden_dim = None
         self.embeddings = None
-        self.token_to_id = None
-        self.id_to_token = None
+        self.token_to_id = {}
+        self.id_to_token = {}
         self.W_out = None  # Output weight matrix
         self.W_proj = None  # Projection matrix (optional)
         self.rotation_angles = None  # If applicable
 
-    def load_from_file(self, file_path: str):
+    def load_from_file(self, model_file_path: str, token_map_file_path: str = None):
         """
         Load model parameters (embeddings and vocab) from a JSON or .qelm file.
-        Supports both .json and .qelm extensions.
+        Optionally load token mappings from a separate JSON file.
 
         Parameters:
-            file_path (str): Path to the model file.
+            model_file_path (str): Path to the model file.
+            token_map_file_path (str, optional): Path to the token mapping JSON file.
         """
-        if not os.path.isfile(file_path):
-            raise FileNotFoundError(f"The file '{file_path}' does not exist.")
+        if not os.path.isfile(model_file_path):
+            raise FileNotFoundError(f"The file '{model_file_path}' does not exist.")
 
-        _, ext = os.path.splitext(file_path)
+        _, ext = os.path.splitext(model_file_path)
         if ext.lower() not in ['.json', '.qelm']:
             raise ValueError("Unsupported file format. Please provide a .json or .qelm file.")
 
-        with open(file_path, 'r') as f:
+        with open(model_file_path, 'r') as f:
             model_dict = json.load(f)
 
         # Print all keys for verification
@@ -81,7 +84,7 @@ class QuantumLanguageModel:
             print(f"- {key}")
 
         # Common required keys
-        required_keys = ["vocab_size", "embed_dim", "hidden_dim", "embeddings", "token_to_id"]
+        required_keys = ["vocab_size", "embed_dim", "hidden_dim", "embeddings"]
         for key in required_keys:
             if key not in model_dict:
                 raise KeyError(f"Model file is missing the required key: '{key}'")
@@ -91,16 +94,38 @@ class QuantumLanguageModel:
         self.hidden_dim = model_dict["hidden_dim"]
         self.embeddings = np.array(model_dict["embeddings"], dtype=np.float32)
 
-        # Load token-to-ID and ID-to-token mappings *unless none then leave empty*
-        self.token_to_id = model_dict["token_to_id"]
-        self.id_to_token = {int(v): k for k, v in self.token_to_id.items()}
+        # Load token-to-ID and ID-to-token mappings if present
+        if "token_to_id" in model_dict:
+            self.token_to_id = model_dict["token_to_id"]
+            self.id_to_token = {int(v): k for k, v in self.token_to_id.items()}
+            print("token_to_id loaded from the model file.")
+        else:
+            if token_map_file_path:
+                self.load_token_map_from_file(token_map_file_path)
+            else:
+                print("token_to_id not found in the model file and no token mapping file provided.")
+                # Initialize empty mappings
+                self.token_to_id = {}
+                self.id_to_token = {}
 
         # Load W_out if present
         if "W_out" in model_dict:
             self.W_out = np.array(model_dict["W_out"], dtype=np.float32)
             expected_shape = (self.vocab_size, self.hidden_dim) if "W_proj" in model_dict and model_dict["W_proj"] is not None else (self.vocab_size, self.embed_dim)
             if self.W_out.shape != expected_shape:
-                raise ValueError(f"'W_out' shape mismatch: expected {expected_shape}, got {self.W_out.shape}")
+                if "W_proj" in model_dict and model_dict["W_proj"] is not None:
+                    # Adjust hidden_dim based on W_out's actual shape
+                    new_hidden_dim = self.W_out.shape[1]
+                    print(f"Warning: 'W_out' shape mismatch. Adjusting 'hidden_dim' from {self.hidden_dim} to {new_hidden_dim}.")
+                    self.hidden_dim = new_hidden_dim
+                    # Reinitialize W_proj to match new hidden_dim and embed_dim
+                    self.W_proj = np.random.randn(self.hidden_dim, self.embed_dim).astype(np.float32) * 0.01
+                    print(f"W_proj reinitialized with shape: {self.W_proj.shape}")
+                else:
+                    # Adjust embed_dim if W_proj is not present
+                    original_embed_dim = self.embed_dim
+                    self.embed_dim = self.W_out.shape[1]
+                    print(f"Warning: 'W_out' shape mismatch. Adjusting 'embed_dim' from {original_embed_dim} to {self.embed_dim}.")
             print(f"W_out loaded with shape: {self.W_out.shape}")
         else:
             if "W_proj" in model_dict and model_dict["W_proj"] is not None:
@@ -117,18 +142,49 @@ class QuantumLanguageModel:
             self.W_proj = np.array(model_dict["W_proj"], dtype=np.float32)
             expected_proj_shape = (self.hidden_dim, self.embed_dim)  # Mapping from embed_dim to hidden_dim
             if self.W_proj.shape != expected_proj_shape:
-                raise ValueError(f"'W_proj' shape mismatch: expected {expected_proj_shape}, got {self.W_proj.shape}")
-            print(f"W_proj loaded with shape: {self.W_proj.shape}")
+                # Adjust hidden_dim based on W_proj's shape
+                new_hidden_dim = self.W_proj.shape[0]
+                print(f"Warning: 'W_proj' shape mismatch: expected {expected_proj_shape}, got {self.W_proj.shape}. Adjusting 'hidden_dim' to {new_hidden_dim}.")
+                self.hidden_dim = new_hidden_dim
+                # Reinitialize W_proj to match new hidden_dim and embed_dim
+                self.W_proj = np.random.randn(self.hidden_dim, self.embed_dim).astype(np.float32) * 0.01
+                print(f"W_proj reinitialized with shape: {self.W_proj.shape}")
+            else:
+                print(f"W_proj loaded with shape: {self.W_proj.shape}")
         else:
             self.W_proj = None  # Projection layer not used in UI
             print("W_proj: Not used in this model.")
 
-    def run_inference(self, input_text: str):
+    def load_token_map_from_file(self, token_map_file_path: str):
+        """
+        Load token mappings from a separate JSON file.
+
+        Parameters:
+            token_map_file_path (str): Path to the token mapping JSON file.
+        """
+        if not os.path.isfile(token_map_file_path):
+            raise FileNotFoundError(f"The token mapping file '{token_map_file_path}' does not exist.")
+
+        try:
+            with open(token_map_file_path, 'r', encoding='utf-8') as f:
+                token_map = json.load(f)
+
+            if not isinstance(token_map, dict):
+                raise ValueError("Token mapping file is not a valid dictionary.")
+
+            self.token_to_id = token_map
+            self.id_to_token = {int(v): k for k, v in self.token_to_id.items()}
+            print(f"Token mapping loaded from '{os.path.basename(token_map_file_path)}'.")
+        except Exception as e:
+            raise ValueError(f"Failed to load token mapping from '{token_map_file_path}': {e}")
+
+    def run_inference(self, input_text: str, max_length: int = 10):
         """
         Generate a response based on input text.
 
         Parameters:
             input_text (str): The user's input message.
+            max_length (int): Maximum number of tokens to generate.
 
         Returns:
             str: The model's response.
@@ -138,38 +194,61 @@ class QuantumLanguageModel:
 
         # Tokenize and encode input text
         tokens = word_tokenize(input_text.lower())
-        input_ids = [self.token_to_id[token] for token in tokens if token in self.token_to_id]
+        input_ids = [self.token_to_id.get(token, self.token_to_id.get("<UNK>", 0)) for token in tokens]
 
         if not input_ids:
-            raise ValueError("Input text contains no valid tokens.")
+            available_tokens = ', '.join(list(self.token_to_id.keys())[:10]) + '...'
+            raise ValueError("Input text contains no valid tokens. Available tokens include: " + available_tokens)
 
-        # Use the embeddings to generate a response
-        input_vector = normalize_vector(np.sum(self.embeddings[input_ids], axis=0))
-        print(f"Input Vector Shape: {input_vector.shape}")  # Debugging
+        # Initialize the response
+        response_tokens = []
 
-        # If projection layer exists, apply it
-        if self.W_proj is not None:
-            # W_proj shape: (hidden_dim, embed_dim)
-            # input_vector shape: (embed_dim,)
-            x = self.W_proj @ input_vector  # Resulting shape: (hidden_dim,)
-            print(f"W_proj Shape: {self.W_proj.shape}")  # Debugging
-            print(f"Projected Vector Shape: {x.shape}")  # Debugging
-        else:
-            x = input_vector  # Shape: (embed_dim,)
-            print(f"Using Input Vector Directly. Shape: {x.shape}")  # Debugging
+        # Initialize the input vector
+        current_input_ids = input_ids.copy()
 
-        # Compute logits
-        print(f"W_out Shape: {self.W_out.shape}")  # Debugging
-        print(f"x Shape: {x.shape}")  # Debugging
-        logits = self.W_out @ x  # Shape: (vocab_size,)
-        print(f"Logits Shape: {logits.shape}")  # Debugging
+        for _ in range(max_length):
+            # Use the embeddings to generate a response
+            input_vector = normalize_vector(np.sum(self.embeddings[current_input_ids], axis=0))
+            print(f"Input Vector Shape: {input_vector.shape}")  # Debugging
 
-        # Get the top response ID
-        top_response_id = np.argmax(logits)
+            # If projection layer exists, apply it
+            if self.W_proj is not None:
+                # W_proj shape: (hidden_dim, embed_dim)
+                # input_vector shape: (embed_dim,)
+                x = self.W_proj @ input_vector  # Resulting shape: (hidden_dim,)
+                print(f"W_proj Shape: {self.W_proj.shape}")  # Debugging
+                print(f"Projected Vector Shape: {x.shape}")  # Debugging
+            else:
+                x = input_vector  # Shape: (embed_dim,)
+                print(f"Using Input Vector Directly. Shape: {x.shape}")  # Debugging
 
-        # Decode the top response ID back into a token
-        response_token = self.id_to_token.get(top_response_id, "<UNK>")
-        return response_token
+            # Compute logits
+            print(f"W_out Shape: {self.W_out.shape}")  # Debugging
+            print(f"x Shape: {x.shape}")  # Debugging
+            logits = self.W_out @ x  # Shape: (vocab_size,)
+            print(f"Logits Shape: {logits.shape}")  # Debugging
+
+            # Apply softmax to get probabilities
+            probabilities = softmax(logits)
+
+            # Sample a token based on the probability distribution
+            sampled_id = np.random.choice(self.vocab_size, p=probabilities)
+            print(f"Sampled ID: {sampled_id}")  # Debugging
+
+            # Decode the sampled ID back into a token
+            sampled_token = self.id_to_token.get(sampled_id, "<UNK>")
+            response_tokens.append(sampled_token)
+
+            # If the sampled token is an end token, stop generation
+            if sampled_token in [".", "!", "?"]:
+                break
+
+            # Update the current input for the next token generation
+            current_input_ids = [sampled_id]
+
+        # Combine the tokens into a single string
+        response = ' '.join(response_tokens)
+        return response
 
 
 # ============================
@@ -188,6 +267,20 @@ def normalize_vector(vec: np.ndarray) -> np.ndarray:
     """
     norm = np.linalg.norm(vec)
     return vec / norm if norm > 1e-12 else vec
+
+
+def softmax(x: np.ndarray) -> np.ndarray:
+    """
+    Compute softmax values for each set of scores in x.
+
+    Parameters:
+        x (np.ndarray): Input array.
+
+    Returns:
+        np.ndarray: Softmax probabilities.
+    """
+    e_x = np.exp(x - np.max(x))
+    return e_x / e_x.sum()
 
 
 def save_conversation(conversation: list, file_path: str):
@@ -322,22 +415,69 @@ class QELMChatUI:
     def load_model(self):
         """
         Open a file dialog to load the model JSON or .qelm file.
+        If 'token_to_id' is missing, prompt the user to load the token mapping JSON file.
         """
-        file_path = filedialog.askopenfilename(
+        # Prompt user to select the model file
+        model_file_path = filedialog.askopenfilename(
             title="Select Model File",
             filetypes=[("Model Files", "*.json *.qelm"), ("All Files", "*.*")]
         )
-        if not file_path:
+        if not model_file_path:
             return
 
         try:
-            self.model.load_from_file(file_path)
-            self.update_chat("System", f"Model loaded successfully from '{os.path.basename(file_path)}'.", color=self.system_color)
-            self.status_label.config(text=f"Model loaded: {os.path.basename(file_path)}")
+            # Attempt to load the model file without token mapping
+            self.model.load_from_file(model_file_path)
+            print("Model loaded without token mapping.")
+            self.update_chat("System", f"Model loaded from '{os.path.basename(model_file_path)}'.", color=self.system_color)
+            self.status_label.config(text=f"Model loaded: {os.path.basename(model_file_path)}")
+
+            if not self.model.token_to_id:
+                # Prompt user to load token mapping
+                response = messagebox.askyesno(
+                    "Token Mapping Missing",
+                    "The model file does not contain 'token_to_id' mapping. Would you like to load it from a separate JSON file?"
+                )
+                if response:
+                    self.prompt_token_map_loading()
+                else:
+                    messagebox.showwarning("Token Mapping Not Loaded", "Inference may not work correctly without token mapping.")
+                    self.status_label.config(text="Model loaded without token mapping.")
+            else:
+                self.status_label.config(text=f"Model loaded with token mapping.")
+                # List available tokens for verification
+                self.display_available_tokens()
+
         except Exception as e:
-            messagebox.showerror("Error", f"Failed to load model:\n{e}")
-            self.update_chat("System", f"Failed to load model from '{os.path.basename(file_path)}'.", color=self.system_color)
+            error_message = f"Failed to load model:\n{e}\n{traceback.format_exc()}"
+            self.update_chat("System", error_message, color=self.system_color)
+            messagebox.showerror("Load Error", error_message)
             self.status_label.config(text="Failed to load model.")
+
+    def prompt_token_map_loading(self):
+        """
+        Prompt the user to select the token mapping JSON file.
+        """
+        token_map_path = filedialog.askopenfilename(
+            title="Select Token Mapping JSON File",
+            filetypes=[("JSON Files", "*.json"), ("All Files", "*.*")]
+        )
+        if not token_map_path:
+            messagebox.showwarning("Token Mapping Not Loaded", "Inference may not work correctly without token mapping.")
+            self.status_label.config(text="Model loaded without token mapping.")
+            return
+
+        try:
+            self.model.load_token_map_from_file(token_map_path)
+            self.update_chat("System", f"Token mapping loaded from '{os.path.basename(token_map_path)}'.", color=self.system_color)
+            self.status_label.config(text=f"Token mapping loaded: {os.path.basename(token_map_path)}")
+            # List available tokens for verification
+            self.display_available_tokens()
+        except Exception as e:
+            error_message = f"Failed to load token mapping:\n{e}\n{traceback.format_exc()}"
+            self.update_chat("System", error_message, color=self.system_color)
+            messagebox.showerror("Token Mapping Load Error", error_message)
+            self.status_label.config(text="Failed to load token mapping.")
 
     def handle_send(self, event=None):
         """
@@ -436,6 +576,19 @@ class QELMChatUI:
         except Exception as e:
             messagebox.showerror("Error", f"Failed to save conversation:\n{e}")
 
+    def display_available_tokens(self):
+        """
+        Display a list of available tokens in the model.
+        Useful for debugging purposes.
+        """
+        if not self.model.token_to_id:
+            self.update_chat("System", "No token mappings available.", color=self.system_color)
+            return
+
+        tokens = list(self.model.token_to_id.keys())
+        tokens_display = ', '.join(tokens[:50]) + ('...' if len(tokens) > 50 else '')
+        self.update_chat("System", f"Available tokens: {tokens_display}", color=self.system_color)
+
 
 # ============================
 # Main Entry Point
@@ -450,7 +603,10 @@ def main():
         app = QELMChatUI(root)
         root.mainloop()
     except Exception as e:
-        messagebox.showerror("Fatal Error", f"An unexpected error occurred:\n{e}")
+        error_trace = traceback.format_exc()
+        messagebox.showerror("Fatal Error", f"An unexpected error occurred:\n{e}\n{error_trace}")
+        print(f"Fatal Error: {e}\n{error_trace}")
+
 
 if __name__ == "__main__":
     main()

@@ -1,3 +1,5 @@
+---
+
 # Quantum-Enhanced Language Model (QELM)
 
 ![License](https://img.shields.io/github/license/R-D-BioTech-Alaska/QELM)
@@ -18,56 +20,42 @@
   - [Install Dependencies](#install-dependencies)
 - [Usage](#usage)
   - [Training the Model](#training-the-model)
-    - [With Synthetic Data](#with-synthetic-data)
-    - [With a Real Dataset](#with-a-real-dataset)
   - [Performing Inference](#performing-inference)
+  - [Graphical User Interface (GUI)](#graphical-user-interface-gui)
   - [Viewing Help/Usage Information](#viewing-helpusage-information)
 - [Project Structure](#project-structure)
 - [Credits](#credits)
 - [License](#license)
 - [Contact](#contact)
 
+---
+
 ## Overview
 
-Welcome to the **Quantum-Enhanced Language Model (QELM)** – an innovative project that merges the power of quantum computing with natural language processing to create a next-generation language model. Leveraging **Qiskit** and **Qiskit Aer**, QELM explores the potential of quantum circuits in enhancing language understanding and generation capabilities. Utilizing Qubits Qelm can train a model that would normally take up gigabytes worth of data in llm files all the way down to "ultra-compact models". With this size, llm's can run instantly with no loss of capabilities or intelligence and on small computers instead requiring data centers to run single models.
-The goal is to create llm's that are instant, smarter and can be utilized anywhere and by anyone.
+Welcome to the **Quantum-Enhanced Language Model (QELM)** project; an innovative project that merges the power of quantum computing with natural language processing to create a next-generation language model. QELM creates and reduces LLMs to ultra-compact models using qubits without compromising capabilities, enabling them to run instantly on small devices without data centers.
 
-
-![QELM Diagram](docs/images/QELM_Diagram.png)
+---
 
 ## Features
 
-- **Quantum Parameter Optimization:** Utilizes the Parameter Shift Rule for gradient-based optimization within quantum circuits.
-- **Advanced Quantum Circuits:** Implements entangling gates and multiple layers for complex state manipulations.
-- **Synthetic and Real Dataset Support:** Capable of training on both synthetic datasets for testing and real-world language data.
-- **Enhanced Model Architecture:** Incorporates residual connections and normalization for stable and efficient training.
-- **Parameter Persistence:** Robust saving and loading mechanisms with versioning to ensure model integrity.
-- **User-Friendly CLI:** Intuitive command-line interface for training, inference, and model management.
+- **Quantum Parameter Optimization**: Gradient-based optimization via the Parameter Shift Rule.
+- **Advanced Quantum Circuits**: Implements entangling gates with multiple layers.
+- **Thread-Safe GUI with Training Feedback**: New GUI-based interface for training, inference, and model management.
+- **Synthetic and Real Dataset Support**: Train with synthetic datasets for testing or real-world text data.
+- **Resource Monitoring**: Integrated system resource usage monitoring (CPU/GPU).
+- **Enhanced Logging**: Threaded logging ensures training progress and errors are visible in real-time.
 
-## Benefits Over Traditional LLMs
-
-### 1. **Quantum Parallelism**
-Quantum computers can process a vast number of states simultaneously due to superposition and entanglement, potentially enabling faster and more efficient computations compared to classical models.
-
-### 2. **Enhanced Representational Capabilities**
-Quantum states can represent complex, high-dimensional data compactly, allowing QELM to capture intricate patterns and relationships in language data more effectively.
-
-### 3. **Improved Optimization**
-Quantum algorithms can tackle optimization problems differently, potentially finding better minima or converging faster during training.
-
-### 4. **Parameter Efficiency**
-Quantum circuits can represent complex functions with fewer parameters, leading to more efficient models that are less resource-intensive to store and deploy.
-
-### 5. **Novel Learning Paradigms**
-Integrating quantum principles inspires new model architectures, offering unique advantages in handling language tasks and potentially mimicking human-like language understanding more closely.
+---
 
 ## Installation
 
 ### Prerequisites
 
 - **Python 3.7 to 3.11**
-- **Git** installed on your machine
-- **Remember** if python command does not work then use py
+- **Qiskit**, **Qiskit Aer**, **TensorFlow**, **Numpy**, **Tkinter**
+- **psutil** (optional for resource monitoring)
+
+---
 
 ### Clone the Repository
 
@@ -76,22 +64,18 @@ git clone https://github.com/R-D-BioTech-Alaska/QELM.git
 cd QELM
 ```
 
+---
+
 ### Setup Virtual Environment
 
-It's recommended to use a virtual environment to manage dependencies as it's easier to deal with issues. If you are sure of your capabilities then using a full environment is best.
-
 ```bash
-# Create a virtual environment named 'qiskit_env'
 python -m venv qiskit_env
-
 # Activate the virtual environment
-
-# Windows
-qiskit_env\Scripts\activate
-
-# Unix/Linux/MacOS
-source qiskit_env/bin/activate
+source qiskit_env/bin/activate  # For Linux/macOS
+qiskit_env\Scripts\activate     # For Windows
 ```
+
+---
 
 ### Install Dependencies
 
@@ -100,182 +84,129 @@ pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-**Note:** If you encounter permission issues, you can add the `--user` flag to the `pip install` command.
+---
 
 ## Usage
 
-QELM provides a command-line interface (CLI) to facilitate training, inference, saving, and loading models. This is extremely basic and being worked on. A fully working GUI model with threading is now available.
-
 ### Training the Model
 
-You can train QELM using either synthetic data (for testing purposes) or a real dataset. Any dataset can be used. File extension may need to be altered for certain types of data.
+QELM allows you to train using **synthetic** or **real datasets**. Use the command-line interface (CLI) for basic runs or the GUI for an enhanced experience.
 
-#### With Synthetic Data
-
-Synthetic data is useful for initial testing and ensuring that the training pipeline works correctly. If you are testing try 2 epochs instead of 20. Each epoch can take minutes to hours depending on your computers capabilities. 
+#### CLI Example:
 
 ```bash
 python Qelm2.py --train --epochs 02 --lr 0.05
 ```
 
-**Parameters:**
+#### GUI Model with Threading
 
-- `--train`: Initiates the training process.
-- `--epochs 02`: Sets the number of training epochs to 02. *Only increase this if you know what you're doing*
-- `--lr 0.05`: Sets the learning rate to 0.05.
-- `--save_path`: (Optional) Path to save the trained model (default: `quantum_llm_model_enhanced.json`).
-- `--dataset_path`: (Optional) Path to a real dataset file. If not provided, synthetic data will be used.
-
-**Expected Output:**
-
-```plaintext
-INFO:root:Creating synthetic dataset...
-INFO:root:Starting training...
-INFO:root:Starting Epoch 1/2
-INFO:root:Epoch 1/2, Average Loss: 0.012345
-INFO:root:Starting Epoch 2/2
-INFO:root:Epoch 2/2, Average Loss: 0.011234
-INFO:root:Training completed.
-INFO:root:Model saved to quantum_llm_model_enhanced.json
-```
-
-#### With a Real Dataset
-
-If you have a real language dataset, you can specify its path using the `--dataset_path` argument. Ensure that your dataset is in plain text format, csv is also now compatible.
+To run the **QELM GUI**, execute:
 
 ```bash
-python Qelm2.py --train --epochs 02 --lr 0.05 --dataset_path path_to_your_dataset.txt
+python QelmGUI.py
 ```
 
-**Parameters:**
+This launches an intuitive interface for:
 
-- `--train`: Initiates the training process.
-- `--epochs 02`: Sets the number of training epochs to 02. *Only increase this if you know what you're doing*
-- `--lr 0.05`: Sets the learning rate to 0.05.
-- `--dataset_path path_to_your_dataset.txt`: Specifies the path to your real dataset file.
-- `--save_path`: (Optional) Path to save the trained model (default: `quantum_llm_model_enhanced.json`).
+- Selecting datasets
+- Training with live progress updates
+- Running inference
+- Managing token mappings
 
-**Expected Output:**
+**Key GUI Features**:
 
-```plaintext
-INFO:root:Loading real dataset...
-INFO:root:Starting training...
-INFO:root:Starting Epoch 1/2
-INFO:root:Epoch 1/2, Average Loss: 0.012345
-INFO:root:Starting Epoch 2/2
-INFO:root:Epoch 2/2, Average Loss: 0.011234
-INFO:root:Training completed.
-INFO:root:Model saved to quantum_llm_model_enhanced.json
-```
+- Real-time progress bars for gradient computations and training
+- System resource usage (CPU/GPU) display
+- Interactive logs for feedback and error monitoring
+- Buttons for saving/loading models, stopping training gracefully, or halting immediately.
 
-**Notes:**
-
-- **Dataset Preparation:** Ensure your dataset file (`path_to_your_dataset.txt`) is properly formatted and preprocessed. The script tokenizes the text and maps the most frequent tokens to unique IDs based on the specified `vocab_size`.
-- **Vocabulary Size:** The default `vocab_size` is set to 256. Adjust this in the script if your dataset requires a different size.
+---
 
 ### Performing Inference
 
-After training the model, you can perform inference to generate logits (predicted outputs) based on an input token ID.
+Run predictions from the GUI or CLI.
+
+#### CLI Inference Example:
 
 ```bash
 python Qelm2.py --inference --input_id 5 --load_path quantum_llm_model_enhanced.json
 ```
 
-**Parameters:**
+#### GUI Inference:
 
-- `--inference`: Initiates the inference process.
-- `--input_id 5`: Specifies the input token ID for which you want to generate logits.
-- `--load_path quantum_llm_model_enhanced.json`: Specifies the path to the saved model file.
+1. Enter an **input token**.
+2. Set parameters like `Max Length` and `Temperature`.
+3. Click **Run Inference**.
 
-**Expected Output:**
+The GUI outputs the generated sequence.
 
-```plaintext
-Logits: [0.00123456 0.00234567 -0.00012345 0.00345678 ...]
-```
+---
 
-**Notes:**
+## Graphical User Interface (GUI)
 
-- **Input ID Validation:** Ensure that the `input_id` provided is within the range of your vocabulary size (e.g., 0 to 255 for `vocab_size=256`). Providing an ID outside this range will result in an error.
-- **Interpreting Logits:** The output logits represent the model's predictions for each token in the vocabulary. These can be further processed (e.g., using a softmax function) to obtain probability distributions over the vocabulary.
+The **QELM GUI** offers an easy-to-use tool for all functionalities, including:
 
-### Viewing Help/Usage Information
+- **Training**: Monitor training logs, set hyperparameters, and view progress visually.
+- **Inference**: Input tokens and generate outputs interactively.
+- **Model Management**: Save and load models with token mappings.
+- **Resource Monitoring**: View real-time CPU usage and estimate remaining training time.
 
-To understand all available options and ensure you're using the script correctly:
+**Launching the GUI**:
 
 ```bash
-python Qelm2.py --help
+python QelmGUI.py
 ```
 
-**Expected Output:**
-
-```plaintext
-usage: Qelm2.py [-h] [--train] [--inference] [--input_id INPUT_ID]
-               [--save_path SAVE_PATH] [--load_path LOAD_PATH]
-               [--epochs EPOCHS] [--lr LR] [--dataset_path DATASET_PATH]
-
-Quantum-Enhanced Language Model (QELM) - Enhanced Version
-
-optional arguments:
-  -h, --help            show this help message and exit
-  --train               Train the model
-  --inference           Run inference
-  --input_id INPUT_ID   Input token ID for inference
-  --save_path SAVE_PATH
-                        Path to save the model
-  --load_path LOAD_PATH
-                        Path to load the model
-  --epochs EPOCHS       Number of training epochs
-  --lr LR               Learning rate
-  --dataset_path DATASET_PATH
-                        Path to real dataset file (optional)
-```
+---
 
 ## Project Structure
 
 ```plaintext
 QELM/
-├── Qelm2.py
-├── requirements.txt
-├── README.md
-├── quantum_llm_model_enhanced.json
+├── Qelm2.py                          # CLI-based model training and inference
+├── QelmGUI.py                        # GUI model with threading
+├── requirements.txt                  # Python dependencies
+├── README.md                         # Project documentation
+├── quantum_llm_model_enhanced.json   # Default model file
 └── docs/
     └── images/
-        └── QELM_Diagram.png
+        ├── QELM_Diagram.png
         └── quantum.png
 ```
 
-![Simple Model](docs/images/quantum.png)
+---
 
 ## Credits
 
-Developed by **Brenton Carter** (Inserian).
-
-Special thanks to the [Qiskit](https://qiskit.org/) community for providing robust quantum computing tools and resources that made this project possible.
-
-## Credit Requirements
-
-If you use or build upon this project, please provide proper credit to the original developer:
+If you use or build upon this project, provide proper credit to the original developer:
 
 - Include the following attribution in your project:  
   **"Based on Quantum-Enhanced Language Model (QELM) by Brenton Carter (Inserian)"**
+
 - Provide a link back to the original repository: [R-D-BioTech-Alaska/QELM](https://github.com/R-D-BioTech-Alaska/QELM)
 
 - Include a mention to the Qiskit community. [Qiskit](https://qiskit.org/)
 
-- Thank IBM!
+- [IBM Quantum](https://www.ibm.com/quantum)
+
+---
 
 ## License
 
 This project is licensed under the MIT License.
 
+---
+
 ## Contact
 
-For any inquiries, suggestions, or contributions, feel free to reach out:
+For inquiries, suggestions, or contributions:
 
-- **Email:** [contact@rdbiotechalaska.com](mailto:contact@rdbiotechalaska.com)
-- **GitHub:** [R-D-BioTech-Alaska](https://github.com/R-D-BioTech-Alaska)
-- **Website:** [RDBioTech.org](http://RDBioTech.org)
+- **Email**: [contact@rdbiotechalaska.com](mailto:contact@rdbiotechalaska.com)
+- **GitHub**: [R-D-BioTech-Alaska](https://github.com/R-D-BioTech-Alaska)
+- **Website**: [RDBioTech.org](http://RDBioTech.org)
 
 ---
 
-> **Disclaimer:** Quantum computing is an emerging field, and this project serves as an experimental exploration into integrating quantum circuits with language modeling. While promising, it is subject to the current limitations of quantum hardware and algorithms. Please add to this project so we can help move quantum computing into the future.
+> **Disclaimer**: QELM is an experimental project integrating quantum principles with NLP. Contributions are welcome to advance this pioneering effort in quantum-enhanced computing! 
+
+---

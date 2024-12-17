@@ -3,14 +3,15 @@
 
 """
 ====================================================================================================
-Quantum-Enhanced Language Model (QELM) - Comprehensive Training Model
+Quantum-Enhanced Language Model (QELM) - Neuron
 ====================================================================================================
 
-This script defines a comprehensive Quantum-Enhanced Language Model (QELM) leveraging Qiskit.
+This script defines an optimized Quantum-Enhanced Language Model (QELM) leveraging Qiskit while
+utilizing qubit architecture while mapping out quantum states for creating QELM's. 
 It incorporates advanced quantum techniques such as logical qubits with error correction,
 graphene-like layer structures, and scalable neural network architectures inspired by string theory
-and brain-like connectivity. The model is designed to simulate large-scale quantum neural networks
-aiming to achieve highly efficient and fault-tolerant language processing capabilities.
+and brain-like connectivity. The model is designed to simulate a quantum neural network
+aiming to achieve efficient and fault-tolerant language processing capabilities.
 
 Key Components:
 1. Quantum Neuron (20-Qubit Logical Unit)
@@ -37,7 +38,7 @@ import numpy as np
 import json
 import logging
 from typing import List, Dict
-from qiskit import QuantumCircuit, Aer, transpile, execute
+from qiskit import QuantumCircuit, transpile
 from qiskit.quantum_info import Statevector, state_fidelity
 from qiskit_aer.noise import NoiseModel, depolarizing_error
 from scipy.optimize import minimize
@@ -174,9 +175,10 @@ class GrapheneLayer:
         # Entangle adjacent neurons (string-like connections)
         for i in range(self.num_neurons - 1):
             # Entangle the last qubit of neuron i with the first qubit of neuron i+1
-            self.circuit.cz(19, 20)  # Example entanglement; adjust qubit indices as needed
-            # Note: In a real hexagonal lattice, connections would be more complex
-
+            last_qubit_current = (i + 1) * 20 - 1
+            first_qubit_next = (i + 1) * 20
+            self.circuit.cz(last_qubit_current, first_qubit_next)
+        
         self.circuit.barrier()
 
     def get_circuit(self) -> QuantumCircuit:
@@ -221,7 +223,7 @@ class StackedLayers:
             
             # Entangle layers if not the first layer
             if layer_num > 0:
-                # Example: Entangle first qubit of current layer with last qubit of previous layer
+                # Entangle the last qubit of the previous layer with the first qubit of the current layer
                 prev_layer_last_qubit = (layer_num - 1) * self.neurons_per_layer * 20 + self.neurons_per_layer * 20 - 1
                 current_layer_first_qubit = layer_num * self.neurons_per_layer * 20
                 self.circuit.cz(prev_layer_last_qubit, current_layer_first_qubit)
@@ -314,19 +316,25 @@ class QuantumLanguageModel:
         input_circuit = QuantumCircuit(self.stacked_layers.circuit.num_qubits)
         
         # Encode embedding into qubits (example: amplitude encoding)
-        normalized_embedding = normalize_vector(input_embedding)
-        state_prep_vec = np.zeros(2**self.stacked_layers.circuit.num_qubits, dtype=complex)
-        state_prep_vec[:len(normalized_embedding)] = normalized_embedding.astype(complex)
+        # Note: Amplitude encoding requires normalization and proper sizing
+        # Here, we pad the embedding vector with zeros to match the statevector size
+        num_qubits = self.stacked_layers.circuit.num_qubits
+        state_prep_length = 2**num_qubits
+        if len(input_embedding) > state_prep_length:
+            sys.exit("Error: Embedding dimension exceeds statevector size.")
+        
+        state_prep_vec = np.zeros(state_prep_length, dtype=complex)
+        state_prep_vec[:len(input_embedding)] = input_embedding.astype(complex)
         state_prep_vec = normalize_vector(state_prep_vec)
-        input_circuit.initialize(state_prep_vec, qubits=range(self.stacked_layers.circuit.num_qubits))
+        input_circuit.initialize(state_prep_vec, qubits=range(num_qubits))
         
         # Combine with stacked layers
-        full_circuit = QuantumCircuit(self.stacked_layers.circuit.num_qubits, self.vocab_size)
+        full_circuit = QuantumCircuit(num_qubits, self.vocab_size)
         full_circuit.compose(input_circuit, inplace=True)
         full_circuit.compose(self.stacked_layers.get_circuit(), inplace=True)
         
         # Apply projection layer (example: simple linear transformation using RX gates)
-        for qubit in range(self.stacked_layers.circuit.num_qubits):
+        for qubit in range(num_qubits):
             angle = self.rotation_angles.get(qubit, 0.0)
             full_circuit.rx(angle, qubit)
         
@@ -334,11 +342,11 @@ class QuantumLanguageModel:
         
         # Output Layer: Measure qubits to generate logits
         for token in range(self.vocab_size):
-            if token < self.stacked_layers.circuit.num_qubits:
+            if token < num_qubits:
                 full_circuit.measure(token, token)
             else:
                 # For tokens beyond the number of qubits, map to the closest qubit
-                mapped_qubit = token % self.stacked_layers.circuit.num_qubits
+                mapped_qubit = token % num_qubits
                 full_circuit.measure(mapped_qubit, token)
         
         return full_circuit
@@ -524,6 +532,8 @@ def train_quantum_model(model: QuantumLanguageModel, X: np.ndarray, Y: np.ndarra
     params = model.get_all_parameters()
     
     for epoch in range(epochs):
+        logging.info(f"Starting Epoch {epoch+1}/{epochs}")
+        
         # Define the objective function for this epoch
         objective = lambda p: quantum_loss(p, model, X, Y)
         
@@ -560,7 +570,7 @@ def create_synthetic_dataset(vocab_size: int, num_samples: int = 100):
     num_samples (int): Number of samples to generate.
     
     Returns:
-    Tuple[np.ndarray, np.ndarray]: Tuple containing input IDs and target one-hot vectors.
+    Tuple[np.ndarray, np.ndarray]: Input IDs and target one-hot vectors.
     """
     X = np.random.randint(0, vocab_size, size=(num_samples,))
     Y = np.zeros((num_samples, vocab_size), dtype=np.float32)
@@ -641,21 +651,44 @@ def simulate_and_evaluate(model: QuantumLanguageModel, input_id: int, target_id:
     
     # Generate ideal state
     ideal_circuit = QuantumCircuit(circuit.num_qubits, model.vocab_size)
-    ideal_circuit.initialize(normalize_vector(model.encode_input(input_id)), qubits=range(circuit.num_qubits))
+    input_embedding = model.encode_input(input_id)
+    normalized_embedding = normalize_vector(input_embedding)
+    state_prep_length = 2**model.stacked_layers.circuit.num_qubits
+    if len(normalized_embedding) > state_prep_length:
+        sys.exit("Error: Embedding dimension exceeds statevector size.")
+    state_prep_vec = np.zeros(state_prep_length, dtype=complex)
+    state_prep_vec[:len(normalized_embedding)] = normalized_embedding.astype(complex)
+    state_prep_vec = normalize_vector(state_prep_vec)
+    ideal_circuit.initialize(state_prep_vec, qubits=range(model.stacked_layers.circuit.num_qubits))
     ideal_circuit.barrier()
     ideal_circuit.compose(model.stacked_layers.get_circuit(), inplace=True)
+    
+    # Apply projection layer with ideal parameters (no rotation)
+    for qubit in range(model.stacked_layers.circuit.num_qubits):
+        ideal_circuit.rx(0.0, qubit)  # No rotation for ideal state
+    
     ideal_circuit.barrier()
-    ideal_circuit.measure_all()
+    
+    # Output Layer: Measure qubits to generate logits
+    for token in range(model.vocab_size):
+        if token < model.stacked_layers.circuit.num_qubits:
+            ideal_circuit.measure(token, token)
+        else:
+            # For tokens beyond the number of qubits, map to the closest qubit
+            mapped_qubit = token % model.stacked_layers.circuit.num_qubits
+            ideal_circuit.measure(mapped_qubit, token)
+    
+    # Simulate the ideal circuit
     ideal_job = execute(ideal_circuit, backend, shots=1024)
     ideal_result = ideal_job.result()
     ideal_counts = ideal_result.get_counts()
     
     # Calculate fidelity
     target_bitstring = '0' * model.stacked_layers.circuit.num_qubits
-    fidelity = state_fidelity(counts.get(target_bitstring, 0) / 1024, ideal_counts.get(target_bitstring, 0) / 1024)
+    model_fidelity = state_fidelity(counts.get(target_bitstring, 0) / 1024, ideal_counts.get(target_bitstring, 0) / 1024)
     
-    logging.info(f"Fidelity for input ID {input_id} targeting ID {target_id}: {fidelity:.4f}")
-    return fidelity
+    logging.info(f"Fidelity for input ID {input_id} targeting ID {target_id}: {model_fidelity:.4f}")
+    return model_fidelity
 
 
 # ============================
@@ -666,40 +699,47 @@ def main():
     """
     Main function to initialize the QELM, prepare data, train, and evaluate.
     """
-    # Define model parameters
-    vocab_size = 256
-    embed_dim = 16
-    num_layers = 3
-    neurons_per_layer = 5
-    epochs = 10
-    learning_rate = 0.1
-    
-    # Initialize the Quantum Language Model
-    qlm = QuantumLanguageModel(vocab_size, embed_dim, num_layers, neurons_per_layer)
-    
-    # Prepare dataset (using synthetic data for demonstration)
-    X, Y = create_synthetic_dataset(vocab_size, num_samples=100)
-    
-    # Train the model
-    train_quantum_model(qlm, X, Y, epochs=epochs, learning_rate=learning_rate)
-    
-    # Save the trained model
-    qlm.save_model("quantum_llm.qelm")
-    
-    # Evaluate the model on a sample input
-    sample_input_id = X[0]
-    sample_target_id = np.argmax(Y[0])
-    fidelity = simulate_and_evaluate(qlm, sample_input_id, sample_target_id)
-    print(f"Sample Fidelity: {fidelity:.4f}")
-    
-    # Load the model back (demonstration)
-    qlm_loaded = QuantumLanguageModel(vocab_size, embed_dim, num_layers, neurons_per_layer)
-    qlm_loaded.load_model("quantum_llm.qelm")
-    
-    # Re-evaluate the loaded model
-    fidelity_loaded = simulate_and_evaluate(qlm_loaded, sample_input_id, sample_target_id)
-    print(f"Sample Fidelity After Loading: {fidelity_loaded:.4f}")
-
+    try:
+        # Define model parameters for a manageable simulation
+        vocab_size = 16           # Reduced vocabulary size for testing
+        embed_dim = 4             # Reduced embedding dimension
+        num_layers = 1            # Start with one layer
+        neurons_per_layer = 2     # Fewer neurons per layer
+        epochs = 2                # Fewer training epochs for quick testing
+        learning_rate = 0.1
+        
+        # Initialize the Quantum Language Model
+        qlm = QuantumLanguageModel(vocab_size, embed_dim, num_layers, neurons_per_layer)
+        
+        # Prepare dataset (using synthetic data for demonstration)
+        X, Y = create_synthetic_dataset(vocab_size, num_samples=10)  # Fewer samples
+        
+        # Train the model
+        train_quantum_model(qlm, X, Y, epochs=epochs, learning_rate=learning_rate)
+        
+        # Save the trained model
+        qlm.save_model("quantum_llm.qelm")
+        
+        # Evaluate the model on a sample input
+        sample_input_id = X[0]
+        sample_target_id = np.argmax(Y[0])
+        fidelity = simulate_and_evaluate(qlm, sample_input_id, sample_target_id)
+        print(f"Sample Fidelity: {fidelity:.4f}")
+        
+        # Load the model back (demonstration)
+        qlm_loaded = QuantumLanguageModel(vocab_size, embed_dim, num_layers, neurons_per_layer)
+        qlm_loaded.load_model("quantum_llm.qelm")
+        
+        # Re-evaluate the loaded model
+        fidelity_loaded = simulate_and_evaluate(qlm_loaded, sample_input_id, sample_target_id)
+        print(f"Sample Fidelity After Loading: {fidelity_loaded:.4f}")
+        
+    except Exception as e:
+        logging.error(f"An error occurred: {e}")
+        print(f"An error occurred: {e}")
+    finally:
+        # Pause before exiting
+        input("Press Enter to exit...")
 
 if __name__ == "__main__":
     main()

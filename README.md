@@ -55,7 +55,11 @@ Welcome to the **Quantum-Enhanced Language Model (QELM)** project; an innovative
 ### Prerequisites
 
 - **Python 3.7 to 3.11**
-- **Qiskit**, **Qiskit Aer**, **TensorFlow**, **Numpy**, **Tkinter**
+- **Qiskit**
+- **Qiskit Aer**
+- **TensorFlow**
+- **Numpy**
+- **Tkinter**
 - **psutil** (optional for resource monitoring)
 
 ---

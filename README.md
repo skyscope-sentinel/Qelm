@@ -47,6 +47,9 @@ Welcome to the **Quantum-Enhanced Language Model (QELM)** project; an innovative
 
 ---
 
+![QELM Diagram](docs/images/QELM_Diagram.png)
+
+---
 ## Installation
 
 ### Prerequisites

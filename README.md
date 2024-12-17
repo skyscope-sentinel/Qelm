@@ -151,6 +151,10 @@ The GUI outputs the generated sequence.
 
 ## Graphical User Interface (GUI)
 
+---
+![QELM](docs/images/QELM.png)
+---
+
 The **QELM GUI** offers an easy-to-use tool for all functionalities, including:
 
 - **Training**: Monitor training logs, set hyperparameters, and view progress visually.

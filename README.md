@@ -11,9 +11,8 @@
 ## Table of Contents
 
 - [Overview](#overview)
-- [Comparison](#comparison)
+- [Comparison](#comparison-with-regular-llms)
 - [Features](#features)
-- [Benefits Over Traditional LLMs](#benefits-over-traditional-llms)
 - [Installation](#installation)
   - [Prerequisites](#prerequisites)
   - [Clone the Repository](#clone-the-repository)

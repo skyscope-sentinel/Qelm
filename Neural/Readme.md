@@ -60,6 +60,9 @@ To run the project, ensure the following Python dependencies are installed:
 - `numpy`
 - `scipy`
 - `nltk`
+- `tensorflow`
+- `psutil`
+
 
 Install all dependencies using:
 ```bash

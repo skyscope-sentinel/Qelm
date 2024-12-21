@@ -1,4 +1,4 @@
-# QELM (Quantum-Enhanced Language Model) - README
+# QELM (Quantum-Enhanced Language Model) - Quantum - README
 
 Welcome to the **Quantum-Enhanced Language Model** (QELM) - Quantum Project. This repository integrates QELM into IBM's QPU's for testing purposes. You must have an IBM Quantum account to use an API for this.
 

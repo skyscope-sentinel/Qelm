@@ -3,10 +3,10 @@
 
 """
 ====================================================================================================
-Quantum-Enhanced Language Model (QELM) - Comprehensive Training Model
+Quantum-Enhanced Language Model (QELM) - Nueron
 ====================================================================================================
 
-This script defines a comprehensive Quantum-Enhanced Language Model (QELM) leveraging Qiskit.
+This script defines a comprehensive Quantum-Enhanced Language Model (QELM) - Nueron (Beta) leveraging Qiskit.
 It incorporates advanced quantum techniques such as logical qubits with error correction,
 graphene-like layer structures, and scalable neural network architectures inspired by string theory
 and brain-like connectivity. The model is designed to simulate large-scale quantum neural networks

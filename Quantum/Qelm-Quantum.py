@@ -15,9 +15,9 @@ from tkinter import filedialog, messagebox, scrolledtext
 from tkinter import ttk
 import multiprocessing  # Added import
 
-# Ensure Qiskit is installed correctly
+# Ensure Qiskit is called correctly
 try:
-    from qiskit import QuantumCircuit
+    from qiskit import QuantumCircuit, transpile  # Added transpile import
     from qiskit_aer import AerSimulator
     from qiskit_ibm_runtime import QiskitRuntimeService  # Removed Sampler import
     from qiskit.quantum_info import SparsePauliOp
@@ -168,8 +168,6 @@ class QuantumLayerBase:
                     raise ValueError("Service is not initialized.")
 
                 backend_name = self.initialize_backend()
-
-                # Retrieve the backend object
                 backend = self.service.backend(backend_name)
 
                 # Initialize BackendSamplerV2 with the backend
@@ -182,15 +180,18 @@ class QuantumLayerBase:
                 if self.enable_logging:
                     logging.info(f"QuantumLayerBase: Running sampler on backend '{backend_name}'.")
 
+                # **Fix**: Transpile the circuit before running to ensure supported instructions for qubit cross instructions to qpu's
+                transpiled_circuit = transpile(circuit, backend=backend)
+
                 # Run the sampler
-                result = sampler.run([circuit])  # Fixed: Pass circuits as positional arguments
-                job_result = result.result()  # Retrieve the result object
+                result = sampler.run([transpiled_circuit])
+                job_result = result.result()
                 counts = job_result.quasi_dists[0].get_counts()
 
                 # Convert counts to probability distribution
                 total = sum(counts.values())
                 probabilities = np.array([
-                    counts.get(format(i, f'0{int(np.ceil(np.log2(len(counts))) or 1)}b'), 0) 
+                    counts.get(format(i, f'0{int(np.ceil(np.log2(len(counts))) or 1)}b'), 0)
                     for i in range(len(counts))
                 ])
                 probabilities = probabilities / total
@@ -393,8 +394,8 @@ class QuantumLanguageModel:
         """
         attn_size = self.attn.get_all_parameters().size
         ffn_size = self.ffn.get_all_parameters().size
-        proj_size = self.embed_dim * self.hidden_dim  # e.g., (256 * 512) = 131072
-        out_size = self.vocab_size * self.embed_dim  # e.g., (10000 * 256) = 2560000
+        proj_size = self.embed_dim * self.hidden_dim
+        out_size = self.vocab_size * self.embed_dim
         expected = attn_size + ffn_size + proj_size + out_size
 
         if params.shape[0] != expected:
@@ -805,7 +806,7 @@ class QELM_GUI:
         try:
             self.master = master
             master.title("QELM Trainer - Enhanced")
-            master.geometry("1600x1000")  # Increased window size for better layout
+            master.geometry("1600x1000")  # Increased window size for better layout *edit based on your screen size*
             master.resizable(False, False)
 
             # Default Model parameters
@@ -815,7 +816,7 @@ class QELM_GUI:
             self.hidden_dim = 512     # Default hidden dimension
             self.sim_method = 'simulator'
             self.num_threads = min(8, multiprocessing.cpu_count())  # Adjusted for higher model complexity
-            self.api_token = ""  # Initialize API token as empty string
+            self.api_token = ""  # Initialize API token as empty string (Don't store your API here, pop it in the box and let it remain hidden).
 
             self.model = QuantumLanguageModel(
                 self.vocab_size, 
@@ -846,7 +847,7 @@ class QELM_GUI:
             else:
                 self.process = None
 
-            # Configure GUI appearance
+            # Configure GUI appearance to whatever suits your mood (Please keep gradio away from my code).
             self.master.configure(bg="#2C3E50")
             style = ttk.Style(self.master)
             style.theme_use('clam')
@@ -1184,7 +1185,7 @@ class QELM_GUI:
             messagebox.showerror("Invalid Input", "Please enter valid positive integers for model parameters and epochs, and a positive float for learning rate.")
             return
 
-        sim_method = self.backend_var.get()  # Updated line
+        sim_method = self.backend_var.get()
         num_threads = self.num_threads_var.get()
         max_threads = multiprocessing.cpu_count()
         if num_threads > max_threads:
@@ -1218,7 +1219,7 @@ class QELM_GUI:
                 messagebox.showerror("Dataset Load Error", err_msg)
                 return
         else:
-            X, Y = create_synthetic_dataset(vocab_size, num_samples=500)  # Increased samples for better training
+            X, Y = create_synthetic_dataset(vocab_size, num_samples=500)  # Can be changed but utilizing a real dataset is best
             self.X = X
             self.Y = Y
             self.log_train("Using synthetic dataset for training.\n")
@@ -1233,7 +1234,7 @@ class QELM_GUI:
                 sim_method=sim_method, 
                 num_threads=num_threads, 
                 enable_logging=True,
-                api_token=self.api_token  # Pass the API token
+                api_token=self.api_token
             )
             self.optimizer = AdamOptimizer(self.model.get_all_parameters(), lr=lr)
             self.log_train("Model re-initialized with new parameters.\n")
@@ -1349,7 +1350,7 @@ class QELM_GUI:
         """
         try:
             save_path = filedialog.asksaveasfilename(title="Save Model", defaultextension=".qelm",
-                                                     filetypes=[("QELM Files", "*.qelm"), ("All Files", "*.*")])
+                                                     filetypes=[("QELM Files", "*.qelm", "*.qlm"), ("All Files", "*.*")])
             if save_path:
                 self.model.save_model(save_path)
                 if self.token_to_id:
@@ -1369,7 +1370,7 @@ class QELM_GUI:
         """
         try:
             load_path = filedialog.askopenfilename(title="Load Model",
-                                                  filetypes=[("QELM Files", "*.qelm"), ("All Files", "*.*")])
+                                                  filetypes=[("QELM Files", "*.qelm", "*.qlm"), ("All Files", "*.*")])
             if load_path:
                 self.model.load_model(load_path)
                 token_map_path = load_path.replace(".qelm", "_token_map.json")

@@ -1,4 +1,3 @@
-```markdown
 # Quantum-Enhanced Language Model (QELM) (QLM)
 
 ![License](https://img.shields.io/github/license/R-D-BioTech-Alaska/QELM)

@@ -64,7 +64,8 @@ In short, quantum-based “compression” can significantly reduce overhead with
   - GPU usage (if available) with `nvidia-smi`
 
 ---
-
+![QELM Diagram](docs/images/QELM_Diagram.png)
+---
 ## Installation
 
 ### Prerequisites
@@ -129,6 +130,8 @@ python QelmGUI.py
 ```
 You’ll see a tabbed window for training, inference, and token mapping. Advanced toggles let you experiment with ring entanglement, RZ gates, data reuploading, multi-block architectures, etc.
 
+![QELM](docs/images/Qelm.png)
+
 ### 2. QELMChatUI (Conversational UI)
 `QELMChatUI.py` provides a **ChatGPT-like** experience:
 - **Multi-session**: Keep track of multiple conversation threads
@@ -143,6 +146,7 @@ python QELMChatUI.py
 ```
 Engage in interactive conversation with your quantum model. Great for testing QELM’s dialogue capabilities or showcasing quantum-based reasoning in a chat interface.
 
+![QELM](docs/images/QelmChat.png)
 ---
 
 ## Legacy Command Line (Older Script)

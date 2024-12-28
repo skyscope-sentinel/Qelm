@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-QELM Conversational UI - Enhanced Version (still rudi)
+QELM Conversational UI - Enhanced Basic Version
 ==========================================
 
 This script provides a chat-style interface to interact with the Quantum-Enhanced Language Model (QELM).
@@ -23,6 +23,9 @@ Ensure all dependencies are installed before running the script.
 Remember that this is a basic chat for the qelm models. This will constantly be updated but not always focused on.
 
 Author: Brenton Carter
+
+==========================================
+
 """
 
 import tkinter as tk
@@ -75,7 +78,7 @@ class QuantumLanguageModel:
         if ext.lower() not in ['.json', '.qelm']:
             raise ValueError("Unsupported file format. Please provide a .json or .qelm file.")
 
-        with open(model_file_path, 'r') as f:
+        with open(model_file_path, 'r', encoding='utf-8') as f:
             model_dict = json.load(f)
 
         # Print all keys for verification
@@ -104,9 +107,15 @@ class QuantumLanguageModel:
                 self.load_token_map_from_file(token_map_file_path)
             else:
                 print("token_to_id and id_to_token not found in the model file and no token mapping file provided.")
-                # Initialize empty mappings
-                self.token_to_id = {}
-                self.id_to_token = {}
+                if "vocabulary" in model_dict:
+                    tokens = model_dict["vocabulary"]
+                    self.token_to_id = {token: idx for idx, token in enumerate(tokens)}
+                    self.id_to_token = {idx: token for token, idx in self.token_to_id.items()}
+                    print("Generated 'token_to_id' and 'id_to_token' from model's vocabulary.")
+                else:
+                    print("Model file does not contain 'vocabulary'. Cannot generate token mappings.")
+                    self.token_to_id = {}
+                    self.id_to_token = {}
 
         # Load W_out if present
         if "W_out" in model_dict:
@@ -118,7 +127,7 @@ class QuantumLanguageModel:
                     new_hidden_dim = self.W_out.shape[1]
                     print(f"Warning: 'W_out' shape mismatch. Adjusting 'hidden_dim' from {self.hidden_dim} to {new_hidden_dim}.")
                     self.hidden_dim = new_hidden_dim
-                    # Reinitialize W_proj to match new hidden_dim and embed_dim
+                    # Reinitialize W_proj to match new_hidden_dim and embed_dim
                     self.W_proj = np.random.randn(self.hidden_dim, self.embed_dim).astype(np.float32) * 0.01
                     print(f"W_proj reinitialized with shape: {self.W_proj.shape}")
                 else:
@@ -146,7 +155,7 @@ class QuantumLanguageModel:
                 new_hidden_dim = self.W_proj.shape[0]
                 print(f"Warning: 'W_proj' shape mismatch: expected {expected_proj_shape}, got {self.W_proj.shape}. Adjusting 'hidden_dim' to {new_hidden_dim}.")
                 self.hidden_dim = new_hidden_dim
-                # Reinitialize W_proj to match new hidden_dim and embed_dim
+                # Reinitialize W_proj to match new_hidden_dim and embed_dim
                 self.W_proj = np.random.randn(self.hidden_dim, self.embed_dim).astype(np.float32) * 0.01
                 print(f"W_proj reinitialized with shape: {self.W_proj.shape}")
             else:
@@ -172,13 +181,46 @@ class QuantumLanguageModel:
             if not isinstance(token_map, dict):
                 raise ValueError("Token mapping file is not a valid dictionary.")
 
-            # Ensure that both 'token_to_id' and 'id_to_token' exist
-            if "token_to_id" not in token_map or "id_to_token" not in token_map:
-                raise ValueError("Token mapping file must contain both 'token_to_id' and 'id_to_token'.")
+            # Handle 'token_to_id' and 'id_to_token' presence
+            if "token_to_id" in token_map or "id_to_token" in token_map or "vocabulary" in token_map:
+                if "token_to_id" in token_map:
+                    self.token_to_id = token_map["token_to_id"]
+                    if "id_to_token" in token_map:
+                        self.id_to_token = {int(k): v for k, v in token_map["id_to_token"].items()}
+                    else:
+                        # Generate 'id_to_token' from 'token_to_id'
+                        self.id_to_token = {v: k for k, v in self.token_to_id.items()}
+                        print("Generated 'id_to_token' from 'token_to_id'.")
+                elif "id_to_token" in token_map:
+                    self.id_to_token = {int(k): v for k, v in token_map["id_to_token"].items()}
+                    # Generate 'token_to_id' from 'id_to_token'
+                    self.token_to_id = {v: k for k, v in self.id_to_token.items()}
+                    print("Generated 'token_to_id' from 'id_to_token'.")
+                elif "vocabulary" in token_map:
+                    tokens = token_map["vocabulary"]
+                    self.token_to_id = {token: idx for idx, token in enumerate(tokens)}
+                    self.id_to_token = {idx: token for token, idx in self.token_to_id.items()}
+                    print("Generated 'token_to_id' and 'id_to_token' from 'vocabulary'.")
+            else:
+                # Check if the JSON is a flat mapping (tokens as keys and IDs as values)
+                if all(isinstance(v, int) for v in token_map.values()):
+                    self.token_to_id = token_map
+                    self.id_to_token = {v: k for k, v in token_map.items()}
+                    print("Generated 'id_to_token' from flat 'token_to_id' mapping.")
+                else:
+                    raise ValueError("Token mapping file must contain at least 'token_to_id', 'id_to_token', or 'vocabulary'.")
 
-            self.token_to_id = token_map["token_to_id"]
-            self.id_to_token = {int(k): v for k, v in token_map["id_to_token"].items()}
-            print(f"Token mapping loaded from '{os.path.basename(token_map_file_path)}'.")
+            # Validation Checks
+            if len(self.token_to_id) != len(self.id_to_token):
+                raise ValueError("Mismatch between 'token_to_id' and 'id_to_token' mappings.")
+
+            # Additional validation: all IDs are unique
+            if len(set(self.token_to_id.values())) != len(self.token_to_id.values()):
+                raise ValueError("Duplicate IDs found in 'token_to_id' mapping.")
+
+            print(f"Token mapping successfully loaded from '{os.path.basename(token_map_file_path)}'.")
+        except json.JSONDecodeError as e:
+            raise ValueError(f"JSON decoding error: {e}")
         except Exception as e:
             raise ValueError(f"Failed to load token mapping from '{token_map_file_path}': {e}")
 
@@ -448,7 +490,7 @@ class QELMChatUI:
                 # Prompt user to load token mapping
                 response = messagebox.askyesno(
                     "Token Mapping Missing",
-                    "The model file does not contain 'token_to_id' and 'id_to_token' mappings. Would you like to load it from a separate JSON file?"
+                    "The model file does not contain 'token_to_id', 'id_to_token', or 'vocabulary' mappings. Would you like to load it from a separate JSON file?"
                 )
                 if response:
                     self.prompt_token_map_loading()

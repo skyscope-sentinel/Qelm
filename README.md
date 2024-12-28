@@ -36,7 +36,7 @@ The **Quantum-Enhanced Language Model (QELM)** merges quantum computing with nat
 ---
 
 ## Comparison with Regular LLMs
-Classical LLMs often reach **6 - 60 GB** (or more) even for modest architectures. In current comparison tests QELM, by contrast, typically yields models around **2 MB** when a classical llm would be **15-20 MB, delivering:
+Classical LLMs often reach **6 - 60 GB** (or more) even for modest architectures. In current comparison tests QELM, by contrast, typically yields models around **2 MB** when a classical llm would be **15-20** MB, delivering:
 - **8–9x size reduction**  
 - Similar perplexity/performance (e.g., perplexity ~100)  
 - Efficient parameter usage through quantum ansätze and ring entanglement  
@@ -204,6 +204,6 @@ For questions, suggestions, or collaborations:
 
 - **GitHub**: [R-D-BioTech-Alaska](https://github.com/R-D-BioTech-Alaska)  
 
-- **Website**: [RDBioTech.org](http://RDBioTech.org) or [Qelm.net](http://www.Qelm.net)
+- **Website**: [RDBioTech.org](http://RDBioTech.org) or [Qelm.org](http://www.Qelm.org)
 
 > *Disclaimer: QELM is mostly experimental. Community feedback & contributions are welcome and needed to advance this exciting field.*  

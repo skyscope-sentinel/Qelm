@@ -29,6 +29,8 @@ Dependencies:
 
 Ensure all dependencies are installed before running the script.
 
+**Update** We are currently working on this model with enhanced quantum techniques. So far small models have shown to recognize commands and aim to make coherent sentences at 53 kb's.
+
 ====================================================================================================
 """
 

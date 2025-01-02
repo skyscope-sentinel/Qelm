@@ -32,6 +32,16 @@ Welcome to the **Quantum-Enhanced Language Model** (QELM) - Quantum Project. Thi
 
 The **Quantum-Enhanced Language Model (QELM) - Quantum ** attempts to fuse the concepts of quantum computing with classical deep learning approaches for language modeling. While the quantum functionality here is relatively basic (e.g., employing Qiskit simulators and optional IBM Quantum hardware for certain circuit executions), it demonstrates how quantum circuits could be embedded into attention and feed-forward layers.
 
+You need to understand IBM's Quantum Dashboard before using this. Currently only small calls are allowed through embedding and hidden as it scales qubits exponentially. Heron will be released in the near future with additional Qubits to run these tasks. Until that time this will be an off and on project.
+
+Results should be : Object
+
+Description should be : Runner Result
+
+If a run doesn't go as expected then you may have to lower dimensions to decrease decoherence. Currently we have methods to defuse this but have not yet been incorporated.
+
+**Might experience backend issues when they update the QPU's** This can be fixed by updated calls.
+
 This project includes:
 - A simplified language model architecture with quantum layers.
 - An **AdamOptimizer** for parameter updates.

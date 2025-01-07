@@ -29,6 +29,8 @@ Ensure all dependencies are installed before running the script.
 
 Check with Qiskit to ensure calls are correct. They have a tendency to change them with updates.
 
+*New* Use Quanta to figure out spin variables and gates, this information will help with inputs.
+
 ====================================================================================================
 """
 
@@ -484,6 +486,7 @@ class QuantumTransformerBlock:
     """
     A block that contains one quantum attention layer and one quantum feed-forward layer,
     optionally with residual connections. This is for multi-block expansions.
+    This will most likely be replaced soon.
     """
     def __init__(self,
                  embed_dim: int,
@@ -1320,12 +1323,12 @@ class QELM_GUI:
 
         ttk.Label(hyperparams_right, text="Learning Rate:").grid(row=1, column=0, padx=10, pady=10, sticky='e')
         self.lr_entry = ttk.Entry(hyperparams_right, width=15, style="Custom.TEntry")
-        self.lr_entry.insert(0, "0.001")
+        self.lr_entry.insert(0, "0.05")
         self.lr_entry.grid(row=1, column=1, padx=10, pady=10, sticky='w')
 
         ttk.Label(hyperparams_right, text="Epochs:").grid(row=2, column=0, padx=10, pady=10, sticky='e')
         self.epochs_entry = ttk.Entry(hyperparams_right, width=15, style="Custom.TEntry")
-        self.epochs_entry.insert(0, "2")
+        self.epochs_entry.insert(0, "1")
         self.epochs_entry.grid(row=2, column=1, padx=10, pady=10, sticky='w')
 
         # Simulation Settings

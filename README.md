@@ -31,17 +31,38 @@
 ---
 
 ## Overview
-The **Quantum-Enhanced Language Model (QELM)** merges quantum computing with natural language processing to produce extremely **compact** yet powerful language models. By encoding token embeddings into **quantum states** and leveraging **entanglement**, QELM drastically reduces storage requirements compared to classical LLMs. This makes QELM an excellent choice for edge devices or memory-limited environments.
+The **Quantum-Enhanced Language Model (QELM)** merges **quantum computing** with natural language processing to produce extremely **compact** yet powerful language models. By encoding token embeddings into **quantum states** and leveraging **entanglement**, QELM drastically reduces storage requirements compared to classical LLMs. This makes QELM an excellent choice for edge devices or memory-limited environments.  
+Moreover, the newest code introduces **multi-block** quantum transformer structures, **ring entanglement**, optional **data reuploading**, and the **Parameter-Shift Rule** for gradient-based quantum training, all in an easy-to-explore environment.
 
 ---
 
 ## Comparison with Regular LLMs
-Classical LLMs often reach **6 - 60 GB** (or more) even for modest architectures. In current comparison tests QELM, by contrast, typically yields models around **2 MB** when a classical llm would be **15-20** MB, delivering:
+Classical LLMs often reach **6 - 60 GB** (or more) even for modest architectures.
+In our original comparison tests, utilizing the same embeddings and parameters to train a model QELM typically yields models around **2 MB** when a classical LLM would be **15-20** MB, delivering:
 - **8–9x size reduction**  
 - Similar perplexity/performance (e.g., perplexity ~100)  
 - Efficient parameter usage through quantum ansätze and ring entanglement  
 
+However
+In our most recent training programs we've been capable of much more effecient encoding of qubit layers in simulations. Currently we are able to express 13.69 bytes per qubit. 
+Overhead for Quantum circuit architecture for each QC is larger in the beginning until the model gets to around 16 mb's. At this point the Qelm begins to get smaller than the comparison of a regular trained llm.
+This delivers a much larger difference in size and speed:
+
+| Classical Size | LLM (bits)                   | QELM (bits)                               | QELM (MB)                 | QELM (GB)                 | Relationship         |
+|----------------|------------------------------|-------------------------------------------|---------------------------|---------------------------|----------------------|
+| 1 MB           | \(8.39 \times 10^6\)         | \(8.44 \times 10^7\)                      | ~10.06 MB                 | ~0.0099 GB                | QELM >> LLM          |
+| 5 MB           | \(4.19 \times 10^7\)         | \(9.84 \times 10^7\)                      | ~11.72 MB                 | ~0.0115 GB                | QELM > LLM           |
+| 10 MB          | \(8.39 \times 10^7\)         | \(1.16 \times 10^8\)                      | ~13.81 MB                 | ~0.0135 GB                | QELM > LLM           |
+| 16.6 MB        | \(1.39 \times 10^8\)         | \(1.39 \times 10^8\)                      | ~16.60 MB                 | ~0.0162 GB                | QELM ≈ LLM           |
+| 20 MB          | \(1.68 \times 10^8\)         | \(1.51 \times 10^8\)                      | ~18.00 MB                 | ~0.0176 GB                | QELM < LLM           |
+| 50 MB          | \(4.19 \times 10^8\)         | \(2.56 \times 10^8\)                      | ~30.50 MB                 | ~0.0298 GB                | QELM << LLM          |
+| 100 MB         | \(8.39 \times 10^8\)         | \(4.31 \times 10^8\)                      | ~51.39 MB                 | ~0.0501 GB                | QELM << LLM          |
+| 1 GB           | \(8.59 \times 10^9\)         | \(3.67 \times 10^9\)                      | ~437.44 MB                | ~0.4274 GB                | QELM << LLM          |
+| 10 GB          | \(8.59 \times 10^{10}\)      | \(3.59 \times 10^{10}\)                   | ~4285.5 MB                | ~4.183 GB                 | QELM << LLM          |
+| 100 GB         | \(8.59 \times 10^{11}\)      | \(3.59 \times 10^{11}\)                   | ~42,740 MB                | ~41.74 GB                 | QELM << LLM          |
+
 In short, quantum-based “compression” can significantly reduce overhead without compromising on capabilities.
+
 
 ---
 
@@ -49,16 +70,16 @@ In short, quantum-based “compression” can significantly reduce overhead with
 - **Sophisticated Quantum Circuits**  
   - **Advanced Ansatz**: RY, RZ, ring entanglement patterns, optional data reuploading  
   - **Multi-Block Transformers**: Stack attention+FFN blocks for deeper language understanding  
-  - **Parameter Shift Gradient** training for quantum gates  
+  - **Parameter Shift Gradient** training for quantum gates (supports multi-threading)  
 - **GUI Support**  
   - **QelmGUI**: Train/infer on quantum LLMs with real-time logs, progress bars, resource tracking  
   - **QELMChatUI**: Chat-like interface for multi-turn conversations, model selection, and conversation saving  
 - **Multi-Threaded / Multiprocessing**  
-  - Parallel parameter-shift evaluations  
-  - CPU/GPU/both simulation modes  
+  - Parallel parameter-shift evaluations to speed up training  
+  - CPU/GPU/both simulation modes for flexible performance  
 - **Dataset Flexibility**  
   - Load real text or generate synthetic tokens  
-  - Manage token mappings easily  
+  - Manage token mappings easily in the integrated GUIs or via JSON  
 - **Resource Monitoring**  
   - CPU usage via `psutil`  
   - GPU usage (if available) with `nvidia-smi`
@@ -102,14 +123,14 @@ pip install -r requirements.txt
 
 ### Training the Model
 1. **Prepare your dataset**: real text or synthetic (auto-generated).
-2. **Set hyperparameters**: vocabulary size, embed dim, #heads, #blocks, advanced ansatz toggles, etc.
+2. **Set hyperparameters**: vocabulary size, embedding dimension, #heads, #blocks, advanced ansatz toggles, etc.
 3. **Run training**:
-   - **GUI**: Launch `QelmGUI.py`, fill in parameters, press **Start Training**.
-   - **CLI**: Use `Qelm2.py --train --epochs N --lr 0.05` (older approach).
+   - **GUI**: Launch `QelmGUI.py`, fill in parameters, press **Start Training** (real-time logging and progress).
+   - **CLI** (Older/Legacy Script): Use `Qelm2.py --train --epochs N --lr 0.05` for a command-line approach.
 
 ### Performing Inference
 - **GUI**: Inference tab allows user to provide a token, set `max_length`, temperature, and generate.  
-- **CLI**: Use `Qelm2.py --inference --input_id 5 --load_path your_model.qelm`.
+- **CLI** (Older/Legacy Script): Use `Qelm2.py --inference --input_id 5 --load_path your_model.qelm`.
 
 ---
 
@@ -118,7 +139,7 @@ pip install -r requirements.txt
 ### 1. QelmGUI (Training + Inference)
 `QelmGUI.py` offers:
 - **Dataset Selection** (real .txt or synthetic)
-- **Hyperparameter Entry** (embed dim, #heads, #blocks, advanced ansatz, etc.)
+- **Hyperparameter Entry** (embedding dimension, #heads, #blocks, advanced ansatz, etc.)
 - **Live Logs & Progress Bars** (epoch progress, gradient progress)
 - **Error & Resource Monitoring** (CPU%, GPU usage if available)
 - **Model Save/Load** + **Token Mapping** management
@@ -128,7 +149,7 @@ pip install -r requirements.txt
 ```bash
 python QelmGUI.py
 ```
-You’ll see a tabbed window for training, inference, and token mapping. Advanced toggles let you experiment with ring entanglement, RZ gates, data reuploading, multi-block architectures, etc.
+You’ll see a tabbed window for training, inference, and token mapping. The new multi-block quantum architecture, advanced ring entanglement, and data reuploading options are all configurable via checkboxes and spinboxes.
 
 ![QELM](docs/images/Qelm.png)
 
@@ -136,15 +157,15 @@ You’ll see a tabbed window for training, inference, and token mapping. Advance
 `QELMChatUI.py` provides a **ChatGPT-like** experience:
 - **Multi-session**: Keep track of multiple conversation threads
 - **Center Chat Panel**: Type messages, get QELM’s replies
-- **Advanced Layout**: Avoids duplication errors from older prototypes
-- **Model Loading & Token Mapping**: Quickly switch or update quantum LLMs
+- **Load/Save**: Quickly switch or update quantum LLMs and preserve token maps
 - **Save Chat**: Archive entire dialogues to text
+- **Under the Hood**: Leverages the same quantum-based model with multi-block attention & feed-forward
 
 **Run**:
 ```bash
 python QELMChatUI.py
 ```
-Engage in interactive conversation with your quantum model. Great for testing QELM’s dialogue capabilities or showcasing quantum-based reasoning in a chat interface.
+Engage in an interactive conversation with your quantum model. Great for testing QELM’s dialogue capabilities or showcasing quantum-based reasoning in a chat interface.
 
 ![QELM](docs/images/QelmChat.png)
 ---

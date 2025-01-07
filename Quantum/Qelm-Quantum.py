@@ -946,7 +946,7 @@ class QELM_GUI:
 
         ttk.Label(hyperparams_frame, text="Epochs:").grid(row=5, column=0, padx=10, pady=10, sticky='e')
         self.epochs_entry = ttk.Entry(hyperparams_frame, width=15, style="Custom.TEntry")
-        self.epochs_entry.insert(0, "2")  # Reduced epochs for testing
+        self.epochs_entry.insert(0, "1")  # Reduced epochs for testing
         self.epochs_entry.grid(row=5, column=1, padx=10, pady=10, sticky='w')
 
         sim_settings_frame = ttk.LabelFrame(self.tab_train, text="Execution Settings")

@@ -2,30 +2,14 @@
 # -*- coding: utf-8 -*-
 
 """
-QELM Conversational UI - Enhanced Basic Version
-==========================================
+QELM Conversational UI - Rudi judi
+============================================================================
+This script provides a chat-style interface to interact with the Quantum-Enhanced
+Language Model (QELM), with an enhanced layout similar to modern chat interfaces
+(e.g., ChatGPT). The duplication issue in user and QELM messages is resolved by
+avoiding multiple appends to the conversation history.
 
-This script provides a chat-style interface to interact with the Quantum-Enhanced Language Model (QELM).
-Enhancements include:
-1. Support for both .json and .qelm model files.
-2. Error handling with output.
-3. Modern GUI using ttk.
-4. Additional features like clearing chat, saving conversations, and status updates.
-5. Added autoloading (if no token file is selected it asks).
-
-Dependencies:
-- tkinter (standard with Python)
-- numpy
-- nltk
-
-Ensure all dependencies are installed before running the script.
-
-Remember that this is a basic chat for the qelm models. This will constantly be updated but not always focused on.
-
-Author: Brenton Carter
-
-==========================================
-
+Author: Brenton Carter (modified to fix duplication)
 """
 
 import tkinter as tk
@@ -36,32 +20,30 @@ from nltk.tokenize import word_tokenize
 import nltk
 import os
 import datetime
-import traceback  # For detailed error traces
+import traceback  
 
 # Initialize NLTK data (only the first time)
 nltk.download('punkt', quiet=True)
 
 
 def normalize_vector(vec: np.ndarray) -> np.ndarray:
-    """
-    Normalize a vector to unit length.
-    """
+
+    # Normalize a vector to unit length.
+
     norm = np.linalg.norm(vec)
     return vec / norm if norm > 1e-12 else vec
 
 
 def softmax(x: np.ndarray) -> np.ndarray:
-    """
-    Compute softmax values for each set of scores in x.
-    """
+
+    # Compute softmax values for each set of scores in x.
+
     e_x = np.exp(x - np.max(x))
     return e_x / e_x.sum()
 
 
 def save_conversation(conversation: list, file_path: str):
-    """
-    Save the conversation history to a text file.
-    """
+
     try:
         with open(file_path, 'w', encoding='utf-8') as f:
             for line in conversation:
@@ -72,10 +54,7 @@ def save_conversation(conversation: list, file_path: str):
 
 
 class QuantumLanguageModel:
-    """
-    Quantum-Enhanced Language Model combining embeddings and output weights.
-    Supports loading from both .json and .qelm files along with separate token mapping files.
-    """
+
     def __init__(self):
         self.vocab_size = None
         self.embed_dim = None
@@ -262,19 +241,11 @@ class QuantumLanguageModel:
 
 
 class QELMChatUI:
-    """
-    Chat-style User Interface for interacting with the QELM,
-    with an advanced layout resembling modern chat interfaces.
-    
-    Key Fix for Duplication:
-    ------------------------
-    Removed extra lines in `handle_send` that appended the user/QELM messages
-    again after `update_chat` already appended them.
-    """
+# Below are modifiable values for the UI.
     def __init__(self, root):
         self.root = root
-        self.root.title("QELM Chat - Advanced Layout")
-        self.root.geometry("1200x700")
+        self.root.title("QELM Chat - Gpt layout")
+        self.root.geometry("1100x600")
         self.root.resizable(False, False)
 
         # Initialize model
@@ -505,6 +476,8 @@ class QELMChatUI:
             messagebox.showerror("Token Mapping Load Error", error_message)
             self.status_label.config(text="Failed to load token mapping.")
 
+    # Tokenization values (may need to be altered for embedding issues) 
+    
     def display_available_tokens(self):
         if not self.model.token_to_id:
             self.update_chat("System", "No token mappings available.", color=self.system_color)
@@ -530,7 +503,6 @@ class QELMChatUI:
             self.update_chat("System", error_message, color=self.system_color)
             self.status_label.config(text="Error during inference.")
             response = "<Error: Response generation failed>"
-
 
         self.refresh_chat_display()
         self.user_input.delete(0, tk.END)

@@ -3,7 +3,7 @@
 
 """
 ====================================================================================================
-Quantum-Enhanced Language Model (QELM) - Trainer with multi thread support. *CPU/GPU*
+Quantum-Enhanced Language Model (QELM) - Trainer with multi thread support. *CPU/GPU* 
 ====================================================================================================
 
 This script defines a Quantum-Enhanced Language Model (QELM) with the following features:
@@ -30,6 +30,10 @@ Ensure all dependencies are installed before running the script.
 Check with Qiskit to ensure calls are correct. They have a tendency to change them with updates.
 
 *New* Use Quanta to figure out spin variables and gates, this information will help with inputs.
+
+GPU currently isn't working for certain gpu instances.
+
+*New* version releases soon.
 
 ====================================================================================================
 """

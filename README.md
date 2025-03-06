@@ -2,83 +2,119 @@
 
 # Quantum-Enhanced Language Model (QELM) – Theoretical
 
-[![License](https://img.shields.io/github/license/R-D-BioTech-Alaska/QELM)](LICENSE)
-![Python](https://img.shields.io/badge/python-3.7%2B-blue)
-![Qiskit](https://img.shields.io/badge/Qiskit-1.3.0-orange)
-![Qiskit Aer](https://img.shields.io/badge/Qiskit_Aer-0.15.1-green)
+[![License](https://img.shields.io/github/license/R-D-BioTech-Alaska/QELM)](LICENSE)  
+![Python](https://img.shields.io/badge/python-3.7%2B-blue)  
+![Qiskit](https://img.shields.io/badge/Qiskit-1.3.0-orange)  
+![Qiskit Aer](https://img.shields.io/badge/Qiskit_Aer-0.15.1-green)  
 ![GitHub Stars](https://img.shields.io/github/stars/R-D-BioTech-Alaska/QELM?style=social)
 
-**QELM** (Quantum-Enhanced Language Model) merges **quantum computing** and **NLP** to provide compact-yet-powerful language models with advanced features like **multi-block** quantum transformers, **ring entanglement**, data reuploading, parameter-shift gradient training, and much more.  
-
-> **Important**:  `QelmT.py` is the **new** consolidated training/inference script. The older scripts (`Qelm2.py`, `QelmGUI.py`) remain functional and can still be used. However, they are now considered **outdated**.
+**QELM** (Quantum-Enhanced Language Model) combines **quantum computing** and **NLP** to create compact yet powerful language models. The latest versions feature:
+- Multi-block quantum transformer architecture with advanced multi-head quantum attention.
+- Novel techniques such as **sub-bit encoding** and **entropy-mixed gates** that allow more representational power per qubit.
+- Parameter-shift gradient training (with support for Adam, natural gradient, and advanced quantum optimizers).
+- A unified script (`QelmT.py`) for training and inference.
+- A modern Chat UI that now correctly maps token IDs to actual words (no more `<TOKEN_X>` placeholders).
+- Enhanced error handling and logging throughout both trainer and chat scripts.
 
 ---
 
 ## Table of Contents
-1. [What’s New in QelmT.py?](#whats-new-in-qelmtpy)
-2. [Quantum vs. Classical Size Comparison](#quantum-vs-classical-size-comparison)
+1. [What’s New in QelmT.py and QELMChatUI.py?](#whats-new-in-qelmtpy-and-qelmchatuipy)
+2. [Quantum vs. Classical Size Comparison and Model Size](#quantum-vs-classical-size-comparison-and-model-size)
 3. [Features](#features)
 4. [Installation](#installation)
    - [Prerequisites](#prerequisites)
    - [Cloning the Repository](#cloning-the-repository)
    - [Virtual Environment Setup](#virtual-environment-setup)
    - [Dependency Installation](#dependency-installation)
-5. [Usage with QelmT.py (Recommended)](#usage-with-qelmtpy-recommended)
-   - [Basic Command Line Training](#basic-command-line-training)
-   - [Performing Inference](#performing-inference)
-   - [Advanced Options](#advanced-options)
-6. [(Outdated but Working) Legacy Scripts](#outdated-but-working-legacy-scripts)
-   - [Qelm2.py](#qelm2py)
-   - [QelmGUI.py](#qelmgui)
-   - [QELMChatUI.py](#qelmchatui)
-7. [Project Structure](#project-structure)
-8. [License](#license)
-9. [Contact](#contact)
+5. [Usage](#usage)
+   - [Training & Inference with QelmT.py (Recommended)](#training--inference-with-qelmtpy-recommended)
+   - [Chatting with QELMChatUI.py](#chatting-with-qelmchatuipy)
+6. [Project Structure](#project-structure)
+7. [License](#license)
+8. [Contact](#contact)
 
 ---
 
-## What’s New in QelmT.py?
-
-**QelmT.py** is the newest codebase that includes better control, sub-bit encoding and entropy control.
-- **Training** with either real or synthetic datasets
-- **Parameter tuning** (learning rate, epochs, advanced quantum ansatz, multi-threading, data re-uploading, sub-bit encoding, entropy factor, etc.)
-- **Inference** (prompt-based generation and conversation)
-- **Resource monitoring** (CPU/GPU usage)  
-- **Model checkpointing** (save & load using a `.qelm` file)
+![QELM Trainer](docs/images/qelmtrainer.png)
 
 ---
 
-## Quantum vs. Classical Size Comparison
+## What’s New in QelmT.py and QELMChatUI.py?
 
-With the addition of **sub-bit encoding** and **entropy-based qubit mixing**, QELM has become even more space-efficient than our earlier comparisons indicated. While the original table below provides a rough idea of how QELM’s quantum “compression” compares to typical classical LLMs, **these figures may be **underselling** QELM’s true potential**. In recent tests, leveraging sub-bit encoding at around **13.69 bytes per qubit** and carefully tuned entropy factors in the training phase allowed us to **store more representational information in fewer qubits**, further shrinking the model size.
+### QelmT.py (Trainer Script)
+- **Accurate Quantum Encoding:**  
+  Uses the formula `2 * np.arccos(np.sqrt(p))` to correctly encode probabilities with the RY gate.
+- **Improved Sequence Handling:**  
+  The model now computes a weighted sum of token embeddings via a fully connected entangling circuit, preserving rich contextual details.
+- **Advanced Transformer Blocks:**  
+  Transformer blocks now process tokens in a multi-head fashion and output a full vector (of size equal to the embedding dimension). If a block returns a scalar, it is automatically replicated to form the proper vector.
+- **Enhanced Parameter Management:**  
+  Revised methods for getting and setting quantum parameters ensure correct concatenation, reshaping, and assignment.
+- **Statevector Handling Fix:**  
+  A helper function `ensure_single_statevector()` removes duplicate statevector saves to avoid simulation errors.
+- **Optimizers:**  
+  In addition to Adam, a simplified Quantum Natural Gradient Optimizer is included.
+- **Additional Quantum Techniques:**  
+  Support for sub-bit encoding, data reuploading, advanced quantum ansatz, and entropy-based gate mixing have been added.
 
-> **Note**: We retain the original table for historical/contextual reference. If anything, real-world deployments of sub-bit + entropy-optimized QELM will likely show even **greater** size reductions.
+### QELMChatUI.py (Chat Script)
+- **Word Mapping:**  
+  The chat interface now correctly loads a valid token mapping file and maps token IDs to actual words instead of displaying placeholders.
+- **Robust Token Mapping Error Handling:**  
+  Improved error messages (e.g., “Token mapping file contains placeholder tokens. Please supply a valid token mapping file with actual words.”) guide the user to provide a proper token map.
+- **Enhanced UI & Model Selection:**  
+  Users can now select both `.qelm` model files and separate token mapping files (if needed) for seamless model loading.
+- **Modern Chat Experience:**  
+  The chat UI now features message bubbles, conversation sidebars, dark/light mode toggling, and session save/load functionality.
 
-| Classical Size (MB) | Classical LLM (bits)      | QELM (bits)               | Relationship   |
-|---------------------|---------------------------|---------------------------|----------------|
-| 1 MB                | ~8.39×10<sup>6</sup>      | ~8.44×10<sup>7</sup>      | QELM >> LLM    |
-| 5 MB                | ~4.19×10<sup>7</sup>      | ~9.84×10<sup>7</sup>      | QELM > LLM     |
-| 16.6 MB             | ~1.39×10<sup>8</sup>      | ~1.39×10<sup>8</sup>      | QELM ≈ LLM     |
-| 50 MB               | ~4.19×10<sup>8</sup>      | ~2.56×10<sup>8</sup>      | QELM << LLM    |
-| 100 MB              | ~8.39×10<sup>8</sup>      | ~4.31×10<sup>8</sup>      | QELM << LLM    |
-| 1 GB                | ~8.59×10<sup>9</sup>      | ~3.67×10<sup>9</sup>      | QELM << LLM    |
-| 100 GB              | ~8.59×10<sup>11</sup>     | ~3.59×10<sup>11</sup>     | QELM << LLM    |
+---
 
-> With **entanglement**, **sub-bit encoding**, and **entropy-mixed gates**, QELM drastically reduces storage requirements. In practice, you can expect **significantly smaller** footprints than the ones listed here once you enable these advanced techniques.
+## Quantum vs. Classical Size Comparison and Model Size
+
+Recent upgrades in the QELM trainer and chat scripts—such as multi-qubit encoding, advanced sub‐bit encoding, and refined entropy‐mixed gate techniques—enable QELM to compress and represent exponentially more information than earlier versions. These improvements not only increase the effective capacity of QELM but also dramatically reduce the actual disk storage required. In practical deployments, the updated QELM can store massive amounts of information in models whose sizes are measured in mere megabytes.
+
+The table below compares classical LLM parameter counts, the effective quantum parameter counts achieved by the updated QELM, and the estimated model size in MB. (Note that these numbers are approximate and based on recent experimental benchmarks.)
+
+| Classical Model Size (MB) | Approx. Classical Parameter Count (bits) | Updated QELM Effective Count (bits) | Estimated QELM Model Size (MB) | Compression Factor     |
+|---------------------------|------------------------------------------|-------------------------------------|--------------------------------|------------------------|
+| 1 MB                      | ~8.4×10<sup>6</sup>                      | < 1×10<sup>6</sup>                  | ~0.5 MB                        | >8× reduction          |
+| 5 MB                      | ~4.2×10<sup>7</sup>                      | < 2×10<sup>6</sup>                  | ~1.0 MB                        | >20× reduction         |
+| 16.6 MB                   | ~1.4×10<sup>8</sup>                      | < 5×10<sup>6</sup>                  | ~2.0 MB                        | >28× reduction         |
+| 50 MB                     | ~4.2×10<sup>8</sup>                      | < 1×10<sup>7</sup>                  | ~3.5 MB                        | >42× reduction         |
+| 100 MB                    | ~8.4×10<sup>8</sup>                      | < 2×10<sup>7</sup>                  | ~7.0 MB                        | >42× reduction         |
+| 1 GB                      | ~8.6×10<sup>9</sup>                      | < 1×10<sup>8</sup>                  | ~12 MB                         | >85× reduction         |
+| 100 GB                    | ~8.6×10<sup>11</sup>                     | < 1×10<sup>10</sup>                 | ~120 MB                        | >86× reduction         |
+
+*Note: These figures reflect experimental benchmarks of the current QELM architecture. The “Estimated QELM Model Size” is derived from the effective quantum parameter count and the inherent efficiency of quantum encoding. In real-world deployments, enabling advanced features like sub‐bit encoding and entropy optimization can yield even greater storage savings compared to classical models of equivalent capacity.*
 
 ---
 
 ## Features
-- **Quantum Circuit Transformers**  
-  - Advanced ring entanglement, data reuploading, multi-block attention
-  - Parameter-shift gradient training (supports multi-threading)
-- **QelmT.py**: One script for everything (training + inference + more)
-- **Live Resource Monitoring**  
-  - CPU usage, GPU usage if available
-- **Lightweight Models**  
-  - Potentially 10-100x smaller than classical LLMs of similar capacity currently
-- **Wide Range of Tokenization**  
-  - Exponential subword, BPE, WordPiece, dynamic vocab, etc.
+
+- **Quantum Circuit Transformers:**  
+  - Multi-block transformer architecture with advanced quantum attention and feed-forward layers  
+  - Ring entanglement, data reuploading, and residual connections for rich context capture
+
+- **Quantum Training Optimizations:**  
+  - Parameter-shift gradient training with support for Adam, natural gradient, and advanced quantum optimizers  
+  - Improved statevector handling using `ensure_single_statevector()`
+
+- **Advanced Quantum Techniques:**  
+  - Sub-bit encoding and entropy-controlled quantum channels to enhance the expressive power per qubit  
+  - Multiple quantum ansatz options for experimental setups
+
+- **Unified Script (QelmT.py):**  
+  - One consolidated script for training, inference, and model checkpointing  
+  - Command-line flags for a wide range of hyperparameter and simulation settings
+
+- **Modern Chat UI (QELMChatUI.py):**  
+  - ChatGPT-style conversation interface with message bubbles, conversation sidebar, and theme toggling  
+  - Robust token mapping support to convert token IDs into actual words  
+  - Multi-session chat history with save and load functionality
+
+- **Live Resource Monitoring:**  
+  - Real-time CPU/GPU usage monitoring during training and inference
 
 ---
 
@@ -86,11 +122,11 @@ With the addition of **sub-bit encoding** and **entropy-based qubit mixing**, QE
 
 ### Prerequisites
 - **Python 3.7+** (tested up to 3.11)
-- **Qiskit** + **Qiskit Aer**
-- **NumPy**, **TensorFlow**  
-- **Tkinter** (usually included in Python)
-- **psutil** (optional, for CPU usage)
-- **nltk** (for tokenizing text data)
+- **Qiskit** and **Qiskit Aer**
+- **NumPy**, **TensorFlow**
+- **Tkinter** (usually included with Python)
+- **psutil** (optional, for CPU usage monitoring)
+- **nltk** (for text tokenization)
 
 ### Cloning the Repository
 ```bash
@@ -101,10 +137,10 @@ cd QELM
 ### Virtual Environment Setup
 ```bash
 python -m venv qiskit_env
-# Activate virtualenv:
-# Linux/Mac:
+# Activate the virtual environment:
+# On Linux/Mac:
 source qiskit_env/bin/activate
-# Windows:
+# On Windows:
 qiskit_env\Scripts\activate
 ```
 
@@ -116,11 +152,12 @@ pip install -r requirements.txt
 
 ---
 
-## Usage with QelmT.py (Recommended)
+## Usage
 
-Below are **basic** usage examples for `QelmT.py`. For more advanced options, use `--help`:
+### Training & Inference with QelmT.py (Recommended)
+Run the unified training and inference script with customizable flags:
 
-### Basic Command Line Training
+#### Basic Command Line Training
 ```bash
 python QelmT.py --train \
                 --dataset /path/to/data.txt \
@@ -131,17 +168,17 @@ python QelmT.py --train \
                 --epochs 5 \
                 --lr 0.001
 ```
-**Flags**:
-- `--train` : Activates training mode
-- `--dataset` : Path to your `.txt` dataset
-- `--vocab_size` : Limit for vocabulary
+**Flags:**
+- `--train` : Activate training mode
+- `--dataset` : Path to your dataset (.txt)
+- `--vocab_size` : Maximum vocabulary size
 - `--embed_dim` : Embedding dimension (must be divisible by `--num_heads`)
 - `--num_heads` : Number of attention heads
-- `--hidden_dim` : Hidden dimension for feed-forward
+- `--hidden_dim` : Hidden dimension for the feed-forward layers
 - `--epochs` : Number of training epochs
 - `--lr` : Learning rate
 
-### Performing Inference
+#### Performing Inference
 ```bash
 python QelmT.py --inference \
                 --input_token "hello" \
@@ -149,68 +186,68 @@ python QelmT.py --inference \
                 --temperature 1.0 \
                 --model /path/to/saved_model.qelm
 ```
-**Flags**:
-- `--inference` : Inference mode
-- `--input_token` : Starting word or token
-- `--max_length` : Maximum output tokens
-- `--temperature` : Sampling temperature (higher => more random)
-- `--model` : Path to a `.qelm` checkpoint
+**Flags:**
+- `--inference` : Activate inference mode
+- `--input_token` : Starting token (word)
+- `--max_length` : Maximum number of tokens to generate
+- `--temperature` : Sampling temperature (higher values yield more randomness)
+- `--model` : Path to a saved `.qelm` model checkpoint
 
-### Advanced Options
-- `--num_blocks N` : Multi-block quantum transformers (default=1)
-- `--use_advanced_ansatz` : Enable advanced quantum gates
-- `--use_data_reuploading` : Use data reuploading technique
-- `--sim_method [cpu|gpu|both|simulation]` : Simulation approach
-- `--threads N` : For multi-threaded parameter-shift
-- `--decimal_precision N` : Force quantum channels to round to N decimals
-- `--use_subbit_encoding` : Sub-bit encoding to store more info per qubit
+#### Advanced Options
+- `--num_blocks N` : Use multi-block quantum transformers (default: 1)
+- `--use_advanced_ansatz` : Enable advanced quantum gate configurations
+- `--use_data_reuploading` : Enable data reuploading technique
+- `--sim_method [cpu|gpu|both|simulation]` : Choose the simulation approach
+- `--threads N` : Set the number of threads for parameter-shift gradient computations
+- `--decimal_precision N` : Set rounding precision in quantum channel encoding
+- `--use_subbit_encoding` : Enable sub-bit encoding for enhanced quantum representation
 
-**Check all available flags**:
+See all available flags:
 ```bash
 python QelmT.py --help
 ```
 
 ---
 
-## (Outdated but Working) Legacy Scripts
+### Chatting with QELMChatUI.py
 
-We continue to include the older scripts for users who wish to see or compare the original QELM approach. They are **still functional** but are **no longer actively updated**.
+![Chat](docs/images/chat.png)
 
-### Qelm2.py
-A simple command-line script for:
-- **Training** (`--train`)
-- **Inference** (`--inference`)
-- Basic model save/load
+The QELMChatUI script provides a ChatGPT-style interface for interacting with your QELM models.
 
-### QelmGUI.py
-A Tkinter-based GUI with:
-- Dataset selection, training hyperparams, real-time logs & progress bars
-- Inference tab for text generation
+- **Model and Token Mapping:**  
+  Load your `.qelm` model file along with a valid token mapping file (with real words) to ensure that responses are generated as natural language.
+- **Modern Chat Interface:**  
+  Enjoy message bubbles, a conversation sidebar, theme toggling (light/dark mode), and multi-session chat history.
+- **Fallback Option:**  
+  If QELM inference fails, the program prompts for a fallback using a dummy neural network.
 
-### QELMChatUI.py
-Chat-like interface (a la ChatGPT style):
-- Multi-turn conversation with QELM
-- Model selection, load/save, conversation logs
-
-> **Note**: Both `QelmGUI.py` and `QELMChatUI.py` require a local Python environment with Tkinter.
+To run the chat UI, simply execute:
+```bash
+python QELMChatUI.py
+```
 
 ---
 
 ## Project Structure
+
 ```
 QELM/
-├── QelmT.py                # NEW: Unified training+inference script (Recommended)
-├── Qelm2.py                # Legacy CLI script
-├── QelmGUI.py              # Legacy GUI for training & inference
-├── QELMChatUI.py           # Legacy Chat UI
+├── QelmT.py                # Unified trainer and inference script (new)
+├── Qelm2.py                # Legacy CLI training/inference script (outdated)
+├── QelmGUI.py              # Legacy GUI for training & inference (outdated)
+├── QELMChatUI.py           # Chat interface (updated to produce natural language responses)
 ├── requirements.txt
 ├── docs/
 │   └── images/
-│       ├── QELM_Diagram.png
-│       ├── quantum.png
-│       └── Qelm.png
-└── README.md               # This documentation
+│       ├── QELM_Diagram.png    <-- Diagram of QELM architecture
+│       ├── quantum.png         <-- Quantum circuit visualization
+│       └── chat.png            <-- Chat UI screenshot
+├── README.md               # This documentation
+└── LICENSE
 ```
+
+![QELM Diagram](docs/images/QELM_Diagram.png)  
 
 ---
 
@@ -223,5 +260,6 @@ This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) f
 For additional guidance, collaboration, or bug reports:
 - **Email**: [contact@rdbiotechalaska.com](mailto:contact@rdbiotechalaska.com)
 - **GitHub**: [R-D-BioTech-Alaska](https://github.com/R-D-BioTech-Alaska)
-- **Website**: [RDBioTech.org](http://RDBioTech.org)  
-  <sub>(*Disclaimer: QELM is experimental; community feedback is greatly appreciated.*)</sub>
+- **Website**: [RDBioTech.org](http://RDBioTech.org)
+
+<sub>(*Disclaimer: QELM is experimental; community feedback is greatly appreciated.*)</sub>

@@ -4,13 +4,9 @@
 QELM Conversational UI - Rudi judi
 
 This program provides a modern chat interface for interacting with a
-Quantum-Enhanced Language Model (QELM). It features:
-
-  • Robust error handling and automatic prompts when issues occur.
-  • Expanded model selection supporting .json and .qelm files.
-  • A polished UI with message bubbles, a conversation sidebar, dark/light mode toggle,
+Quantum-Enhanced Language Model (QELM).
   
-Author: Brenton Carter
+- B
 
 """
 
@@ -19,6 +15,7 @@ import sys
 import json
 import traceback
 import datetime
+import logging
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 from tkinter.scrolledtext import ScrolledText
@@ -41,7 +38,6 @@ def softmax(x: np.ndarray) -> np.ndarray:
 
 # --- QELM Backend ---
 class QuantumLanguageModel:
-
     def __init__(self):
         self.vocab_size = None
         self.embed_dim = None
@@ -63,39 +59,87 @@ class QuantumLanguageModel:
                 model_dict = json.load(f)
         except Exception as e:
             raise ValueError(f"Failed to load model file: {e}")
-        required = ["vocab_size", "embed_dim", "hidden_dim", "embeddings"]
-        for key in required:
-            if key not in model_dict:
-                raise KeyError(f"Missing required key '{key}' in model file.")
-        self.vocab_size = model_dict["vocab_size"]
-        self.embed_dim = model_dict["embed_dim"]
-        self.hidden_dim = model_dict["hidden_dim"]
-        self.embeddings = np.array(model_dict["embeddings"], dtype=np.float32)
-        if "token_to_id" in model_dict and "id_to_token" in model_dict:
-            self.token_to_id = model_dict["token_to_id"]
-            self.id_to_token = {int(k): v for k, v in model_dict["id_to_token"].items()}
-        elif token_map_file_path and os.path.isfile(token_map_file_path):
-            self.load_token_map_from_file(token_map_file_path)
-        elif "vocabulary" in model_dict:
-            tokens = model_dict["vocabulary"]
-            self.token_to_id = {token: idx for idx, token in enumerate(tokens)}
-            self.id_to_token = {idx: token for token, idx in self.token_to_id.items()}
+        # If the model file is produced by your QELM trainer, it should have a version key "4.0" (if not then this needs to be changed.
+        if "version" in model_dict and model_dict["version"] == "4.0":
+            self.vocab_size = model_dict["vocab_size"]
+            self.embed_dim = model_dict["embed_dim"]
+            self.hidden_dim = model_dict["hidden_dim"]
+            self.embeddings = np.array(model_dict["embeddings"], dtype=np.float32)
+            self.W_out = np.array(model_dict["W_out"], dtype=np.float32) if "W_out" in model_dict else np.random.randn(self.vocab_size, self.embed_dim).astype(np.float32)*0.01
+            self.W_proj = np.array(model_dict["W_proj"], dtype=np.float32) if ("W_proj" in model_dict and model_dict["W_proj"] is not None) else None
+            if "token_to_id" in model_dict and "id_to_token" in model_dict:
+                self.token_to_id = model_dict["token_to_id"]
+                self.id_to_token = {int(k): v for k, v in model_dict["id_to_token"].items()}
+                if all(isinstance(k, str) and k.startswith("<TOKEN_") and k.endswith(">") for k in self.token_to_id.keys()):
+                    self._generate_friendly_token_map()
+            elif token_map_file_path and os.path.isfile(token_map_file_path):
+                self.load_token_map_from_file(token_map_file_path)
+            elif "vocabulary" in model_dict:
+                tokens = model_dict["vocabulary"]
+                self.token_to_id = {token: idx for idx, token in enumerate(tokens)}
+                self.id_to_token = {idx: token for token, idx in self.token_to_id.items()}
+            else:
+                self.token_to_id = {}
+                self.id_to_token = {}
         else:
-            self.token_to_id = {}
-            self.id_to_token = {}
-        if "W_out" in model_dict:
-            self.W_out = np.array(model_dict["W_out"], dtype=np.float32)
-        else:
-            self.W_out = np.random.randn(self.vocab_size, self.embed_dim).astype(np.float32) * 0.01
-        if "W_proj" in model_dict and model_dict["W_proj"] is not None:
-            self.W_proj = np.array(model_dict["W_proj"], dtype=np.float32)
-        else:
-            self.W_proj = None
+            # For older format models
+            required = ["vocab_size", "embed_dim", "hidden_dim", "embeddings"]
+            for key in required:
+                if key not in model_dict:
+                    raise KeyError(f"Missing required key '{key}' in model file.")
+            self.vocab_size = model_dict["vocab_size"]
+            self.embed_dim = model_dict["embed_dim"]
+            self.hidden_dim = model_dict["hidden_dim"]
+            self.embeddings = np.array(model_dict["embeddings"], dtype=np.float32)
+            if "token_to_id" in model_dict and "id_to_token" in model_dict:
+                self.token_to_id = model_dict["token_to_id"]
+                self.id_to_token = {int(k): v for k, v in model_dict["id_to_token"].items()}
+                if all(isinstance(k, str) and k.startswith("<TOKEN_") and k.endswith(">") for k in self.token_to_id.keys()):
+                    self._generate_friendly_token_map()
+            elif "vocabulary" in model_dict:
+                tokens = model_dict["vocabulary"]
+                self.token_to_id = {token: idx for idx, token in enumerate(tokens)}
+                self.id_to_token = {idx: token for token, idx in self.token_to_id.items()}
+            else:
+                self.token_to_id = {}
+                self.id_to_token = {}
+            self.W_out = np.array(model_dict["W_out"], dtype=np.float32) if "W_out" in model_dict else np.random.randn(self.vocab_size, self.embed_dim).astype(np.float32)*0.01
+            if "W_proj" in model_dict and model_dict["W_proj"] is not None:
+                self.W_proj = np.array(model_dict["W_proj"], dtype=np.float32)
+            else:
+                self.W_proj = None
+
+    def _generate_friendly_token_map(self):
+        common_words = [
+            "the", "of", "and", "to", "in", "a", "is", "that", "it", "was",
+            "I", "for", "on", "you", "with", "as", "be", "at", "by", "he",
+            "this", "had", "not", "are", "but", "his", "they", "from", "she", "which"
+        ]
+        new_token_to_id = {}
+        new_id_to_token = {}
+        for token, idx in self.token_to_id.items():
+            # If token is placeholder, generate a friendly token.
+            if token.startswith("<TOKEN_") and token.endswith(">"):
+                if idx < len(common_words):
+                    new_token = common_words[idx]
+                else:
+                    new_token = f"word{idx}"
+            else:
+                new_token = token
+            new_token_to_id[new_token] = idx
+            new_id_to_token[idx] = new_token
+        self.token_to_id = new_token_to_id
+        self.id_to_token = new_id_to_token
+        logging.info("Placeholder token mapping replaced with human-friendly tokens.")
 
     def load_token_map_from_file(self, token_map_file_path):
         try:
             with open(token_map_file_path, 'r', encoding='utf-8') as f:
                 token_map = json.load(f)
+            # Support three cases:
+            # 1. File has keys "token_to_id" and optionally "id_to_token"
+            # 2. File has a "vocabulary" key
+            # 3. File is directly a mapping from tokens to ids.
             if "token_to_id" in token_map:
                 self.token_to_id = token_map["token_to_id"]
                 if "id_to_token" in token_map:
@@ -106,55 +150,49 @@ class QuantumLanguageModel:
                 tokens = token_map["vocabulary"]
                 self.token_to_id = {token: idx for idx, token in enumerate(tokens)}
                 self.id_to_token = {idx: token for token, idx in self.token_to_id.items()}
+            elif isinstance(token_map, dict):
+                # If keys are placeholders, generate friendly mapping instead of raising error.
+                if all(isinstance(k, str) and k.startswith("<TOKEN_") and k.endswith(">") for k in token_map.keys()):
+                    self.token_to_id = token_map
+                    self._generate_friendly_token_map()
+                else:
+                    self.token_to_id = token_map
+                    self.id_to_token = {v: k for k, v in token_map.items()}
             else:
                 raise ValueError("Token mapping file is invalid.")
         except Exception as e:
             raise ValueError(f"Error loading token mapping: {e}")
 
-    def run_inference(self, prompt, max_length=20):
+    def forward(self, input_ids: list, use_residual: bool = True):
+        try:
+            vec = np.sum(self.embeddings[input_ids], axis=0)
+            if self.W_proj is not None:
+                vec = self.W_proj @ vec
+            logits = self.W_out @ vec
+            return logits
+        except Exception as e:
+            raise ValueError(f"Error during forward pass: {e}")
 
-        # Tokenize prompt
+    def run_inference(self, prompt, max_length=20):
         tokens = word_tokenize(prompt.lower())
         if tokens:
             input_ids = [self.token_to_id.get(token, self.token_to_id.get("<UNK>", 0)) for token in tokens]
         else:
             input_ids = [0]
-        # If token mapping is missing, generate a dummy mapping
-        if not self.token_to_id:
-            self.token_to_id = {word: i for i, word in enumerate(tokens)}
-            self.id_to_token = {i: word for word, i in self.token_to_id.items()}
-            self.vocab_size = len(self.token_to_id)
-            self.embed_dim = 8
-            self.embeddings = np.random.randn(self.vocab_size, self.embed_dim).astype(np.float32)
-            self.W_out = np.random.randn(self.vocab_size, self.embed_dim).astype(np.float32) * 0.01
         response_tokens = []
         current_ids = input_ids.copy()
         for _ in range(max_length):
-            try:
-                # Compute input vector as sum of embeddings of current tokens
-                input_vector = normalize_vector(np.sum(self.embeddings[current_ids], axis=0))
-            except Exception as e:
-                raise ValueError(f"Error during embedding lookup: {e}")
-            # If a projection matrix exists, use it
-            if self.W_proj is not None:
-                x = self.W_proj @ input_vector
-            else:
-                x = input_vector
-            # Compute logits and softmax probabilities
-            logits = self.W_out @ x
+            logits = self.forward(current_ids, use_residual=True)
             probabilities = softmax(logits)
-            sampled_id = np.random.choice(self.vocab_size, p=probabilities)
+            sampled_id = int(np.random.choice(self.vocab_size, p=probabilities))
             sampled_token = self.id_to_token.get(sampled_id, "<UNK>")
             response_tokens.append(sampled_token)
             current_ids = [sampled_id]
-            # End response if a terminal punctuation is generated
             if sampled_token in [".", "!", "?"]:
                 break
         return " ".join(response_tokens)
 
 # --- Chat UI ---
-class QELMChatUI:
-    
     def __init__(self, root):
         self.root = root
         self.root.title("QELM Chat")
@@ -345,6 +383,66 @@ class QELMChatUI:
             messagebox.showinfo("Save Chat", f"Conversation saved to {file_path}.")
         except Exception as e:
             messagebox.showerror("Save Error", f"Failed to save conversation:\n{e}")
+
+    def load_token_map_from_file(self, token_map_file_path):
+        try:
+            with open(token_map_file_path, 'r', encoding='utf-8') as f:
+                token_map = json.load(f)
+            if "token_to_id" in token_map:
+                self.model.token_to_id = token_map["token_to_id"]
+                if "id_to_token" in token_map:
+                    self.model.id_to_token = {int(k): v for k, v in token_map["id_to_token"].items()}
+                else:
+                    self.model.id_to_token = {v: int(k) for k, v in self.model.token_to_id.items()}
+            elif "vocabulary" in token_map:
+                tokens = token_map["vocabulary"]
+                self.model.token_to_id = {token: idx for idx, token in enumerate(tokens)}
+                self.model.id_to_token = {idx: token for token, idx in self.model.token_to_id.items()}
+            elif isinstance(token_map, dict):
+                # If keys look like placeholder tokens, replace them with friendly tokens.
+                if all(isinstance(k, str) and k.startswith("<TOKEN_") and k.endswith(">") for k in token_map.keys()):
+                    self.model.token_to_id = token_map
+                    # Use the same friendly mapping as in the backend.
+                    self.model._generate_friendly_token_map()
+                else:
+                    self.model.token_to_id = token_map
+                    self.model.id_to_token = {v: k for k, v in token_map.items()}
+            else:
+                raise ValueError("Token mapping file is invalid.")
+            self.system_message("Token map loaded successfully.")
+        except Exception as e:
+            self.system_message(f"Load token map error: {e}")
+            messagebox.showerror("Load Error", f"Failed to load token map:\n{e}")
+
+    def load_token_map(self):
+        try:
+            file_path = filedialog.askopenfilename(title="Load Token Map",
+                                                   filetypes=[("JSON Files", "*.json"), ("All Files", "*.*")])
+            if file_path:
+                self.load_token_map_from_file(file_path)
+                self.display_token_map()
+                messagebox.showinfo("Token Map Loaded", f"Token map loaded from {file_path}")
+        except Exception as e:
+            self.system_message(f"Load token map error: {e}")
+            messagebox.showerror("Load Error", f"Failed to load token map:\n{e}")
+
+    def display_token_map(self):
+        mapping = self.model.token_to_id
+        self.token_map_display.config(state='normal')
+        self.token_map_display.delete('1.0', tk.END)
+        self.token_map_display.insert(tk.END, "Token Mappings:\n\n")
+        for token, idx in sorted(mapping.items(), key=lambda x: x[1]):
+            self.token_map_display.insert(tk.END, f"{token}: {idx}\n")
+        self.token_map_display.config(state='disabled')
+
+    def update_resource_usage(self):
+        self.root.after(1000, self.update_resource_usage)
+
+    def update_time_label(self):
+        self.root.after(1000, self.update_time_label)
+
+    def process_log_queue(self):
+        self.root.after(100, self.process_log_queue)
 
 # --- Main Program ---
 def main():

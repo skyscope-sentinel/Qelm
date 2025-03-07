@@ -23,10 +23,11 @@ Logging Enhancements and Error-Handling Refinements:
 • Improved error messages and logging throughout the script (ensuring that the logging module is properly imported and used) to provide more helpful debugging information.
 • Added extra error-checks (such as verifying input token ID ranges) and clearer inline comments without altering the overall architecture.
 
+Fixed duplicate issues and calls.
+
 - B
 
 """
-
 
 import sys, os, json, time, logging, traceback, threading, multiprocessing, concurrent.futures, queue, subprocess
 from collections import defaultdict
@@ -661,7 +662,7 @@ class QuantumTransformerBlock:
     def __init__(self, embed_dim: int, num_heads: int, hidden_dim: int, sim_method: str = 'cpu',
                  num_threads: int = 1, block_prefix: str = "block", enable_logging: bool = True,
                  use_advanced_ansatz: bool = False, use_data_reuploading: bool = False,
-                 qc_manager: QuantumChannelManager = None, decoder: SubBitDecoder = None,
+                 qc_manager: Optional[QuantumChannelManager] = None, decoder: Optional[SubBitDecoder] = None,
                  use_subbit_encoding: bool = False):
         self.attn = QuantumAttentionLayer(
             embed_dim, num_heads, sim_method, num_threads,
@@ -795,7 +796,7 @@ class QuantumLanguageModel:
                  use_advanced_ansatz: bool = False, use_data_reuploading: bool = False, num_blocks: int = 1,
                  use_context: bool = False, use_positional_encoding: bool = False,
                  use_knowledge_embedding: bool = False, knowledge_dim: int = 0,
-                 manager: QuantumChannelManager = None, decoder: SubBitDecoder = None,
+                 manager: Optional[QuantumChannelManager] = None, decoder: Optional[SubBitDecoder] = None,
                  use_subbit_encoding: bool = False):
         self.vocab_size = vocab_size
         self.embed_dim = embed_dim
@@ -803,8 +804,8 @@ class QuantumLanguageModel:
         self.hidden_dim = hidden_dim
         self.embeddings = (np.random.randn(vocab_size, embed_dim) * 0.01).astype(np.float32)
         self.token_to_id = {}
-        self.blocks = []
-        self.manager = manager if manager else QuantumChannelManager()
+        self.blocks: List[QuantumTransformerBlock] = []
+        self.manager = manager if manager is not None else QuantumChannelManager()
         self.use_subbit_encoding = use_subbit_encoding
         if num_blocks > 1:
             for b in range(num_blocks):
@@ -841,7 +842,7 @@ class QuantumLanguageModel:
         self.pos_enc = QuantumPositionalEncoding() if use_positional_encoding else None
         self.knowledge_module = QuantumKnowledgeEmbedding(knowledge_dim) if (use_knowledge_embedding and knowledge_dim > 0) else None
         self.qc_manager = self.manager
-        self.decoder = decoder if decoder else SubBitDecoder(self.qc_manager)
+        self.decoder = decoder if decoder is not None else SubBitDecoder(self.qc_manager)
         self.token_searcher = QuantumTokenSearcher(model=self, manager=self.qc_manager)
         self.id_to_token = {}
 
@@ -1208,11 +1209,11 @@ class AdamOptimizer:
 
     def step(self, gradients: np.ndarray):
         self.t += 1
-        self.m = self.betas[0]*self.m + (1-self.betas[0])*(gradients)
-        self.v = self.betas[1]*self.v + (1-self.betas[1])*(gradients**2)
-        m_hat = self.m/(1-self.betas[0]**self.t)
-        v_hat = self.v/(1-self.betas[1]**self.t)
-        update = self.lr * m_hat/(np.sqrt(v_hat)+self.eps)
+        self.m = self.betas[0] * self.m + (1 - self.betas[0]) * gradients
+        self.v = self.betas[1] * self.v + (1 - self.betas[1]) * (gradients**2)
+        m_hat = self.m / (1 - self.betas[0]**self.t)
+        v_hat = self.v / (1 - self.betas[1]**self.t)
+        update = self.lr * m_hat / (np.sqrt(v_hat) + self.eps)
         self.parameters -= update
         return self.parameters
 
@@ -1235,7 +1236,7 @@ class QuantumNaturalGradientOptimizer:
 
     def step(self, gradients: np.ndarray):
         norm_grad = np.linalg.norm(gradients) + self.eps
-        update = self.lr * (gradients/norm_grad)
+        update = self.lr * (gradients / norm_grad)
         self.parameters -= update
         return self.parameters
 
@@ -1372,7 +1373,7 @@ class QELM_GUI:
     def __init__(self, master):
         try:
             self.master = master
-            master.title("QELM Theoretical")
+            master.title("QELM Trainer")
             master.geometry("1440x900")
             master.resizable(False, False)
             self.vocab_size = 100
@@ -1923,9 +1924,7 @@ class QELM_GUI:
             return
         self.infer_button.config(state='disabled')
         self.log_infer(f"Inference for '{input_token}' (max_length={max_length}, temperature={temperature})...\n")
-        inference_thread = threading.Thread(target=self.inference_process,
-                                            args=(input_token, max_length, temperature),
-                                            daemon=True)
+        inference_thread = threading.Thread(target=self.inference_process, args=(input_token, max_length, temperature), daemon=True)
         inference_thread.start()
 
     def inference_process(self, input_token: str, max_length: int, temperature: float):

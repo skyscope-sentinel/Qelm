@@ -243,7 +243,7 @@ QELM/
 └── LICENSE
 ```
 
-![QELM Diagram](docs/images/QELM_Diagram.png)  
+![QELM](docs/images/qelmd.png)  
 
 ---
 

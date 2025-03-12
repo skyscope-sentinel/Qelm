@@ -24,6 +24,7 @@ Logging Enhancements and Error-Handling Refinements:
 • Added extra error-checks (such as verifying input token ID ranges) and clearer inline comments without altering the overall architecture.
 
 Fixed duplicate issues and calls.
+Increased set lr.
 
 - B
 
@@ -1395,7 +1396,7 @@ class QELM_GUI:
             )
             self.token_to_id = {}
             self.id_to_token = {}
-            self.optimizer = AdamOptimizer(self.model.get_all_parameters(), lr=0.001)
+            self.optimizer = AdamOptimizer(self.model.get_all_parameters(), lr=0.05) # Increased for faster output.
             self.stop_flag = threading.Event()
             self.time_data = {'start_time': None, 'epochs_done': 0, 'remaining': 0, 'epochs': 0}
             self.time_lock = threading.Lock()

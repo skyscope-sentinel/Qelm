@@ -12,6 +12,11 @@
 - A modern Chat UI that now correctly maps token IDs to actual words (no more `<TOKEN_X>` placeholders).
 - Enhanced error handling and logging throughout both trainer and chat scripts.
 
+**QELM Quantum** (Connect to IBM quantum computers) *Last update 12/21/2024
+   - Must have an IBM account (Free account alots 10 minutes per month)
+   - Must have a basic understanding of running circuits
+   - Must be familiar with Quantum Computers (you can switch, but I usually use Brisbane for free)
+
 ---
 
 ## Table of Contents

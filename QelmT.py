@@ -26,6 +26,10 @@ Logging Enhancements and Error-Handling Refinements:
 Fixed duplicate issues and calls.
 Increased set lr.
 
+Update - 3/17/2025
+    Produced another working model thats available using base values and 100 vocab. This model shows that all the encoding techniques are working and can easily surpass current llms if upscaled. 
+    However a lot of training with adjustments will be needed on a larger training computer. (Currently trying to build a stack to run parallel computations).
+
 - B
 
 """

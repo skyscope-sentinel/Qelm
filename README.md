@@ -234,9 +234,10 @@ python QELMChatUI.py
 ```
 QELM/
 ├── QelmT.py                # Unified trainer and inference script (new)
-├── Qelm2.py                # Legacy CLI training/inference script (outdated)
-├── QelmGUI.py              # Legacy GUI for training & inference (outdated)
 ├── QELMChatUI.py           # Chat interface (updated to produce natural language responses)
+├── Outdated
+│      ├── QelmGUI.py              # Legacy GUI for training & inference (outdated)
+│      ├── Qelm2.py                # Legacy CLI training/inference script (outdated)
 ├── requirements.txt
 ├── docs/
 │   └── images/

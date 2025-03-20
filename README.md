@@ -18,6 +18,16 @@
 
 ---
 
+## TensorFlow & Python Version Compatibility
+
+TensorFlow is **not yet compatible** with the latest versions of Python.  
+To install a working Python version, use the **official Python FTP archive**, as they no longer provide an executable for this version or lower:
+
+ **[Download Python 3.11.7](https://www.python.org/ftp/python/3.11.7/)**  
+
+
+---
+
 ## Table of Contents
 1. [What’s New in QelmT.py and QELMChatUI.py?](#whats-new-in-qelmtpy-and-qelmchatuipy)
 2. [Quantum vs. Classical Size Comparison and Model Size](#quantum-vs-classical-size-comparison-and-model-size)

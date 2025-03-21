@@ -3,37 +3,6 @@
 
 """
 Qelm - Theoretical
-This program is a much more advanced version of Qelm that is currently being tested. Completely theoretical at the moment.
-
-Update - 3/6/25
-Entropy Handling Added:
-• Introduced an entropy factor in the QuantumChannel class with a new _apply_entropy_mixing method that applies random RY rotations based on the specified entropy factor.
-
-Statevector Saving Fix:
-• Added the helper function ensure_single_statevector(circuit) to remove duplicate "save_statevector" instructions.
-• Updated all simulation calls (in methods such as decode, decode_subbit, and simulate) to call this helper for consistent statevector retrieval.
-
-Transformer Block Output Adjustment:
-• Modified the output of the QuantumTransformerBlock.forward method so that if it returns a scalar value, it is replicated into a full vector of length equal to the embedding dimension. This change is meant to preserve the representation required for next-token prediction.
-
-Parameter Management Improvements:
-• Revised the implementations of get_all_parameters and set_all_parameters in the attention, feed-forward, and transformer block classes to ensure correct concatenation, reshaping, and assignment of quantum circuit parameters.
-
-Logging Enhancements and Error-Handling Refinements:
-• Improved error messages and logging throughout the script (ensuring that the logging module is properly imported and used) to provide more helpful debugging information.
-• Added extra error-checks (such as verifying input token ID ranges) and clearer inline comments without altering the overall architecture.
-
-Fixed duplicate issues and calls.
-Increased set lr.
-
-Update - 3/17/2025
-    Produced another working model thats available using base values and 100 vocab. This model shows that all the encoding techniques are working and can easily surpass current llms if upscaled. 
-    However a lot of training with adjustments will be needed on a larger training computer. (Currently trying to build a stack to run parallel computations).
-3/18/25
-    Exe available under releases.
-
-- B
-
 """
 
 import sys, os, json, time, logging, traceback, threading, multiprocessing, concurrent.futures, queue, subprocess

@@ -17,7 +17,7 @@ from qiskit.circuit import Parameter
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras.utils import plot_model
-
+# Adding numba to future release
 try:
     import psutil
 except ImportError:
@@ -44,6 +44,7 @@ formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 console.setFormatter(formatter)
 logging.getLogger('').addHandler(console)
 
+#Method for Numba Functions will exist here
 
 def normalize_vector(vec: np.ndarray) -> np.ndarray:
     norm = np.linalg.norm(vec)
@@ -204,6 +205,8 @@ class QuantumChannel:
         self._apply_entropy_mixing()
         self.circuit.save_statevector()
 
+    #Multi Qubit method functions will populate here
+    
     def encode_subbit(self, value):
         self.circuit = QuantumCircuit(self.num_qubits)
         if self.num_qubits == 1:

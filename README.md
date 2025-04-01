@@ -126,7 +126,7 @@ The table below compares classical LLM parameter counts, the effective quantum p
 
 - **Datasets for training:**  
   - Light datasets for quick training and testing of models
-  - And csv or txt file can be used as a dataset
+  - Any csv or txt file can be used as a dataset
     
 ---
 

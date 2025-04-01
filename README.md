@@ -124,6 +124,10 @@ The table below compares classical LLM parameter counts, the effective quantum p
 - **Live Resource Monitoring:**  
   - Real-time CPU/GPU usage monitoring during training and inference
 
+- **Datasets for training:**  
+  - Light datasets for quick training and testing of models
+  - And csv or txt file can be used as a dataset
+    
 ---
 
 ## Installation
@@ -190,6 +194,13 @@ QELM/
 │      ├── QelmGUI.py              # Legacy GUI for training & inference (outdated)
 │      ├── Qelm2.py                # Legacy CLI training/inference script (outdated)
 ├── requirements.txt
+├── Datasets                # Light datasets for training Qelm models (any dataset can be used)
+│      ├── Science.txt            
+│      ├── Biology.txt               
+│      ├── Mathematics.txt
+│      ├── Literature.txt
+│      ├── Geography.txt
+│      ├── History.txt
 ├── docs/
 │   └── images/
 │       ├── QELM_Diagram.png    <-- Diagram of QELM architecture

@@ -124,7 +124,7 @@ The table below compares classical LLM parameter counts, the effective quantum p
 - **Live Resource Monitoring:**  
   - Real-time CPU/GPU usage monitoring during training and inference
 
-- **Datasets for training:**  
+- **Datasets for Training:**  
   - Light datasets for quick training and testing of models
   - Any csv or txt file can be used as a dataset
     

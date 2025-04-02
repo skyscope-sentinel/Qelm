@@ -165,7 +165,7 @@ pip install -r requirements.txt
 ---
 
 ### Chatting with QELMChatUI.py
-
+(This model is 23kb's in size)
 ![Chat](docs/images/chat.png)
 
 The QELMChatUI script provides a ChatGPT-style interface for interacting with your QELM models.

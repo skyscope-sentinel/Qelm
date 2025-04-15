@@ -201,6 +201,7 @@ QELM/
 │      ├── Literature.txt
 │      ├── Geography.txt
 │      ├── History.txt
+│      └── Qelm Large Dataset.zip <-- Based on tatsu-lab Alpaca (unzip before use)
 ├── docs/
 │   └── images/
 │       ├── QELM_Diagram.png    <-- Diagram of QELM architecture

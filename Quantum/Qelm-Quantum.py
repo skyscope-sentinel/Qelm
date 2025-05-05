@@ -1,3 +1,9 @@
+"""
+Currently Q-Quantum runs through ibm but can be utilized through any qpu
+
+Future update coming soon
+"""
+
 import sys
 import os
 import json

@@ -175,6 +175,7 @@ def load_dataset_with_exponential_tokenizer(file_path: str, vocab_size: int):
     Y = np.array(next_ids, dtype=np.int32)
     return X, Y, tokenizer.get_vocab(), tokenizer.get_id_to_token_map()
 
+#additional quantum channel input here -
 
 class QuantumChannel:
     def __init__(self, label: str = "Qc", decimal_precision: Optional[int] = None, num_qubits: int = 1,
@@ -260,6 +261,8 @@ class QuantumChannel:
                 decoded.append((theta, phi))
             return decoded
 
+    #New gate for qc injection -holding place-    
+    
     def apply_gate(self, gate: str, params: Optional[list] = None):
         if gate.upper() == 'RY' and params:
             self.circuit.ry(float(params[0]), 0)

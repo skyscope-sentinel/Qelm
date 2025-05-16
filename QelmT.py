@@ -2013,6 +2013,7 @@ class QELM_GUI:
     def main_loop(self):
         self.master.mainloop()
 
+#Extras added for exe build, can be removed for .py run
 
 def main():
     try:

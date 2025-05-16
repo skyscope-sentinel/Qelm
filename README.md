@@ -127,6 +127,10 @@ The table below compares classical LLM parameter counts, the effective quantum p
 - **Datasets for Training:**  
   - Light datasets for quick training and testing of models
   - Any csv or txt file can be used as a dataset
+ 
+- **Executable build for simple runs:**
+  - QelmT.exe for simple run without the hassle
+  - QelmChat.exe for simple chat setup that can run qelm models
     
 ---
 

@@ -4,6 +4,8 @@ Welcome to the **Quantum-Enhanced Language Model** (QELM) - Quantum Project. Thi
 
 **Warning** This is not QELM. This has been modified to work with IBM's QPU's to process and understand information. It can create Qelm's given the correct parameters using QPU's, but as of this moment, this is extreme **Beta** 
 
+Future release will include a simple executable and a choice for QPU
+
 ## Table of Contents
 1. [Overview](#overview)  
 2. [Key Features](#key-features)  

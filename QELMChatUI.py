@@ -24,7 +24,7 @@ from nltk.tokenize import word_tokenize
 import nltk
 nltk.download('punkt', quiet=True)
 
-# Dummy neural network fallback for demonstration
+# Dummy neural network fallback for demonstration - New implement asks before executing
 def neural_network_inference(prompt):
     return "Neural fallback response: " + prompt[::-1]
 
@@ -445,6 +445,7 @@ class QuantumLanguageModel:
         self.root.after(100, self.process_log_queue)
 
 # --- Main Program ---
+# --- Looping is required for an executable build ---
 def main():
     try:
         root = tk.Tk()

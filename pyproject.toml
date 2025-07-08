@@ -3,15 +3,14 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "qelm"      
-version = "0.0.1.dev0"
-description = "Quantum-Enhanced Language Model (full repo snapshot)"
-authors = [{name="Brenton Carter"}]
-license = {text = "Apache-2.0"}
+name = "qelm"
+version = "0.1.0"
+description = "Quantum-Enhanced Language Model"
+authors = [{ name = "Brenton Carter" }]
+license = "MIT"          # ← simple SPDX string; removes warning
 readme = "README.md"
 requires-python = ">=3.9"
 
-# core runtime deps
 dependencies = [
   "qiskit-aer>=0.12",
   "qiskit>=1.0",
@@ -19,9 +18,9 @@ dependencies = [
   "nltk>=3.8",
   "psutil>=5.9",
   "matplotlib>=3.8",
-  "tk",                    # GUI
+  "tk"
 ]
 
-[project.scripts]
-qelm-gui   = "qelm.gui.launcher:main"   
-qelm-train = "qelm.cli.train:main"
+# NEW: tell setuptools to ship **only** the qelm package tree
+[tool.setuptools]
+packages = ["qelm"]              # everything inside qelm/ will be included

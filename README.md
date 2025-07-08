@@ -235,7 +235,7 @@ This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) f
 ## Contact
 For additional guidance, collaboration, or bug reports:
 - **Email**: [contact@rdbiotechalaska.com](mailto:contact@rdbiotechalaska.com)
-- **Email**: [contact@qelm.orm](mailto:contact@qelm.org)
+- **Email**: [contact@qelm.org](mailto:contact@qelm.org)
 - **GitHub**: [R-D-BioTech-Alaska](https://github.com/R-D-BioTech-Alaska)
 - **Website**: [RDBioTech.org](http://RDBioTech.org)
 - **Website**: [Qelm.org](https://Qelm.org)

@@ -36,6 +36,7 @@ To install a working Python version, use the **official Python FTP archive**, as
 3. [Features](#features)
 4. [Installation](#installation)
    - [Prerequisites](#prerequisites)
+   - [Easy Install](#easy-installation)
    - [Cloning the Repository](#cloning-the-repository)
    - [Virtual Environment Setup](#virtual-environment-setup)
    - [Dependency Installation](#dependency-installation)
@@ -145,6 +146,11 @@ The table below compares classical LLM parameter counts, the effective quantum p
 - **Tkinter** (usually included with Python)
 - **psutil** (optional, for CPU usage monitoring)
 - **nltk** (for text tokenization)
+
+### Easy Installation
+```bash
+pip install qelm
+```
 
 ### Cloning the Repository
 ```bash

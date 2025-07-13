@@ -1,11 +1,14 @@
 <p align="center">
+  <img src="docs/images/qelm_logo_small.png" alt="QELM" width="140" />
+</p>
+
+<p align="center">
   <a href="https://discord.gg/sr9QBj3k36">
-    <img
-      src="https://img.shields.io/badge/Discord-Join%20the%20Server-blue?style=for-the-badge"
-      alt="Join our Discord"
-    />
+    <img src="https://img.shields.io/badge/Discord-Join%20the%20Server-blue?style=for-the-badge"
+         alt="Join our Discord" />
   </a>
 </p>
+
 
 # Quantum-Enhanced Language Model (QELM) – Theoretical
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE) ![Python](https://img.shields.io/badge/python-3.7%2B-blue)  ![Qiskit](https://img.shields.io/badge/Qiskit-1.4.2-orange)  ![Qiskit Aer](https://img.shields.io/badge/Qiskit_Aer-0.15.1-green)  ![GitHub Stars](https://img.shields.io/github/stars/R-D-BioTech-Alaska/QELM?style=social) [![PyPI Downloads](https://static.pepy.tech/badge/qelm)](https://pepy.tech/projects/qelm) [![PyPI](https://img.shields.io/pypi/v/qelm.svg)](https://pypi.org/project/qelm/)

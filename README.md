@@ -1,9 +1,7 @@
 [![Join our Discord](https://img.shields.io/badge/Discord-Join%20the%20Server-blue?style=for-the-badge)](https://discord.gg/sr9QBj3k36)
-[![PyPI](https://img.shields.io/pypi/v/qelm.svg)](https://pypi.org/project/qelm/)
-
 
 # Quantum-Enhanced Language Model (QELM) – Theoretical
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE) ![Python](https://img.shields.io/badge/python-3.7%2B-blue)  ![Qiskit](https://img.shields.io/badge/Qiskit-1.4.2-orange)  ![Qiskit Aer](https://img.shields.io/badge/Qiskit_Aer-0.15.1-green)  ![GitHub Stars](https://img.shields.io/github/stars/R-D-BioTech-Alaska/QELM?style=social)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE) ![Python](https://img.shields.io/badge/python-3.7%2B-blue)  ![Qiskit](https://img.shields.io/badge/Qiskit-1.4.2-orange)  ![Qiskit Aer](https://img.shields.io/badge/Qiskit_Aer-0.15.1-green)  ![GitHub Stars](https://img.shields.io/github/stars/R-D-BioTech-Alaska/QELM?style=social) [![PyPI Downloads](https://static.pepy.tech/badge/qelm)](https://pepy.tech/projects/qelm) [![PyPI](https://img.shields.io/pypi/v/qelm.svg)](https://pypi.org/project/qelm/)
 
 **QELM** (Quantum-Enhanced Language Model) combines **quantum computing** and **NLP** to create compact yet powerful language models. The latest versions feature:
 - Multi-block quantum transformer architecture with advanced multi-head quantum attention.

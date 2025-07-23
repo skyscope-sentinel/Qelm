@@ -3,11 +3,11 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "qelm"
+name = "Qelm"
 version = "0.1.0"
 description = "Quantum-Enhanced Language Model"
 authors = [{ name = "Brenton Carter" }]
-license = "MIT"          # ← simple SPDX string; removes warning
+license = "MIT"   
 readme = "README.md"
 requires-python = ">=3.9"
 
@@ -21,6 +21,6 @@ dependencies = [
   "tk"
 ]
 
-# NEW: tell setuptools to ship **only** the qelm package tree
+
 [tool.setuptools]
-packages = ["qelm"]              # everything inside qelm/ will be included
+packages = ["qelm"]  

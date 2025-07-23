@@ -2,12 +2,12 @@
 name: release-qelm
 on:
   push:
-    tags: ["v*"]              # e.g. v1.3.0
+    tags: ["v*"]        
 
 jobs:
   build-and-publish:
     permissions:
-      id-token: write         # OIDC token for PyPI
+      id-token: write    
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

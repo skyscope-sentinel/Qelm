@@ -9,7 +9,6 @@
   </a>
 </p>
 
-
 # Quantum-Enhanced Language Model (QELM) – Theoretical
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE) ![Python](https://img.shields.io/badge/python-3.7%2B-blue)  ![Qiskit](https://img.shields.io/badge/Qiskit-1.4.2-orange)  ![Qiskit Aer](https://img.shields.io/badge/Qiskit_Aer-0.15.1-green)  ![GitHub Stars](https://img.shields.io/github/stars/R-D-BioTech-Alaska/QELM?style=social) [![PyPI Downloads](https://static.pepy.tech/badge/qelm)](https://pepy.tech/projects/qelm) [![PyPI](https://img.shields.io/pypi/v/qelm.svg)](https://pypi.org/project/qelm/)
 
@@ -21,10 +20,10 @@
 - A modern Chat UI that now correctly maps token IDs to actual words (no more `<TOKEN_X>` placeholders).
 - Enhanced error handling and logging throughout both trainer and chat scripts.
 
-**QELM Quantum** (Connect to IBM quantum computers) *Last update 12/21/2024
-   - Must have an IBM account (Free account alots 10 minutes per month)
-   - Must have a basic understanding of running circuits
-   - Must be familiar with Quantum Computers (you can switch, but I usually use Brisbane for free)
+**QELM Quantum** (Connect to IBM quantum computers) *Last update 12/21/2024*  
+- Must have an IBM account (Free account alots 10 minutes per month)  
+- Must have a basic understanding of running circuits  
+- Must be familiar with Quantum Computers (you can switch, but I usually use Brisbane for free)
 
 ---
 
@@ -35,23 +34,28 @@ To install a working Python version, use the **official Python FTP archive**, as
 
  **[Download Python 3.11.7](https://www.python.org/ftp/python/3.11.7/)**  
 
-
 ---
 
 ## Table of Contents
 1. [What’s New in QelmT.py and QELMChatUI.py?](#whats-new-in-qelmtpy-and-qelmchatuipy)
 2. [Quantum vs. Classical Size Comparison and Model Size](#quantum-vs-classical-size-comparison-and-model-size)
-3. [Features](#features)
-4. [Installation](#installation)
-   - [Prerequisites](#prerequisites)
-   - [Easy Install](#easy-installation)
-   - [Cloning the Repository](#cloning-the-repository)
-   - [Virtual Environment Setup](#virtual-environment-setup)
-   - [Dependency Installation](#dependency-installation)
-5. [Chatting with QELMChatUI.py](#chatting-with-qelmchatuipy)
-6. [Project Structure](#project-structure)
-7. [License](#license)
-8. [Contact](#contact)
+3. [Architecture Overview](#architecture-overview)
+4. [Feature Matrix](#feature-matrix)
+5. [Features](#features)
+6. [Installation](#installation)  
+   6.1. [Prerequisites](#prerequisites)  
+   6.2. [Easy Installation](#easy-installation)  
+   6.3. [Cloning the Repository](#cloning-the-repository)  
+   6.4. [Virtual Environment Setup](#virtual-environment-setup)  
+   6.5. [Dependency Installation](#dependency-installation)
+7. [Training with QelmT.py](#training-with-qelmtpy)
+8. [Chatting with QELMChatUI.py](#chatting-with-qelmchatuipy)
+9. [Benchmarks & Metrics](#benchmarks--metrics)
+10. [Running on Real QPUs (IBM, etc.)](#running-on-real-qpus-ibm-etc)
+11. [Project Structure](#project-structure)
+12. [Roadmap](#roadmap)
+13. [License](#license)
+14. [Contact](#contact)
 
 ---
 
@@ -77,6 +81,17 @@ To install a working Python version, use the **official Python FTP archive**, as
 - **Additional Quantum Techniques:**  
   Support for sub-bit encoding, data reuploading, advanced quantum ansatz, and entropy-based gate mixing have been added.
 
+**7/25/2025 — Additional updates**
+- **Multi-block quantum transformer path** fully parameterized (not just single block fallback).  
+- **Sub-bit encode/decode** path hardened: values stored as `(θ, φ)` pairs; scalar fallback if disabled.  
+- **Entropy mixing** now centralized; can be toggled globally per channel.  
+- **Context / positional / knowledge modules** seeded and controllable through flags.  
+- **Parallel parameter-shift gradients** with `ProcessPoolExecutor` and batch-shift option for faster, less noisy training.  
+- **Optimizer API unified** (Adam, Natural Gradient, Advanced, optional QAOA wrapper).  
+- **GUI resource/ETA fixes**: better elapsed/remaining time estimates; robust error logging.  
+- **Serialization (`to_dict`/`from_dict`)** for each block so save/load is clean, even with many layers.  
+- **Statevector duplication fix**: `ensure_single_statevector()` ensures simulators don’t choke on multiple save ops.
+
 ### QELMChatUI.py (Chat Script)
 - **Word Mapping:**  
   The chat interface now correctly loads a valid token mapping file and maps token IDs to actual words instead of displaying placeholders.
@@ -86,7 +101,7 @@ To install a working Python version, use the **official Python FTP archive**, as
   Users can now select both `.qelm` model files and separate token mapping files (if needed) for seamless model loading.
 - **Modern Chat Experience:**  
   The chat UI now features message bubbles, conversation sidebars, dark/light mode toggling, and session save/load functionality.
-
+  
 ---
 
 ## Quantum vs. Classical Size Comparison and Model Size
@@ -106,6 +121,39 @@ The table below compares classical LLM parameter counts, the effective quantum p
 | 100 GB                    | ~8.6×10<sup>11</sup>                     | < 1×10<sup>10</sup>                 | ~120 MB                        | >86× reduction         |
 
 *Note: These figures reflect experimental benchmarks of the current QELM architecture. The “Estimated QELM Model Size” is derived from the effective quantum parameter count and the inherent efficiency of quantum encoding. In real-world deployments, enabling advanced features like sub‐bit encoding and entropy optimization can yield even greater storage savings compared to classical models of equivalent capacity.*
+
+---
+
+## Architecture Overview
+QELM mirrors a transformer but swaps heavy linear algebra blocks for compact quantum circuits:
+
+1. **Classical Embeddings** → token → vector.  
+2. **Quantum Attention (per head)** → encode vector into qubits (initialize/RY/RZ), entangle, measure amplitudes.  
+3. **Quantum Feed-Forward** → another circuit with its own params.  
+4. **Residual / Combine** → classical post-processing.  
+5. **Output Projection** → classical matrix to vocab logits.
+
+Optional add-ons:
+- **QuantumContextModule** (conversation memory across turns)
+- **QuantumPositionalEncoding** (phase shifts tied to position)
+- **QuantumKnowledgeEmbedding** (tiny knowledge matrix retrieval)
+
+---
+
+## Feature Matrix
+| Area        | Feature                             | Old (`qelm.py`) | New (`QelmT.py`) |
+|-------------|-------------------------------------|-----------------|------------------|
+| Encoding     | Scalar RY                           | ✔               | ✔                |
+|             | Sub-bit (θ, φ) per value            | experimental    | ✔ (toggle)       |
+|             | Data re-uploading                   | ❌               | ✔                |
+| Attention    | Single-block                        | ✔               | Multi-block      |
+|             | Weighted entangling attention       | ✔               | ✔ (refined)      |
+| Training     | Parameter-shift gradients           | ✔               | ✔ + parallel + batch-shift |
+|             | Adam/NGD optimizer                   | ✔               | ✔ + Advanced/QAOA |
+| Metrics      | Loss/Perplexity in GUI              | basic           | integrated & labeled |
+| GUI          | Legacy trainer                      | present         | New theme, ETA, error logger |
+| Chat UI      | Token ID mapping                    | partial         | robust checks/no placeholders |
+| Hardware     | Aer CPU/GPU                         | ✔               | ✔ + IBM drop-in hooks |
 
 ---
 
@@ -136,13 +184,13 @@ The table below compares classical LLM parameter counts, the effective quantum p
   - Real-time CPU/GPU usage monitoring during training and inference
 
 - **Datasets for Training:**  
-  - Light datasets for quick training and testing of models
+  - Light datasets for quick training and testing of models  
   - Any csv or txt file can be used as a dataset
- 
-- **Executable build for simple runs:**
-  - QelmT.exe for simple run without the hassle
+
+- **Executable build for simple runs:**  
+  - QelmT.exe for simple run without the hassle  
   - QelmChat.exe for simple chat setup that can run qelm models
-    
+
 ---
 
 ## Installation
@@ -158,15 +206,17 @@ The table below compares classical LLM parameter counts, the effective quantum p
 ### Easy Installation
 ```bash
 pip install qelm
-```
+````
 
 ### Cloning the Repository
+
 ```bash
 git clone https://github.com/R-D-BioTech-Alaska/QELM.git
 cd QELM
 ```
 
 ### Virtual Environment Setup
+
 ```bash
 python -m venv qiskit_env
 # Activate the virtual environment:
@@ -177,6 +227,7 @@ qiskit_env\Scripts\activate
 ```
 
 ### Dependency Installation
+
 ```bash
 pip install --upgrade pip
 pip install -r requirements.txt
@@ -184,23 +235,87 @@ pip install -r requirements.txt
 
 ---
 
-### Chatting with QELMChatUI.py
+## Training with QelmT.py
+
+Example:
+
+```bash
+python QelmT.py \
+  --dataset Datasets/Science.txt \
+  --vocab-size 100 \
+  --embed-dim 4 --heads 2 --hidden-dim 4 \
+  --blocks 4 --advanced-ansatz --data-reuploading \
+  --subbit --threads 18 --lr 0.5 --epochs 1
+```
+
+Outputs:
+
+* `.qelm` model file
+* `<modelname>_token_map.json`
+* Training logs with gradient magnitudes, loss, perplexity, ETA
+
+You can also use packaged executables:
+
+* **QelmT.exe** for training
+* **QelmChat.exe** for chat
+
+---
+
+## Chatting with QELMChatUI.py
+
 (This model is 23kb's in size)
 ![Chat](docs/images/chat.png)
 
 The QELMChatUI script provides a ChatGPT-style interface for interacting with your QELM models.
 
-- **Model and Token Mapping:**  
+* **Model and Token Mapping:**
   Load your `.qelm` model file along with a valid token mapping file (with real words) to ensure that responses are generated as natural language.
-- **Modern Chat Interface:**  
+* **Modern Chat Interface:**
   Enjoy message bubbles, a conversation sidebar, theme toggling (light/dark mode), and multi-session chat history.
-- **Fallback Option:**  
+* **Fallback Option:**
   If QELM inference fails, the program prompts for a fallback using a dummy neural network.
 
 To run the chat UI, simply execute:
+
 ```bash
 python QELMChatUI.py
 ```
+
+---
+
+## Benchmarks & Metrics
+
+(Soon you can use the JSON/CSV exporter shown in the GUI or scripts to produce shareable results.) - Next update
+
+Core metrics to report:
+
+* **Loss & Perplexity** (shown in logs/labels)
+* **Top-k accuracy**, **BLEU** (optional script)
+* **Gradient magnitude stats** (min/mean/max)
+* **Distinct-1/Distinct-2** on generated samples
+* **Wall clock time / ETA** from the GUI logs
+
+Random baseline perplexity ≈ vocab size (e.g., \~100 for vocab=100). If your run gets below that, you’re learning something non-trivial.
+
+---
+
+## Running on Real QPUs (IBM, etc.)
+
+You can drop in IBM backends (or other providers) instead of Aer: (This will be automatically available on the gui in the next update) Don't forget your API key!
+
+```python
+from qiskit_ibm_runtime import QiskitRuntimeService
+service = QiskitRuntimeService(channel="ibm_quantum", token="YOUR_TOKEN")
+backend = service.backend("ibm_brisbane")
+
+qc = transpile(circuit, backend)
+job = backend.run(qc, shots=1024)
+```
+
+**Suggestions:**
+
+* Add a `qelm configure-ibm` helper to store credentials in `~/.qelm/credentials.toml`.
+* Expose `--backend aer|ibm|braket|rigetti|ionq` flag so users can switch easily.
 
 ---
 
@@ -209,10 +324,10 @@ python QELMChatUI.py
 ```
 QELM/
 ├── QelmT.py                # Unified trainer and inference script (new)
+├── qelm.py                 # Legacy trainer (kept for reference)
 ├── QELMChatUI.py           # Chat interface (updated to produce natural language responses)
 ├── Outdated
-│      ├── QelmGUI.py              # Legacy GUI for training & inference (outdated)
-│      ├── Qelm2.py                # Legacy CLI training/inference script (outdated)
+│      ├── QelmGUI.py       # Legacy GUI for training & inference (outdated)
 ├── requirements.txt
 ├── Datasets                # Light datasets for training Qelm models (any dataset can be used)
 │      ├── Science.txt            
@@ -231,21 +346,34 @@ QELM/
 └── LICENSE
 ```
 
-![QELM](docs/images/qelmd.png)  
+![QELM](docs/images/qelmd.png)
+
+---
+
+## Roadmap
+
+* **Backend abstraction** for Amazon Braket, IonQ, Rigetti (beyond IBM/Aer)
+* **Automated benchmark script**: perplexity/BLEU/top‑k in one JSON report
+* **Tokenizer upgrades**: plug-in BPE/Unigram tokenizers
+* **Noise mitigation sliders** (Pauli twirling/ZNE in GUI)
+* **Auto circuit diagrams** per block for documentation
 
 ---
 
 ## License
+
 This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for details.
 
 ---
 
 ## Contact
+
 For additional guidance, collaboration, or bug reports:
-- **Email**: [contact@rdbiotechalaska.com](mailto:contact@rdbiotechalaska.com)
-- **Email**: [contact@qelm.org](mailto:contact@qelm.org)
-- **GitHub**: [R-D-BioTech-Alaska](https://github.com/R-D-BioTech-Alaska)
-- **Website**: [RDBioTech.org](http://RDBioTech.org)
-- **Website**: [Qelm.org](https://Qelm.org)
+
+* **Email**: [contact@rdbiotechalaska.com](mailto:contact@rdbiotechalaska.com)
+* **Email**: [contact@qelm.org](mailto:contact@qelm.org)
+* **GitHub**: [R-D-BioTech-Alaska](https://github.com/R-D-BioTech-Alaska)
+* **Website**: [RDBioTech.org](http://RDBioTech.org)
+* **Website**: [Qelm.org](https://Qelm.org)
 
 <sub>(*Disclaimer: QELM is experimental; community feedback is greatly appreciated.*)</sub>

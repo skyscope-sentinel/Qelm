@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Qelm - Theoretical
+Qelm
 """
 
 import sys, os, json, time, logging, traceback, threading, multiprocessing, concurrent.futures, queue, subprocess
@@ -17,7 +17,7 @@ from qiskit.circuit import Parameter
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras.utils import plot_model
-# Adding numba to future release
+
 try:
     import psutil
 except ImportError:
@@ -44,7 +44,6 @@ formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 console.setFormatter(formatter)
 logging.getLogger('').addHandler(console)
 
-#Method for Numba Functions will exist here
 
 def normalize_vector(vec: np.ndarray) -> np.ndarray:
     norm = np.linalg.norm(vec)
@@ -175,7 +174,6 @@ def load_dataset_with_exponential_tokenizer(file_path: str, vocab_size: int):
     Y = np.array(next_ids, dtype=np.int32)
     return X, Y, tokenizer.get_vocab(), tokenizer.get_id_to_token_map()
 
-#additional quantum channel input here -
 
 class QuantumChannel:
     def __init__(self, label: str = "Qc", decimal_precision: Optional[int] = None, num_qubits: int = 1,
@@ -206,8 +204,6 @@ class QuantumChannel:
         self._apply_entropy_mixing()
         self.circuit.save_statevector()
 
-    #Multi Qubit method functions will populate here
-    
     def encode_subbit(self, value):
         self.circuit = QuantumCircuit(self.num_qubits)
         if self.num_qubits == 1:
@@ -261,8 +257,6 @@ class QuantumChannel:
                 decoded.append((theta, phi))
             return decoded
 
-    #New gate for qc injection -holding place-    
-    
     def apply_gate(self, gate: str, params: Optional[list] = None):
         if gate.upper() == 'RY' and params:
             self.circuit.ry(float(params[0]), 0)
@@ -639,7 +633,6 @@ class QuantumFeedForwardLayer(QuantumLayerBase):
         self.w2_params.from_dict(d["w2_params"])
 
 
-# === Modified QuantumTransformerBlock with added parameter methods ===
 class QuantumTransformerBlock:
     def __init__(self, embed_dim: int, num_heads: int, hidden_dim: int, sim_method: str = 'cpu',
                  num_threads: int = 1, block_prefix: str = "block", enable_logging: bool = True,
@@ -667,7 +660,6 @@ class QuantumTransformerBlock:
         self.token_searcher = QuantumTokenSearcher(model=None, manager=self.qc_manager)
 
     def forward(self, x: np.ndarray, use_residual: bool = True) -> np.ndarray:
-        # Revised implementation: Process each token by splitting it into heads.
         if x.ndim == 0:
             x = np.array([[float(x)]], dtype=float)
         elif x.ndim == 1:
@@ -680,7 +672,6 @@ class QuantumTransformerBlock:
         for token in x:  # token shape: (embed_dim,)
             token_heads = token.reshape(self.num_heads, head_dim)
             head_outputs = []
-            # Process each head separately using head_dim quantum channels.
             for head in token_heads:
                 allocated_qcs = self.qc_manager.allocate_channels(head_dim)
                 for qc, value in zip(allocated_qcs, head):
@@ -692,7 +683,6 @@ class QuantumTransformerBlock:
                         qc.encode_subbit((theta, phi))
                     else:
                         qc.encode(float(value))
-                # Decode each quantum channel to form a vector for this head.
                 head_vector = np.array([qc.decode() for qc in allocated_qcs])
                 self.qc_manager.release_channels(allocated_qcs)
                 head_outputs.append(head_vector)
@@ -712,7 +702,6 @@ class QuantumTransformerBlock:
                 return circuit
             ffn_vector = np.array([qc.decode() for qc in allocated_qcs_ffn])
             self.qc_manager.release_channels(allocated_qcs_ffn)
-            # Combine the token output with its feed-forward transformation using a residual connection.
             if use_residual:
                 token_final = normalize_vector(token_output + ffn_vector)
             else:
@@ -1377,7 +1366,7 @@ class QELM_GUI:
             )
             self.token_to_id = {}
             self.id_to_token = {}
-            self.optimizer = AdamOptimizer(self.model.get_all_parameters(), lr=0.05) # Increased for faster output.
+            self.optimizer = AdamOptimizer(self.model.get_all_parameters(), lr=0.001)
             self.stop_flag = threading.Event()
             self.time_data = {'start_time': None, 'epochs_done': 0, 'remaining': 0, 'epochs': 0}
             self.time_lock = threading.Lock()
@@ -2013,7 +2002,6 @@ class QELM_GUI:
     def main_loop(self):
         self.master.mainloop()
 
-#Extras added for exe build, can be removed for .py run
 
 def main():
     try:

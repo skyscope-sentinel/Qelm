@@ -37,7 +37,7 @@ except ImportError:
     QAOA = None
     COBYLA = None
 
-# Logging configuration
+# Logging configuration 
 console = logging.StreamHandler()
 console.setLevel(logging.INFO)
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
@@ -231,7 +231,7 @@ class QuantumChannel:
 
     def decode_subbit(self) -> Union[Tuple[float, float], List[Tuple[float, float]]]:
         self._apply_entropy_mixing()
-        optimized_circuit = transpile(self.circuit, self.backend, optimization_level=3)
+        optimized_circuit = transpile(self.circuit, self.backend, optimization_level=1) # For faster training stick to 0/1 for deeper and much longer models use 2/3
         ensure_single_statevector(optimized_circuit)
         job = self.backend.run(optimized_circuit, shots=1)
         result = job.result()

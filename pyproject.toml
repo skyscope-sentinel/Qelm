@@ -3,11 +3,11 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "Qelm"
-version = "0.1.1"
+name = "qelm"               
+version = "0.1.2"           
 description = "Quantum-Enhanced Language Model"
 authors = [{ name = "Brenton Carter" }]
-license = "MIT"   
+license = "MIT"
 readme = "README.md"
 requires-python = ">=3.9"
 
@@ -17,10 +17,8 @@ dependencies = [
   "tensorflow>=2.16",
   "nltk>=3.8",
   "psutil>=5.9",
-  "matplotlib>=3.8",
-  "tk"
+  "matplotlib>=3.8"
 ]
 
-
 [tool.setuptools]
-py-modules = ["Qelm"]
+py-modules = ["Qelm"]    

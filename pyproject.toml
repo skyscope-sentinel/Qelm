@@ -22,4 +22,4 @@ dependencies = [
 
 [tool.setuptools]
 packages = ["qelm"]
-py-modules = ["Qelm", "QelmT", "QELMChatUI", "requirements.txt", "README.md"]  
+py-modules = ["Qelm", "QelmT", "QELMChatUI", "requirements", "README"]  

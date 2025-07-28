@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "qelm"               
-version = "0.1.3"          
+version = "0.1.4"          
 description = "Quantum-Enhanced Language Model"
 authors = [{ name = "Brenton Carter" }]
 license = "MIT"
@@ -22,4 +22,4 @@ dependencies = [
 
 [tool.setuptools]
 packages = ["qelm"]
-py-modules = ["Qelm", "QelmT", "QELMChatUI"]  
+py-modules = ["Qelm", "QelmT", "QELMChatUI", "requirements.txt", "README.md"]  

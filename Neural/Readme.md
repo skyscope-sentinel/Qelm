@@ -4,6 +4,9 @@
 Welcome to the **Quantum-Enhanced Language Model (QELM) Neuron repository! This project leverages quantum computing and neural 
 network-inspired architectures to explore advanced language processing using **Qiskit** and quantum hardware simulators.
 
+***Update 7/27/2025***
+
+Preparing a Neural‑focused update. Core addition: a gradient‑flow pipeline implementing online, quantum‑assisted optimization. Gradients are computed via QELM‑derived flows with an enforced sub‑bit gradient regime. The pipeline establishes a branching quantum channel: state information is duplicated at the channel level prior to observation; one branch is measured, while the companion branch maintains coherence (or a learned surrogate) to continue parameter updates without full state re‑preparation. This yields a self‑reinforcing quantum flow whose effective learning rate and search dynamics increase with experience. Target direction: QELM as a self‑learning QPU architecture. A Quantum "Brain".
 ---
 
 ## 🚀 Project Overview

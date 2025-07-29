@@ -19,6 +19,7 @@ jobs:
       MILESTONES_FILE: "STATUS_MILESTONES.json"
       TIMEZONE: "America/Anchorage"
       MAX_COMMITS_PER_DAY: "3"
+      BADGE_JSON_FILE: "badges/days_active.json"
     steps:
       - uses: actions/checkout@v4
         with:

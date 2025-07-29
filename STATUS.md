@@ -1,10 +1,253 @@
-# QELM — Day 1
+# QELM — Day 244
 
-**Date:** 2024-11-28 09:00 AKST (-0900) — Alaska time
+**Date:** 2025-07-29 09:18 AKDT (-0800) — Alaska time
 
-QELM has been active for **1 day** since **2024-11-28**.
+QELM has been active for **244 days** since **2024-11-28**.
 
 This file is updated once per day. No history rewrites.
 
 ## History
-- 2024-11-28 — Day 1 — Original creation date
+- 2025-07-29 — Day 244 — Latest README and QelmT updates. · Update README.md (4bc5952) · Update QelmT.py (fd750ff)
+- 2025-07-28 — Day 243 — GitHub release **v0.1.4**; requirements/README updates; Holevo alternative note. · Create requirements.txt (58f8dd1) · Update pyproject.toml (tag v0.1.4) (a77f45a) (+19)
+- 2025-07-27 — Day 242 — GitHub release **v0.1.3**; packaging tuned. · Update pyproject.toml (tag v0.1.3) (fc9223e) · Rename publish.yaml to publish.yml (b346c27) (+16)
+- 2025-07-26 — Day 241 — Update requirements.txt (0f0b0c8) · Update requirements.txt (3629905) · Create Quantum.txt (30b7e6d) (+2)
+- 2025-07-25 — Day 240 — Update QELMChatUI.py (6ae8b24) · Update README.md (006122c) · Update release.yml (c8dc2b7) (+6)
+- 2025-07-24 — Day 239
+- 2025-07-23 — Day 238 — Release workflow introduced; authorship/provenance notes strengthened.
+- 2025-07-22 — Day 237
+- 2025-07-21 — Day 236
+- 2025-07-20 — Day 235
+- 2025-07-19 — Day 234
+- 2025-07-18 — Day 233
+- 2025-07-17 — Day 232
+- 2025-07-16 — Day 231
+- 2025-07-15 — Day 230
+- 2025-07-14 — Day 229
+- 2025-07-13 — Day 228
+- 2025-07-12 — Day 227
+- 2025-07-11 — Day 226
+- 2025-07-10 — Day 225
+- 2025-07-09 — Day 224
+- 2025-07-08 — Day 223 — Packaging restructure (`pyproject.toml`, package scoping) and **first PyPI release `qelm 0.1.0`**. · Create pyproject.toml (10216a7) · Create __init__.py (76eb2fd) (+1)
+- 2025-07-07 — Day 222
+- 2025-07-06 — Day 221
+- 2025-07-05 — Day 220
+- 2025-07-04 — Day 219
+- 2025-07-03 — Day 218
+- 2025-07-02 — Day 217
+- 2025-07-01 — Day 216
+- 2025-06-30 — Day 215
+- 2025-06-29 — Day 214
+- 2025-06-28 — Day 213
+- 2025-06-27 — Day 212
+- 2025-06-26 — Day 211
+- 2025-06-25 — Day 210
+- 2025-06-24 — Day 209
+- 2025-06-23 — Day 208
+- 2025-06-22 — Day 207
+- 2025-06-21 — Day 206
+- 2025-06-20 — Day 205
+- 2025-06-19 — Day 204
+- 2025-06-18 — Day 203
+- 2025-06-17 — Day 202
+- 2025-06-16 — Day 201
+- 2025-06-15 — Day 200
+- 2025-06-14 — Day 199 — IBM workflow added (then removed on Jun 15) during CI cleanup.
+- 2025-06-13 — Day 198
+- 2025-06-12 — Day 197
+- 2025-06-11 — Day 196
+- 2025-06-10 — Day 195
+- 2025-06-09 — Day 194
+- 2025-06-08 — Day 193
+- 2025-06-07 — Day 192
+- 2025-06-06 — Day 191
+- 2025-06-05 — Day 190
+- 2025-06-04 — Day 189
+- 2025-06-03 — Day 188
+- 2025-06-02 — Day 187
+- 2025-06-01 — Day 186
+- 2025-05-31 — Day 185
+- 2025-05-30 — Day 184
+- 2025-05-29 — Day 183
+- 2025-05-28 — Day 182
+- 2025-05-27 — Day 181
+- 2025-05-26 — Day 180
+- 2025-05-25 — Day 179
+- 2025-05-24 — Day 178
+- 2025-05-23 — Day 177
+- 2025-05-22 — Day 176
+- 2025-05-21 — Day 175
+- 2025-05-20 — Day 174
+- 2025-05-19 — Day 173
+- 2025-05-18 — Day 172
+- 2025-05-17 — Day 171
+- 2025-05-16 — Day 170
+- 2025-05-15 — Day 169
+- 2025-05-14 — Day 168
+- 2025-05-13 — Day 167
+- 2025-05-12 — Day 166
+- 2025-05-11 — Day 165
+- 2025-05-10 — Day 164
+- 2025-05-09 — Day 163
+- 2025-05-08 — Day 162
+- 2025-05-07 — Day 161
+- 2025-05-06 — Day 160
+- 2025-05-05 — Day 159
+- 2025-05-04 — Day 158
+- 2025-05-03 — Day 157
+- 2025-05-02 — Day 156
+- 2025-05-01 — Day 155
+- 2025-04-30 — Day 154
+- 2025-04-29 — Day 153
+- 2025-04-28 — Day 152
+- 2025-04-27 — Day 151
+- 2025-04-26 — Day 150
+- 2025-04-25 — Day 149
+- 2025-04-24 — Day 148
+- 2025-04-23 — Day 147
+- 2025-04-22 — Day 146
+- 2025-04-21 — Day 145
+- 2025-04-20 — Day 144
+- 2025-04-19 — Day 143
+- 2025-04-18 — Day 142
+- 2025-04-17 — Day 141
+- 2025-04-16 — Day 140
+- 2025-04-15 — Day 139
+- 2025-04-14 — Day 138
+- 2025-04-13 — Day 137
+- 2025-04-12 — Day 136
+- 2025-04-11 — Day 135
+- 2025-04-10 — Day 134
+- 2025-04-09 — Day 133
+- 2025-04-08 — Day 132
+- 2025-04-07 — Day 131
+- 2025-04-06 — Day 130
+- 2025-04-05 — Day 129
+- 2025-04-04 — Day 128
+- 2025-04-03 — Day 127
+- 2025-04-02 — Day 126
+- 2025-04-01 — Day 125 — QelmT.py refinements and README expansion through early April.
+- 2025-03-31 — Day 124
+- 2025-03-30 — Day 123
+- 2025-03-29 — Day 122
+- 2025-03-28 — Day 121
+- 2025-03-27 — Day 120
+- 2025-03-26 — Day 119
+- 2025-03-25 — Day 118
+- 2025-03-24 — Day 117
+- 2025-03-23 — Day 116
+- 2025-03-22 — Day 115
+- 2025-03-21 — Day 114
+- 2025-03-20 — Day 113
+- 2025-03-19 — Day 112
+- 2025-03-18 — Day 111 — Tag **Theoretical-Beta-01**; license updates; legacy files moved under `Outdated/`. Dependabot bumps Qiskit 1.4.2 across trees. · Tag: Theoretical-Beta-01 (Update LICENSE) (99d36f4)
+- 2025-03-17 — Day 110
+- 2025-03-16 — Day 109
+- 2025-03-15 — Day 108
+- 2025-03-14 — Day 107
+- 2025-03-13 — Day 106
+- 2025-03-12 — Day 105
+- 2025-03-11 — Day 104
+- 2025-03-10 — Day 103
+- 2025-03-09 — Day 102
+- 2025-03-08 — Day 101
+- 2025-03-07 — Day 100
+- 2025-03-06 — Day 99
+- 2025-03-05 — Day 98
+- 2025-03-04 — Day 97
+- 2025-03-03 — Day 96
+- 2025-03-02 — Day 95
+- 2025-03-01 — Day 94
+- 2025-02-28 — Day 93
+- 2025-02-27 — Day 92
+- 2025-02-26 — Day 91
+- 2025-02-25 — Day 90
+- 2025-02-24 — Day 89
+- 2025-02-23 — Day 88
+- 2025-02-22 — Day 87
+- 2025-02-21 — Day 86
+- 2025-02-20 — Day 85
+- 2025-02-19 — Day 84
+- 2025-02-18 — Day 83
+- 2025-02-17 — Day 82
+- 2025-02-16 — Day 81
+- 2025-02-15 — Day 80
+- 2025-02-14 — Day 79
+- 2025-02-13 — Day 78
+- 2025-02-12 — Day 77
+- 2025-02-11 — Day 76
+- 2025-02-10 — Day 75
+- 2025-02-09 — Day 74
+- 2025-02-08 — Day 73
+- 2025-02-07 — Day 72
+- 2025-02-06 — Day 71
+- 2025-02-05 — Day 70
+- 2025-02-04 — Day 69
+- 2025-02-03 — Day 68
+- 2025-02-02 — Day 67 — “Qelm – Theoretical (More advanced)” track committed.
+- 2025-02-01 — Day 66
+- 2025-01-31 — Day 65
+- 2025-01-30 — Day 64
+- 2025-01-29 — Day 63
+- 2025-01-28 — Day 62
+- 2025-01-27 — Day 61
+- 2025-01-26 — Day 60
+- 2025-01-25 — Day 59
+- 2025-01-24 — Day 58
+- 2025-01-23 — Day 57
+- 2025-01-22 — Day 56
+- 2025-01-21 — Day 55
+- 2025-01-20 — Day 54
+- 2025-01-19 — Day 53
+- 2025-01-18 — Day 52
+- 2025-01-17 — Day 51
+- 2025-01-16 — Day 50
+- 2025-01-15 — Day 49
+- 2025-01-14 — Day 48
+- 2025-01-13 — Day 47
+- 2025-01-12 — Day 46
+- 2025-01-11 — Day 45
+- 2025-01-10 — Day 44
+- 2025-01-09 — Day 43
+- 2025-01-08 — Day 42
+- 2025-01-07 — Day 41
+- 2025-01-06 — Day 40
+- 2025-01-05 — Day 39 — “Bypassing Holevo” document added/renamed.
+- 2025-01-04 — Day 38
+- 2025-01-03 — Day 37
+- 2025-01-02 — Day 36 — GUI added to `gen.py`; single‑run script and example artifacts.
+- 2025-01-01 — Day 35
+- 2024-12-31 — Day 34
+- 2024-12-30 — Day 33
+- 2024-12-29 — Day 32 — CODE_OF_CONDUCT and FUNDING files added.
+- 2024-12-28 — Day 31 — Chat UI rename to **QELMChatUI.py**; GUI V3 alpha; docs/images refresh.
+- 2024-12-27 — Day 30
+- 2024-12-26 — Day 29
+- 2024-12-25 — Day 28
+- 2024-12-24 — Day 27
+- 2024-12-23 — Day 26
+- 2024-12-22 — Day 25 — Tag **V2-Alpha** — Quantum branch alpha snapshot. · Tag: V2-Alpha (Update Qelm-Quantum.py) (5a4c477)
+- 2024-12-21 — Day 24 — `Qelm-Quantum.py` created; requirements published. Quantum bridge path formalized. · Create Qelm-Quantum.py (c5aebf3)
+- 2024-12-20 — Day 23
+- 2024-12-19 — Day 22
+- 2024-12-18 — Day 21
+- 2024-12-17 — Day 20 — Tag **V1Beta** — first public beta snapshot. · Tag: V1Beta (Update README.md) (4283eaa)
+- 2024-12-16 — Day 19
+- 2024-12-15 — Day 18
+- 2024-12-14 — Day 17
+- 2024-12-13 — Day 16
+- 2024-12-12 — Day 15
+- 2024-12-11 — Day 14 — First GUI trainer (`QelmGUI.py`) with CPU/GPU threading options. · Create QelmGUI.py (2ba5c56)
+- 2024-12-10 — Day 13 — Create python-app.yml (CI) (ee92ac9)
+- 2024-12-09 — Day 12 — Early trainer + chat scripts (`gen.py`, `chat.py`, `Qelm.py`); CI workflow added.
+- 2024-12-08 — Day 11 — Initial commit to GitHub (seed code + README). · Initial commit (7ab6ef3)
+- 2024-12-07 — Day 10
+- 2024-12-06 — Day 9
+- 2024-12-05 — Day 8
+- 2024-12-04 — Day 7
+- 2024-12-03 — Day 6
+- 2024-12-02 — Day 5
+- 2024-12-01 — Day 4
+- 2024-11-30 — Day 3
+- 2024-11-29 — Day 2
+- 2024-11-28 — Day 1 — Concept inception / original creation date (off‑GitHub). · Original creation date

@@ -1,84 +1,413 @@
 {
   "manual": [
-    { "date": "2024-11-28", "text": "Concept inception / original creation date (off‑GitHub)." },
-    { "date": "2024-12-08", "text": "Initial commit to GitHub (seed code + README)." },
-    { "date": "2024-12-09", "text": "Early trainer + chat scripts (`gen.py`, `chat.py`, `Qelm.py`); CI workflow added." },
-    { "date": "2024-12-11", "text": "First GUI trainer (`QelmGUI.py`) with CPU/GPU threading options." },
-    { "date": "2024-12-17", "text": "Tag **V1Beta** — first public beta snapshot." },
-    { "date": "2024-12-21", "text": "`Qelm-Quantum.py` created; requirements published. Quantum bridge path formalized." },
-    { "date": "2024-12-22", "text": "Tag **V2-Alpha** — Quantum branch alpha snapshot." },
-    { "date": "2024-12-28", "text": "Chat UI rename to **QELMChatUI.py**; GUI V3 alpha; docs/images refresh." },
-    { "date": "2024-12-29", "text": "CODE_OF_CONDUCT and FUNDING files added." },
-    { "date": "2025-01-02", "text": "GUI added to `gen.py`; single‑run script and example artifacts." },
-    { "date": "2025-01-05", "text": "“Bypassing Holevo” document added/renamed." },
-    { "date": "2025-02-02", "text": "“Qelm – Theoretical (More advanced)” track committed." },
-    { "date": "2025-03-18", "text": "Tag **Theoretical-Beta-01**; license updates; legacy files moved under `Outdated/`. Dependabot bumps Qiskit 1.4.2 across trees." },
-    { "date": "2025-04-01", "text": "QelmT.py refinements and README expansion through early April." },
-    { "date": "2025-06-14", "text": "IBM workflow added (then removed on Jun 15) during CI cleanup." },
-    { "date": "2025-07-08", "text": "Packaging restructure (`pyproject.toml`, package scoping) and **first PyPI release `qelm 0.1.0`**." },
-    { "date": "2025-07-23", "text": "Release workflow introduced; authorship/provenance notes strengthened." },
-    { "date": "2025-07-27", "text": "GitHub release **v0.1.3**; packaging tuned." },
-    { "date": "2025-07-28", "text": "GitHub release **v0.1.4**; requirements/README updates; Holevo alternative note." },
-    { "date": "2025-07-29", "text": "Latest README and QelmT updates." }
+    {
+      "date": "2024-11-28",
+      "text": "Concept inception / original creation date (off‑GitHub)."
+    },
+    {
+      "date": "2024-12-08",
+      "text": "Initial commit to GitHub (seed code + README)."
+    },
+    {
+      "date": "2024-12-09",
+      "text": "Early trainer + chat scripts (`gen.py`, `chat.py`, `Qelm.py`); CI workflow added."
+    },
+    {
+      "date": "2024-12-11",
+      "text": "First GUI trainer (`QelmGUI.py`) with CPU/GPU threading options."
+    },
+    {
+      "date": "2024-12-17",
+      "text": "Tag **V1Beta** — first public beta snapshot."
+    },
+    {
+      "date": "2024-12-21",
+      "text": "`Qelm-Quantum.py` created; requirements published. Quantum bridge path formalized."
+    },
+    {
+      "date": "2024-12-22",
+      "text": "Tag **V2-Alpha** — Quantum branch alpha snapshot."
+    },
+    {
+      "date": "2024-12-28",
+      "text": "Chat UI rename to **QELMChatUI.py**; GUI V3 alpha; docs/images refresh."
+    },
+    {
+      "date": "2024-12-29",
+      "text": "CODE_OF_CONDUCT and FUNDING files added."
+    },
+    {
+      "date": "2025-01-02",
+      "text": "GUI added to `gen.py`; single‑run script and example artifacts."
+    },
+    {
+      "date": "2025-01-05",
+      "text": "“Bypassing Holevo” document added/renamed."
+    },
+    {
+      "date": "2025-02-02",
+      "text": "“Qelm – Theoretical (More advanced)” track committed."
+    },
+    {
+      "date": "2025-03-18",
+      "text": "Tag **Theoretical-Beta-01**; license updates; legacy files moved under `Outdated/`. Dependabot bumps Qiskit 1.4.2 across trees."
+    },
+    {
+      "date": "2025-04-01",
+      "text": "QelmT.py refinements and README expansion through early April."
+    },
+    {
+      "date": "2025-06-14",
+      "text": "IBM workflow added (then removed on Jun 15) during CI cleanup."
+    },
+    {
+      "date": "2025-07-08",
+      "text": "Packaging restructure (`pyproject.toml`, package scoping) and **first PyPI release `qelm 0.1.0`**."
+    },
+    {
+      "date": "2025-07-23",
+      "text": "Release workflow introduced; authorship/provenance notes strengthened."
+    },
+    {
+      "date": "2025-07-27",
+      "text": "GitHub release **v0.1.3**; packaging tuned."
+    },
+    {
+      "date": "2025-07-28",
+      "text": "GitHub release **v0.1.4**; requirements/README updates; Holevo alternative note."
+    },
+    {
+      "date": "2025-07-29",
+      "text": "Latest README and QelmT updates."
+    }
   ],
   "auto_commits": [
-    { "date": "2025-07-29", "sha": "4bc595246d66eb8f00a55b7e58856d96a38d61c6", "subject": "Update README.md" },
-    { "date": "2025-07-29", "sha": "fd750fff8f6a9f2b9b8f1a9d9b1a7a9e00000000", "subject": "Update QelmT.py" },
-    { "date": "2025-07-28", "sha": "58f8dd1c00000000000000000000000000000000", "subject": "Create requirements.txt" },
-    { "date": "2025-07-28", "sha": "a77f45ab9f2a3bd0b8f1b2e9c6d0e0c3b2e7b3a1", "subject": "Update pyproject.toml (tag v0.1.4)" },
-    { "date": "2025-07-28", "sha": "79be75e000000000000000000000000000000000", "subject": "Update pyproject.toml" },
-    { "date": "2025-07-28", "sha": "964aaf2e00000000000000000000000000000000", "subject": "Create HolevosAlternative.doc" },
-    { "date": "2025-07-28", "sha": "25752ec000000000000000000000000000000000", "subject": "Add files via upload" },
-    { "date": "2025-07-28", "sha": "f8b6404b00000000000000000000000000000000", "subject": "Update Readme.md" },
-    { "date": "2025-07-28", "sha": "eddbd0a000000000000000000000000000000000", "subject": "Update Readme.md" },
-    { "date": "2025-07-28", "sha": "cf1f3c0c00000000000000000000000000000000", "subject": "Update Readme.md" },
-    { "date": "2025-07-28", "sha": "ba6581e000000000000000000000000000000000", "subject": "Update README.md" },
-    { "date": "2025-07-28", "sha": "88756cb000000000000000000000000000000000", "subject": "Update QelmT.py" },
-    { "date": "2025-07-27", "sha": "fc9223e2a9a7df3f6a0a3e2b3a7f8e9d12345678", "subject": "Update pyproject.toml (tag v0.1.3)" },
-    { "date": "2025-07-27", "sha": "b346c27b00000000000000000000000000000000", "subject": "Rename publish.yaml to publish.yml" },
-    { "date": "2025-07-27", "sha": "da7212a000000000000000000000000000000000", "subject": "Create publish.yaml" },
-    { "date": "2025-07-27", "sha": "6a44cff000000000000000000000000000000000", "subject": "Update pyproject.toml" },
-    { "date": "2025-07-27", "sha": "117b872000000000000000000000000000000000", "subject": "Update pyproject.toml" },
-    { "date": "2025-07-27", "sha": "757574e000000000000000000000000000000000", "subject": "Update pyproject.toml" },
-    { "date": "2025-07-27", "sha": "02bb92f000000000000000000000000000000000", "subject": "Update pyproject.toml" },
-    { "date": "2025-07-27", "sha": "03bb4f0000000000000000000000000000000000", "subject": "Update pyproject.toml" },
-    { "date": "2025-07-27", "sha": "a3f8534c00000000000000000000000000000000", "subject": "Update pyproject.toml" },
-    { "date": "2025-07-27", "sha": "301a554000000000000000000000000000000000", "subject": "Update README.md" },
-    { "date": "2025-07-27", "sha": "90ce08b000000000000000000000000000000000", "subject": "Add files via upload" },
-    { "date": "2025-07-27", "sha": "50dccb6f00000000000000000000000000000000", "subject": "Delete docs/images/chat.png" },
-    { "date": "2025-07-27", "sha": "264234c000000000000000000000000000000000", "subject": "Add files via upload" },
-    { "date": "2025-07-27", "sha": "6a6b6ea000000000000000000000000000000000", "subject": "Rename chat.png to chatold3.png" },
-    { "date": "2025-07-27", "sha": "ac30228000000000000000000000000000000000", "subject": "Add files via upload" },
-    { "date": "2025-07-27", "sha": "b859343000000000000000000000000000000000", "subject": "Rename qelmtrainer.png to qelmtrainerold.png" },
-    { "date": "2025-07-27", "sha": "6c104ef000000000000000000000000000000000", "subject": "Update pyproject.toml" },
-    { "date": "2025-07-27", "sha": "b462a4a000000000000000000000000000000000", "subject": "Update QelmT.py" },
-    { "date": "2025-07-26", "sha": "0f0b0c8000000000000000000000000000000000", "subject": "Update requirements.txt" },
-    { "date": "2025-07-26", "sha": "3629905000000000000000000000000000000000", "subject": "Update requirements.txt" },
-    { "date": "2025-07-26", "sha": "30b7e6d000000000000000000000000000000000", "subject": "Create Quantum.txt" },
-    { "date": "2025-07-26", "sha": "3dd1bc9000000000000000000000000000000000", "subject": "Update README.md" },
-    { "date": "2025-07-26", "sha": "16a69d6000000000000000000000000000000000", "subject": "Update requirements.txt" },
-    { "date": "2025-07-25", "sha": "6ae8b24800000000000000000000000000000000", "subject": "Update QELMChatUI.py" },
-    { "date": "2025-07-25", "sha": "006122c000000000000000000000000000000000", "subject": "Update README.md" },
-    { "date": "2025-07-25", "sha": "c8dc2b7000000000000000000000000000000000", "subject": "Update release.yml" },
-    { "date": "2025-07-25", "sha": "879dc09000000000000000000000000000000000", "subject": "Update release.yml" },
-    { "date": "2025-07-25", "sha": "dd1723a000000000000000000000000000000000", "subject": "Delete Benchmark/100science.csv" },
-    { "date": "2025-07-25", "sha": "8bc33be000000000000000000000000000000000", "subject": "Add files via upload" },
-    { "date": "2025-07-25", "sha": "4ac5ffc000000000000000000000000000000000", "subject": "Create 100science.csv" },
-    { "date": "2025-07-25", "sha": "c4bbbd2000000000000000000000000000000000", "subject": "Update pyproject.toml" },
-    { "date": "2025-07-25", "sha": "04f4102000000000000000000000000000000000", "subject": "Update QelmT.py" },
-
-    { "date": "2025-07-08", "sha": "10216a7a0f7c0c9b2a2b3c4d5e6f708192837465", "subject": "Create pyproject.toml" },
-    { "date": "2025-07-08", "sha": "76eb2fd3a1b2c3d4e5f60718293a4b5c6d7e8f90", "subject": "Create __init__.py" },
-    { "date": "2025-07-08", "sha": "ff66dee2b4d9c3a5e7f1a2b3c4d5e6f708192837", "subject": "Limit packaging to qelm package; fix license field" },
-
-    { "date": "2025-03-18", "sha": "99d36f4c0c0ffee0000000000000000000000000", "subject": "Tag: Theoretical-Beta-01 (Update LICENSE)" },
-    { "date": "2024-12-22", "sha": "5a4c4773e2b1c0ffee0000000000000000000000", "subject": "Tag: V2-Alpha (Update Qelm-Quantum.py)" },
-    { "date": "2024-12-21", "sha": "c5aebf3d00000000000000000000000000000000", "subject": "Create Qelm-Quantum.py" },
-    { "date": "2024-12-17", "sha": "4283eaa9c7c0ffee000000000000000000000000", "subject": "Tag: V1Beta (Update README.md)" },
-    { "date": "2024-12-11", "sha": "2ba5c56900000000000000000000000000000000", "subject": "Create QelmGUI.py" },
-    { "date": "2024-12-10", "sha": "ee92ac9a00000000000000000000000000000000", "subject": "Create python-app.yml (CI)" },
-    { "date": "2024-12-08", "sha": "7ab6ef36b7d7da7c5b0e0c4a5b4a8f90f0c9e2d1", "subject": "Initial commit" }
+    {
+      "date": "2025-07-29",
+      "sha": "4bc595246d66eb8f00a55b7e58856d96a38d61c6",
+      "subject": "Update README.md"
+    },
+    {
+      "date": "2025-07-29",
+      "sha": "fd750fff8f6a9f2b9b8f1a9d9b1a7a9e00000000",
+      "subject": "Update QelmT.py"
+    },
+    {
+      "date": "2025-07-28",
+      "sha": "58f8dd1c00000000000000000000000000000000",
+      "subject": "Create requirements.txt"
+    },
+    {
+      "date": "2025-07-28",
+      "sha": "a77f45ab9f2a3bd0b8f1b2e9c6d0e0c3b2e7b3a1",
+      "subject": "Update pyproject.toml (tag v0.1.4)"
+    },
+    {
+      "date": "2025-07-28",
+      "sha": "79be75e000000000000000000000000000000000",
+      "subject": "Update pyproject.toml"
+    },
+    {
+      "date": "2025-07-28",
+      "sha": "964aaf2e00000000000000000000000000000000",
+      "subject": "Create HolevosAlternative.doc"
+    },
+    {
+      "date": "2025-07-28",
+      "sha": "25752ec000000000000000000000000000000000",
+      "subject": "Add files via upload"
+    },
+    {
+      "date": "2025-07-28",
+      "sha": "f8b6404b00000000000000000000000000000000",
+      "subject": "Update Readme.md"
+    },
+    {
+      "date": "2025-07-28",
+      "sha": "eddbd0a000000000000000000000000000000000",
+      "subject": "Update Readme.md"
+    },
+    {
+      "date": "2025-07-28",
+      "sha": "cf1f3c0c00000000000000000000000000000000",
+      "subject": "Update Readme.md"
+    },
+    {
+      "date": "2025-07-28",
+      "sha": "ba6581e000000000000000000000000000000000",
+      "subject": "Update README.md"
+    },
+    {
+      "date": "2025-07-28",
+      "sha": "88756cb000000000000000000000000000000000",
+      "subject": "Update QelmT.py"
+    },
+    {
+      "date": "2025-07-27",
+      "sha": "fc9223e2a9a7df3f6a0a3e2b3a7f8e9d12345678",
+      "subject": "Update pyproject.toml (tag v0.1.3)"
+    },
+    {
+      "date": "2025-07-27",
+      "sha": "b346c27b00000000000000000000000000000000",
+      "subject": "Rename publish.yaml to publish.yml"
+    },
+    {
+      "date": "2025-07-27",
+      "sha": "da7212a000000000000000000000000000000000",
+      "subject": "Create publish.yaml"
+    },
+    {
+      "date": "2025-07-27",
+      "sha": "6a44cff000000000000000000000000000000000",
+      "subject": "Update pyproject.toml"
+    },
+    {
+      "date": "2025-07-27",
+      "sha": "117b872000000000000000000000000000000000",
+      "subject": "Update pyproject.toml"
+    },
+    {
+      "date": "2025-07-27",
+      "sha": "757574e000000000000000000000000000000000",
+      "subject": "Update pyproject.toml"
+    },
+    {
+      "date": "2025-07-27",
+      "sha": "02bb92f000000000000000000000000000000000",
+      "subject": "Update pyproject.toml"
+    },
+    {
+      "date": "2025-07-27",
+      "sha": "03bb4f0000000000000000000000000000000000",
+      "subject": "Update pyproject.toml"
+    },
+    {
+      "date": "2025-07-27",
+      "sha": "a3f8534c00000000000000000000000000000000",
+      "subject": "Update pyproject.toml"
+    },
+    {
+      "date": "2025-07-27",
+      "sha": "301a554000000000000000000000000000000000",
+      "subject": "Update README.md"
+    },
+    {
+      "date": "2025-07-27",
+      "sha": "90ce08b000000000000000000000000000000000",
+      "subject": "Add files via upload"
+    },
+    {
+      "date": "2025-07-27",
+      "sha": "50dccb6f00000000000000000000000000000000",
+      "subject": "Delete docs/images/chat.png"
+    },
+    {
+      "date": "2025-07-27",
+      "sha": "264234c000000000000000000000000000000000",
+      "subject": "Add files via upload"
+    },
+    {
+      "date": "2025-07-27",
+      "sha": "6a6b6ea000000000000000000000000000000000",
+      "subject": "Rename chat.png to chatold3.png"
+    },
+    {
+      "date": "2025-07-27",
+      "sha": "ac30228000000000000000000000000000000000",
+      "subject": "Add files via upload"
+    },
+    {
+      "date": "2025-07-27",
+      "sha": "b859343000000000000000000000000000000000",
+      "subject": "Rename qelmtrainer.png to qelmtrainerold.png"
+    },
+    {
+      "date": "2025-07-27",
+      "sha": "6c104ef000000000000000000000000000000000",
+      "subject": "Update pyproject.toml"
+    },
+    {
+      "date": "2025-07-27",
+      "sha": "b462a4a000000000000000000000000000000000",
+      "subject": "Update QelmT.py"
+    },
+    {
+      "date": "2025-07-26",
+      "sha": "0f0b0c8000000000000000000000000000000000",
+      "subject": "Update requirements.txt"
+    },
+    {
+      "date": "2025-07-26",
+      "sha": "3629905000000000000000000000000000000000",
+      "subject": "Update requirements.txt"
+    },
+    {
+      "date": "2025-07-26",
+      "sha": "30b7e6d000000000000000000000000000000000",
+      "subject": "Create Quantum.txt"
+    },
+    {
+      "date": "2025-07-26",
+      "sha": "3dd1bc9000000000000000000000000000000000",
+      "subject": "Update README.md"
+    },
+    {
+      "date": "2025-07-26",
+      "sha": "16a69d6000000000000000000000000000000000",
+      "subject": "Update requirements.txt"
+    },
+    {
+      "date": "2025-07-25",
+      "sha": "6ae8b24800000000000000000000000000000000",
+      "subject": "Update QELMChatUI.py"
+    },
+    {
+      "date": "2025-07-25",
+      "sha": "006122c000000000000000000000000000000000",
+      "subject": "Update README.md"
+    },
+    {
+      "date": "2025-07-25",
+      "sha": "c8dc2b7000000000000000000000000000000000",
+      "subject": "Update release.yml"
+    },
+    {
+      "date": "2025-07-25",
+      "sha": "879dc09000000000000000000000000000000000",
+      "subject": "Update release.yml"
+    },
+    {
+      "date": "2025-07-25",
+      "sha": "dd1723a000000000000000000000000000000000",
+      "subject": "Delete Benchmark/100science.csv"
+    },
+    {
+      "date": "2025-07-25",
+      "sha": "8bc33be000000000000000000000000000000000",
+      "subject": "Add files via upload"
+    },
+    {
+      "date": "2025-07-25",
+      "sha": "4ac5ffc000000000000000000000000000000000",
+      "subject": "Create 100science.csv"
+    },
+    {
+      "date": "2025-07-25",
+      "sha": "c4bbbd2000000000000000000000000000000000",
+      "subject": "Update pyproject.toml"
+    },
+    {
+      "date": "2025-07-25",
+      "sha": "04f4102000000000000000000000000000000000",
+      "subject": "Update QelmT.py"
+    },
+    {
+      "date": "2025-07-08",
+      "sha": "10216a7a0f7c0c9b2a2b3c4d5e6f708192837465",
+      "subject": "Create pyproject.toml"
+    },
+    {
+      "date": "2025-07-08",
+      "sha": "76eb2fd3a1b2c3d4e5f60718293a4b5c6d7e8f90",
+      "subject": "Create __init__.py"
+    },
+    {
+      "date": "2025-07-08",
+      "sha": "ff66dee2b4d9c3a5e7f1a2b3c4d5e6f708192837",
+      "subject": "Limit packaging to qelm package; fix license field"
+    },
+    {
+      "date": "2025-03-18",
+      "sha": "99d36f4c0c0ffee0000000000000000000000000",
+      "subject": "Tag: Theoretical-Beta-01 (Update LICENSE)"
+    },
+    {
+      "date": "2024-12-22",
+      "sha": "5a4c4773e2b1c0ffee0000000000000000000000",
+      "subject": "Tag: V2-Alpha (Update Qelm-Quantum.py)"
+    },
+    {
+      "date": "2024-12-21",
+      "sha": "c5aebf3d00000000000000000000000000000000",
+      "subject": "Create Qelm-Quantum.py"
+    },
+    {
+      "date": "2024-12-17",
+      "sha": "4283eaa9c7c0ffee000000000000000000000000",
+      "subject": "Tag: V1Beta (Update README.md)"
+    },
+    {
+      "date": "2024-12-11",
+      "sha": "2ba5c56900000000000000000000000000000000",
+      "subject": "Create QelmGUI.py"
+    },
+    {
+      "date": "2024-12-10",
+      "sha": "ee92ac9a00000000000000000000000000000000",
+      "subject": "Create python-app.yml (CI)"
+    },
+    {
+      "date": "2024-12-08",
+      "sha": "7ab6ef36b7d7da7c5b0e0c4a5b4a8f90f0c9e2d1",
+      "subject": "Initial commit"
+    },
+    {
+      "date": "2025-07-28",
+      "sha": "13708ac",
+      "subject": "Create STATUS_MILESTONES.json"
+    },
+    {
+      "date": "2025-07-28",
+      "sha": "1db5b52",
+      "subject": "Update README.md"
+    },
+    {
+      "date": "2025-07-28",
+      "sha": "2530f08",
+      "subject": "Update update_status.py"
+    },
+    {
+      "date": "2025-07-28",
+      "sha": "27ff9d2",
+      "subject": "Update STATUS_MILESTONES.json"
+    },
+    {
+      "date": "2025-07-28",
+      "sha": "4bc5952",
+      "subject": "Update README.md"
+    },
+    {
+      "date": "2025-07-28",
+      "sha": "6e6695e",
+      "subject": "Create STATUS.md"
+    },
+    {
+      "date": "2025-07-28",
+      "sha": "7d46fe3",
+      "subject": "Create update_status.py"
+    },
+    {
+      "date": "2025-07-28",
+      "sha": "913425e",
+      "subject": "Update daily-status.yml"
+    },
+    {
+      "date": "2025-07-28",
+      "sha": "a7bdc26",
+      "subject": "Create days_active.json"
+    },
+    {
+      "date": "2025-07-28",
+      "sha": "b3e2b75",
+      "subject": "Create daily-status.yml"
+    },
+    {
+      "date": "2025-07-28",
+      "sha": "e37a8c8",
+      "subject": "Create update_milestones.py"
+    }
   ],
-  "last_commit_sha": "4bc595246d66eb8f00a55b7e58856d96a38d61c6",
-  "last_checked": "2025-07-29T12:00:00-08:00"
+  "last_commit_sha": "27ff9d209bf1a0e9b04b08d11e2387f8bb42fd1f",
+  "last_checked": "2025-07-29T17:18:31Z"
 }

@@ -11,6 +11,7 @@ START_ENV = os.environ.get("QELM_START_DATE")
 STATUS_FILE = os.environ.get("STATUS_FILE", "STATUS.md")
 MILESTONES_FILE = os.environ.get("MILESTONES_FILE", "STATUS_MILESTONES.json")
 MAX_COMMITS_PER_DAY = int(os.environ.get("MAX_COMMITS_PER_DAY", "3"))
+BADGE_JSON_FILE = os.environ.get("BADGE_JSON_FILE", "badges/days_active.json")  # <-- NEW
 
 if not START_ENV:
     raise SystemExit("QELM_START_DATE env var is required (YYYY-MM-DD)")
@@ -33,6 +34,7 @@ def load_text(path: str) -> str:
         return ""
 
 def save_text(path: str, text: str) -> None:
+    os.makedirs(os.path.dirname(path) or ".", exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
         f.write(text)
 
@@ -50,7 +52,6 @@ manual = data.get("manual", []) if isinstance(data.get("manual"), list) else (da
 auto_commits: List[Dict[str, Any]] = data.get("auto_commits", []) if isinstance(data.get("auto_commits"), list) else []
 
 notes_by_date: Dict[date, List[str]] = {}
-
 def add_note(d: date, text: str):
     if text:
         notes_by_date.setdefault(d, []).append(text)
@@ -122,3 +123,12 @@ new_content = top + HISTORY_HDR + "\n".join(lines) + "\n"
 
 if new_content != content_old:
     save_text(STATUS_FILE, new_content)
+
+badge_payload = {
+    "schemaVersion": 1,
+    "label": "days active",
+    "message": str(day_number),
+    "color": "blue",
+    "cacheSeconds": 300  # 5 minutes
+}
+save_text(BADGE_JSON_FILE, json.dumps(badge_payload, ensure_ascii=False, indent=2) + "\n")

@@ -1,0 +1,11 @@
+{
+  "manual": [
+    { "date": "2024-11-28", "text": "Original creation date." },
+    { "date": "2024-12-29", "text": "Public repo + qelm.org announced." },
+    { "date": "2025-07-23", "text": "Authorship statement & codebase provenance work." },
+    { "date": "2025-07-27", "text": "IBM channel migration; Quantum bridge marked for archival." }
+  ],
+  "auto_commits": [],
+  "last_commit_sha": "",
+  "last_checked": ""
+}

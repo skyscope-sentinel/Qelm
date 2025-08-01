@@ -44,10 +44,9 @@ jobs:
       - name: Update STATUS.md & badge
         run: python scripts/update_status.py
 
-      - name: Commit and push if files changed
+      - name: Commit and force push if files changed
         run: |
           set -e
-          # Nothing to do?
           if git diff --quiet; then
             echo "No changes to commit."
             exit 0
@@ -59,12 +58,7 @@ jobs:
           git add -A
           DAY_LINE=$(head -n 1 "$STATUS_FILE" || echo "update")
           git commit -m "chore(status): ${DAY_LINE}"
-
-          # Rebase onto latest main in case new commits landed
-          git pull --rebase --autostash origin main
-
-          # Push safely; fails only if main moved again after pull
-          git push --force-with-lease origin HEAD:main
+          git push --force origin HEAD:main
 
       - name: Preview STATUS.md
         run: head -n 60 "$STATUS_FILE" || true

@@ -32,9 +32,9 @@ jobs:
       - env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
-        run: python update_milestones.py
+        run: python scripts/update_milestones.py
 
-      - run: python update_status.py
+      - run: python scripts/update_status.py
 
       - name: commit & push with PAT
         env:

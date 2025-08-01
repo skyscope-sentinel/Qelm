@@ -1,12 +1,10 @@
 name: daily-status
 
-name: daily-status
-
 on:
   schedule:
-    - cron: "0 17 * 4,5,6,7,8,9,10 *"   
-    - cron: "0 17 * 11,12 *"            
-    - cron: "0 17 * 1,2,3 *"            
+    - cron: "20 0 * 4,5,6,7,8,9,10 *"
+    - cron: "20 1 * 11,12 *"
+    - cron: "20 1 * 1,2,3 *"
   workflow_dispatch: {}
 
 permissions:
@@ -16,7 +14,7 @@ jobs:
   update:
     runs-on: ubuntu-latest
     env:
-      QELM_START_DATE: "2024-11-28"          
+      QELM_START_DATE: "2024-11-28"
       STATUS_FILE: "STATUS.md"
       MILESTONES_FILE: "STATUS_MILESTONES.json"
       TIMEZONE: "America/Anchorage"
@@ -40,12 +38,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
-        run: |
-          python scripts/update_milestones.py
+        run: python scripts/update_milestones.py
 
       - name: Update STATUS.md
-        run: |
-          python scripts/update_status.py
+        run: python scripts/update_status.py
 
       - name: Commit changes (if any)
         run: |
@@ -62,5 +58,4 @@ jobs:
           fi
 
       - name: Preview
-        run: |
-          head -n 60 "$STATUS_FILE" || true
+        run: head -n 60 "$STATUS_FILE" || true

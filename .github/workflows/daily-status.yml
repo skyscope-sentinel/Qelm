@@ -20,6 +20,7 @@ jobs:
       TIMEZONE: "America/Anchorage"
       MAX_COMMITS_PER_DAY: "3"
       BADGE_JSON_FILE: "badges/days_active.json"
+
     steps:
       - uses: actions/checkout@v4
         with:
@@ -40,8 +41,13 @@ jobs:
           GITHUB_REPOSITORY: ${{ github.repository }}
         run: python scripts/update_milestones.py
 
-      - name: Update STATUS.md
+      - name: Update STATUS.md and badge JSON
         run: python scripts/update_status.py
+
+      - name: Rebase on latest main
+        run: |
+          git fetch origin main
+          git rebase origin/main
 
       - name: Commit changes (if any)
         run: |
@@ -54,8 +60,9 @@ jobs:
             git add -A
             DAY_LINE=$(head -n 1 "$STATUS_FILE" || true)
             git commit -m "chore(status): ${DAY_LINE}"
-            git push
+            git push origin HEAD:main
           fi
 
       - name: Preview
         run: head -n 60 "$STATUS_FILE" || true
+

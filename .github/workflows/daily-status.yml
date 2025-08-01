@@ -41,28 +41,30 @@ jobs:
           GITHUB_REPOSITORY: ${{ github.repository }}
         run: python scripts/update_milestones.py
 
-      - name: Update STATUS.md and badge JSON
+      - name: Update STATUS.md & badge
         run: python scripts/update_status.py
 
-      - name: Rebase on latest main
-        run: |
-          git fetch origin main
-          git rebase origin/main
-
-      - name: Commit changes (if any)
+      - name: Commit and push if files changed
         run: |
           set -e
+          # Nothing to do?
           if git diff --quiet; then
             echo "No changes to commit."
-          else
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add -A
-            DAY_LINE=$(head -n 1 "$STATUS_FILE" || true)
-            git commit -m "chore(status): ${DAY_LINE}"
-            git push origin HEAD:main
+            exit 0
           fi
 
-      - name: Preview
-        run: head -n 60 "$STATUS_FILE" || true
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
+          git add -A
+          DAY_LINE=$(head -n 1 "$STATUS_FILE" || echo "update")
+          git commit -m "chore(status): ${DAY_LINE}"
+
+          # Rebase onto latest main in case new commits landed
+          git pull --rebase --autostash origin main
+
+          # Push safely; fails only if main moved again after pull
+          git push --force-with-lease origin HEAD:main
+
+      - name: Preview STATUS.md
+        run: head -n 60 "$STATUS_FILE" || true

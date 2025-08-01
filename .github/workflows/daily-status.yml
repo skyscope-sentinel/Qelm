@@ -58,6 +58,11 @@ jobs:
           git add -A
           DAY_LINE=$(head -n 1 "$STATUS_FILE" || echo "update")
           git commit -m "chore(status): ${DAY_LINE}"
+
+          git fetch origin main
+          git reset --hard origin/main
+          git pull origin main
+          git merge --strategy=ours HEAD
           git push --force origin HEAD:main
 
       - name: Preview STATUS.md

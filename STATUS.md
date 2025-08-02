@@ -1,21 +1,22 @@
-# QELM — Day 246
+# QELM — Day 247
 
-**Date:** 2025-07-31 19:22 AKDT (-0800) — Alaska time
+**Date:** 2025-08-01 18:19 AKDT (-0800) — Alaska time
 
-QELM has been active for **246 days** since **2024-11-28**.
+QELM has been active for **247 days** since **2024-11-28**.
 
 This file is updated once per day. No history rewrites.
 
 ## History
-- 2025-07-31 — Day 246 — Update days_active.json (0afb887) · Delete STATUS.md (1a1c10c) · Update daily-status.yml (25fbdf9) (+22)
+- 2025-08-01 — Day 247
+- 2025-07-31 — Day 246 — Update days_active.json (0afb887) · Delete STATUS.md (1a1c10c) · Update daily-status.yml (25fbdf9) (+24)
 - 2025-07-30 — Day 245 — Update daily-status.yml (1763f69)
-- 2025-07-29 — Day 244 — Update daily-status.yml (422d82e) · chore(status): # QELM — Day 244 (7d5beb4)
-- 2025-07-28 — Day 243 — Create STATUS_MILESTONES.json (13708ac) · Update README.md (1db5b52) · Update update_status.py (2530f08) (+9)
-- 2025-07-27 — Day 242 — IBM channel migration; Quantum bridge marked for archival. · Update pyproject.toml (02bb92f) · Update pyproject.toml (03bb4f0) (+17)
-- 2025-07-26 — Day 241 — Update requirements.txt (0f0b0c8) · Update requirements.txt (16a69d6) · Add files via upload (264234c) (+12)
-- 2025-07-25 — Day 240 — Update README.md (006122c) · Update QelmT.py (04f4102) · Create 100science.csv (4ac5ffc) (+6)
+- 2025-07-29 — Day 244 — Update daily-status.yml (422d82e) · chore(status): # QELM — Day 244 (7d5beb4) · Update daily-status.yml (422d82e) · chore(status): # QELM — Day 244 (7d5beb4)
+- 2025-07-28 — Day 243 — Create STATUS_MILESTONES.json (13708ac) · Update README.md (1db5b52) · Update update_status.py (2530f08) (+10)
+- 2025-07-27 — Day 242 — IBM channel migration; Quantum bridge marked for archival. · Update pyproject.toml (02bb92f) · Update pyproject.toml (03bb4f0) (+18)
+- 2025-07-26 — Day 241 — Update requirements.txt (0f0b0c8) · Update requirements.txt (16a69d6) · Add files via upload (264234c) (+13)
+- 2025-07-25 — Day 240 — Update README.md (006122c) · Update QelmT.py (04f4102) · Create 100science.csv (4ac5ffc) (+7)
 - 2025-07-24 — Day 239
-- 2025-07-23 — Day 238 — Authorship statement & codebase provenance work. · Create release.yml (25394b2) · Update release.yml (5869463) (+1)
+- 2025-07-23 — Day 238 — Authorship statement & codebase provenance work. · Create release.yml (25394b2) · Update release.yml (5869463) (+2)
 - 2025-07-22 — Day 237
 - 2025-07-21 — Day 236
 - 2025-07-20 — Day 235
@@ -25,13 +26,13 @@ This file is updated once per day. No history rewrites.
 - 2025-07-16 — Day 231
 - 2025-07-15 — Day 230
 - 2025-07-14 — Day 229
-- 2025-07-13 — Day 228 — Add files via upload (13d0df6) · Update README.md (5c8df4b) · Update README.md (7ceaf61) (+1)
+- 2025-07-13 — Day 228 — Add files via upload (13d0df6) · Update README.md (5c8df4b) · Update README.md (7ceaf61) (+2)
 - 2025-07-12 — Day 227
 - 2025-07-11 — Day 226
 - 2025-07-10 — Day 225
 - 2025-07-09 — Day 224
 - 2025-07-08 — Day 223
-- 2025-07-07 — Day 222 — Create pyproject.toml (10216a7) · Update README.md (14f3037) · Create __init__.py (76eb2fd) (+3)
+- 2025-07-07 — Day 222 — Create pyproject.toml (10216a7) · Update README.md (14f3037) · Create __init__.py (76eb2fd) (+4)
 - 2025-07-06 — Day 221
 - 2025-07-05 — Day 220
 - 2025-07-04 — Day 219
@@ -54,7 +55,7 @@ This file is updated once per day. No history rewrites.
 - 2025-06-17 — Day 202
 - 2025-06-16 — Day 201
 - 2025-06-15 — Day 200
-- 2025-06-14 — Day 199 — Delete .github/workflows/ibm.yml (3abfe89) · Create ibm.yml (44106ef) · Update QELMChatUI.py (ca3e440)
+- 2025-06-14 — Day 199 — Delete .github/workflows/ibm.yml (3abfe89) · Create ibm.yml (44106ef) · Update QELMChatUI.py (ca3e440) (+1)
 - 2025-06-13 — Day 198
 - 2025-06-12 — Day 197
 - 2025-06-11 — Day 196
@@ -84,7 +85,7 @@ This file is updated once per day. No history rewrites.
 - 2025-05-18 — Day 172
 - 2025-05-17 — Day 171
 - 2025-05-16 — Day 170
-- 2025-05-15 — Day 169 — Update QelmT.py (599eb80) · Update README.md (8b691ab) · Update Readme.md (af02751)
+- 2025-05-15 — Day 169 — Update QelmT.py (599eb80) · Update README.md (8b691ab) · Update Readme.md (af02751) (+1)
 - 2025-05-14 — Day 168
 - 2025-05-13 — Day 167
 - 2025-05-12 — Day 166
@@ -95,7 +96,7 @@ This file is updated once per day. No history rewrites.
 - 2025-05-07 — Day 161
 - 2025-05-06 — Day 160
 - 2025-05-05 — Day 159
-- 2025-05-04 — Day 158 — Update Qelm-Quantum.py (6917087) · Update QelmT.py (9d738bc)
+- 2025-05-04 — Day 158 — Update Qelm-Quantum.py (6917087) · Update QelmT.py (9d738bc) · Update Qelm-Quantum.py (6917087) · Update QelmT.py (9d738bc)
 - 2025-05-03 — Day 157
 - 2025-05-02 — Day 156
 - 2025-05-01 — Day 155
@@ -115,7 +116,7 @@ This file is updated once per day. No history rewrites.
 - 2025-04-17 — Day 141
 - 2025-04-16 — Day 140
 - 2025-04-15 — Day 139
-- 2025-04-14 — Day 138 — Update README.md (2ec6a98) · Add files via upload (cb3e38b)
+- 2025-04-14 — Day 138 — Update README.md (2ec6a98) · Add files via upload (cb3e38b) · Update README.md (2ec6a98) · Add files via upload (cb3e38b)
 - 2025-04-13 — Day 137
 - 2025-04-12 — Day 136
 - 2025-04-11 — Day 135
@@ -129,7 +130,7 @@ This file is updated once per day. No history rewrites.
 - 2025-04-03 — Day 127
 - 2025-04-02 — Day 126 — Update README.md (5ad6fa2)
 - 2025-04-01 — Day 125
-- 2025-03-31 — Day 124 — Update README.md (0569ccd) · Update README.md (3107ce3) · Update QelmT.py (790dc0b) (+1)
+- 2025-03-31 — Day 124 — Update README.md (0569ccd) · Update README.md (3107ce3) · Update QelmT.py (790dc0b) (+2)
 - 2025-03-30 — Day 123
 - 2025-03-29 — Day 122
 - 2025-03-28 — Day 121
@@ -138,28 +139,28 @@ This file is updated once per day. No history rewrites.
 - 2025-03-25 — Day 118
 - 2025-03-24 — Day 117
 - 2025-03-23 — Day 116
-- 2025-03-22 — Day 115 — Update Readme.md (1c6e7f4) · Update README.md (d09a77a)
+- 2025-03-22 — Day 115 — Update Readme.md (1c6e7f4) · Update README.md (d09a77a) · Update Readme.md (1c6e7f4) · Update README.md (d09a77a)
 - 2025-03-21 — Day 114 — Update QelmT.py (442f2fb)
 - 2025-03-20 — Day 113
 - 2025-03-19 — Day 112 — Update README.md (8484285)
-- 2025-03-18 — Day 111 — Update issue templates (40e19ea) · Update LICENSE (4e6a3a8) · Update LICENSE (510dca0) (+11)
-- 2025-03-17 — Day 110 — Update QelmT.py (0a46072) · Bump qiskit from 1.3.0 to 1.4.2 (0dcb4df) · Merge pull request #7 from R-D-BioTech-Alaska/dependabot/pip/Neural/qiskit-1.4.2 (11aff3d) (+15)
-- 2025-03-16 — Day 109 — Update README.md (1361bbe) · Update README.md (62518f6)
+- 2025-03-18 — Day 111 — Update issue templates (40e19ea) · Update LICENSE (4e6a3a8) · Update LICENSE (510dca0) (+12)
+- 2025-03-17 — Day 110 — Update QelmT.py (0a46072) · Bump qiskit from 1.3.0 to 1.4.2 (0dcb4df) · Merge pull request #7 from R-D-BioTech-Alaska/dependabot/pip/Neural/qiskit-1.4.2 (11aff3d) (+16)
+- 2025-03-16 — Day 109 — Update README.md (1361bbe) · Update README.md (62518f6) · Update README.md (1361bbe) · Update README.md (62518f6)
 - 2025-03-15 — Day 108 — Update README.md (cda2745)
 - 2025-03-14 — Day 107
 - 2025-03-13 — Day 106
 - 2025-03-12 — Day 105
-- 2025-03-11 — Day 104 — Update QelmT.py (3ab7a25) · Update README.md (b357942)
+- 2025-03-11 — Day 104 — Update QelmT.py (3ab7a25) · Update README.md (b357942) · Update QelmT.py (3ab7a25) · Update README.md (b357942)
 - 2025-03-10 — Day 103
 - 2025-03-09 — Day 102
 - 2025-03-08 — Day 101
 - 2025-03-07 — Day 100
-- 2025-03-06 — Day 99 — Update README.md (00a5eff) · Delete Datasets/f.md (106df5f) · Add files via upload (1343c76) (+9)
+- 2025-03-06 — Day 99 — Update README.md (00a5eff) · Delete Datasets/f.md (106df5f) · Add files via upload (1343c76) (+10)
 - 2025-03-05 — Day 98
 - 2025-03-04 — Day 97
 - 2025-03-03 — Day 96 — Update QELMChatUI.py (c3f6018)
 - 2025-03-02 — Day 95
-- 2025-03-01 — Day 94 — Add files via upload (2399738) · Update README.md (97293b0)
+- 2025-03-01 — Day 94 — Add files via upload (2399738) · Update README.md (97293b0) · Add files via upload (2399738) · Update README.md (97293b0)
 - 2025-02-28 — Day 93
 - 2025-02-27 — Day 92
 - 2025-02-26 — Day 91
@@ -191,7 +192,7 @@ This file is updated once per day. No history rewrites.
 - 2025-01-31 — Day 65
 - 2025-01-30 — Day 64
 - 2025-01-29 — Day 63
-- 2025-01-28 — Day 62 — Update gen.py (e26f693) · Update QelmGUI.py (f893b91)
+- 2025-01-28 — Day 62 — Update gen.py (e26f693) · Update QelmGUI.py (f893b91) · Update gen.py (e26f693) · Update QelmGUI.py (f893b91)
 - 2025-01-27 — Day 61 — Update QELMChatUI.py (09690ea)
 - 2025-01-26 — Day 60
 - 2025-01-25 — Day 59
@@ -212,37 +213,37 @@ This file is updated once per day. No history rewrites.
 - 2025-01-10 — Day 44
 - 2025-01-09 — Day 43
 - 2025-01-08 — Day 42
-- 2025-01-07 — Day 41 — Update python-app.yml (1dd745a) · Update python-app.yml (24dc694) · Update python-app.yml (3732e57) (+5)
-- 2025-01-06 — Day 40 — Update README.md (2cf7d55) · Update QelmGUI.py (8d808bd)
+- 2025-01-07 — Day 41 — Update python-app.yml (1dd745a) · Update python-app.yml (24dc694) · Update python-app.yml (3732e57) (+6)
+- 2025-01-06 — Day 40 — Update README.md (2cf7d55) · Update QelmGUI.py (8d808bd) · Update README.md (2cf7d55) · Update QelmGUI.py (8d808bd)
 - 2025-01-05 — Day 39 — Rename Bypassing Holevo.doc to Bypassing Holevo.md (5402299)
 - 2025-01-04 — Day 38 — Create Bypassing Holevo.doc (8581a1c)
 - 2025-01-03 — Day 37
 - 2025-01-02 — Day 36
-- 2025-01-01 — Day 35 — Update Neuron.py (0c6587a) · Update Readme.md (14d576a) · Create OneRun.txt (32c37be) (+2)
+- 2025-01-01 — Day 35 — Update Neuron.py (0c6587a) · Update Readme.md (14d576a) · Create OneRun.txt (32c37be) (+3)
 - 2024-12-31 — Day 34
 - 2024-12-30 — Day 33 — Delete QLM/Example/tst (2a1b197)
-- 2024-12-29 — Day 32 — Public repo + qelm.org announced. · Create FUNDING.yml (16e9966) · Add files via upload (2cdd794) (+2)
-- 2024-12-28 — Day 31 — Delete docs/images/Qelm.png (0a8cfff) · Create CODE_OF_CONDUCT.md (0fd0670) · Update README.md (42f1739) (+9)
+- 2024-12-29 — Day 32 — Public repo + qelm.org announced. · Create FUNDING.yml (16e9966) · Add files via upload (2cdd794) (+3)
+- 2024-12-28 — Day 31 — Delete docs/images/Qelm.png (0a8cfff) · Create CODE_OF_CONDUCT.md (0fd0670) · Update README.md (42f1739) (+10)
 - 2024-12-27 — Day 30
 - 2024-12-26 — Day 29 — Update QelmGUI.py - Bug fix V2 - Alpha (46a04e0)
 - 2024-12-25 — Day 28
 - 2024-12-24 — Day 27
 - 2024-12-23 — Day 26
 - 2024-12-22 — Day 25
-- 2024-12-21 — Day 24 — Create requirements.txt (07f09ef) · Update chat.py (1c7cb96) · Update requirements.txt (3cf71e5) (+7)
+- 2024-12-21 — Day 24 — Create requirements.txt (07f09ef) · Update chat.py (1c7cb96) · Update requirements.txt (3cf71e5) (+8)
 - 2024-12-20 — Day 23
-- 2024-12-19 — Day 22 — Update README.md (7ea729f) · Update README.md (881a65e) · Update Neuron.py (f6fdf0f)
+- 2024-12-19 — Day 22 — Update README.md (7ea729f) · Update README.md (881a65e) · Update Neuron.py (f6fdf0f) (+1)
 - 2024-12-18 — Day 21
 - 2024-12-17 — Day 20 — Create readme.md (bb772fc)
-- 2024-12-16 — Day 19 — Update/Upgrade QelmGUI.py (0ac233b) · Create Readme.md (1ab25e3) · Update Readme.md (21fa207) (+13)
-- 2024-12-15 — Day 18 — Add files via upload (0a0d681) · Delete docs/images/tst (0a33fe5) · Update README.md (360b627) (+8)
+- 2024-12-16 — Day 19 — Update/Upgrade QelmGUI.py (0ac233b) · Create Readme.md (1ab25e3) · Update Readme.md (21fa207) (+14)
+- 2024-12-15 — Day 18 — Add files via upload (0a0d681) · Delete docs/images/tst (0a33fe5) · Update README.md (360b627) (+9)
 - 2024-12-14 — Day 17
 - 2024-12-13 — Day 16 — Delete GUI Trainer (8cc232d)
-- 2024-12-12 — Day 15 — Update README.md (178d24b) · Update README.md (7f12cf8)
-- 2024-12-11 — Day 14 — Update README.md (0ad3e81) · Qelm GUI - With threading selection (68fd945) · Multi-Threading CPU/GPU (7b73d48) (+1)
-- 2024-12-10 — Day 13 — Update chat.py (15e63ef) · Rename Readme to Readme.md (17cfae7) · Create QelmGUI.py (2ba5c56) (+8)
-- 2024-12-09 — Day 12 — Create chat.py (550cd3b) · Update README.md (58816e4) · Update README.md (64e8e70) (+5)
-- 2024-12-08 — Day 11 — Add files via upload (011759e) · Update README.md (0cd3063) · Update README.md (27c1bbe) (+11)
+- 2024-12-12 — Day 15 — Update README.md (178d24b) · Update README.md (7f12cf8) · Update README.md (178d24b) · Update README.md (7f12cf8)
+- 2024-12-11 — Day 14 — Update README.md (0ad3e81) · Qelm GUI - With threading selection (68fd945) · Multi-Threading CPU/GPU (7b73d48) (+2)
+- 2024-12-10 — Day 13 — Update chat.py (15e63ef) · Rename Readme to Readme.md (17cfae7) · Create QelmGUI.py (2ba5c56) (+9)
+- 2024-12-09 — Day 12 — Create chat.py (550cd3b) · Update README.md (58816e4) · Update README.md (64e8e70) (+6)
+- 2024-12-08 — Day 11 — Add files via upload (011759e) · Update README.md (0cd3063) · Update README.md (27c1bbe) (+12)
 - 2024-12-07 — Day 10
 - 2024-12-06 — Day 9
 - 2024-12-05 — Day 8

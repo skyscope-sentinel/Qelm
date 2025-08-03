@@ -28,7 +28,7 @@
 - Must have an IBM account (Free account alots 10 minutes per month)  
 - Must have a basic understanding of running circuits  
 - Must be familiar with Quantum Computers (you can switch, but I usually use Brisbane for free)
-- 8/2/2025 - Qelm now has a drop in for backends. Future releases of qelm will automatically have this feature. Quantum has been retired but still works perfectly.
+- 8/2/2025 - Qelm now has a drop in for backends. Future releases of Qelm will automatically have this feature. Quantum has been retired but still works perfectly.
 
 ---
 

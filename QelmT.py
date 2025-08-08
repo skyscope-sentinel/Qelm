@@ -1,6 +1,3 @@
-#!/usr/bin/env python3.11
-# -*- coding: utf-8 -*-
-
 import sys, os, json, time, logging, traceback, threading, multiprocessing, concurrent.futures, queue, subprocess
 from collections import defaultdict
 from typing import List, Dict, Tuple, Optional, Callable, Union

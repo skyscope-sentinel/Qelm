@@ -14,6 +14,10 @@ New UI Features:
   - Fixed token encodings.
   - Fixed fallback methods.
 
+Update 8/9/25
+  - With Qelm 2.0 coming this is massively overhauled and will be replaced within the next couple of weeks with Qelms 2.0 release.
+  Please request pr's during this time if you are having issues, the more the better so I can know what to expect and what to fix.
+
  - B
 """
 
@@ -120,7 +124,7 @@ class QuantumLanguageModel:
                 model_dict = json.load(f)
         except Exception as e:
             raise ValueError(f"Failed to load model file: {e}")
-        if "version" in model_dict and model_dict["version"] == "4.0":
+        if "version" in model_dict and model_dict["version"] == "4.0": #If this instance gives issues for pulling old models, then update or open a pr.
             self.vocab_size = model_dict["vocab_size"]
             self.embed_dim = model_dict["embed_dim"]
             self.hidden_dim = model_dict["hidden_dim"]
@@ -757,7 +761,7 @@ class QELMChatUI:
             messagebox.showerror("Local Model Load Error", f"Failed to load local HuggingFace model:\n{e}")
 
     def run_hf_inference(self, prompt: str) -> str:
-        """Generate a response with the loaded HuggingFace model."""
+        """Generate a response with the loaded HuggingFace model. This is experiencing issues on build."""
         if not self.hf_model or not self.hf_tokenizer:
             raise RuntimeError("No HuggingFace model loaded.")
         if torch is None:
@@ -840,11 +844,11 @@ def main():
     try:
         root = tk.Tk()
         app = QELMChatUI(root)
-        root.mainloop()
+        root.mainloop() #Some builds seem to have issues with cmd, remove this if it gives you issues for a build.
     except Exception as e:
         err = f"Fatal error: {e}\n{traceback.format_exc()}"
         messagebox.showerror("Fatal Error", err)
         sys.exit(1)
 
-if __name__ == "__main__":
+if __name__ == "__main__": 
     main()
